@@ -1,7 +1,7 @@
 ## Summary
 [Briefly describe what this PR does and why it’s needed.]
 
-## 🔧 Changes
+## Changes
 Select all that apply and list any specific files or modules changed.
 
 - [ ] Feature added  

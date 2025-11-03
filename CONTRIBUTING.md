@@ -51,12 +51,28 @@ docs/<section-name>
 ---
 
 ## Commit Messages
-We use **Conventional Commits** for clarity:
+
+We use the **[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)** standard to keep commit history organized, consistent, and easy to understand.
+
+**Format:**
 ```
-feat: add login page layout
-fix: correct API response handling
-docs: update README with setup steps
+<type>(optional scope): <short imperative summary>
 ```
+
+**Allowed types:**
+| Type | Description |
+|------|--------------|
+| **feat** | Introduce a new feature |
+| **fix** | Correct a bug |
+| **docs** | Documentation-only changes |
+| **style** | Code style changes (formatting, spacing, etc.) that don’t affect behavior |
+| **refactor** | Code changes that neither fix a bug nor add a feature |
+| **test** | Add or update tests |
+| **chore** | Maintenance tasks (build, tooling, dependency updates) |
+| **perf** | Performance improvements |
+| **ci** | Changes to CI/CD configuration or scripts |
+| **build** | Build system or dependency changes |
+
 ---
 
 ## Code Style, Linting & Formatting

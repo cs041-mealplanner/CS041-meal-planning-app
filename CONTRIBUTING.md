@@ -32,10 +32,15 @@ Environment variables are stored locally in `.env` (not pushed to GitHub).
 We use a **feature-branch workflow** with the `main` branch as the stable release branch.
 
 **Branch naming convention**
+
 ```
-feature/<feature-name>
-fix/<bug-description>
-docs/<section-name>
+<type>/<short-description>-<author-initials>
+
+Examples:
+  feat/navbar-FLDB
+  fix/login-bug-KL
+  docs/readme-update-CHH
+  chore/add-license-LPL
 ```
 - Create a feature branch before coding.
 - Open a Pull Request (PR) to merge into `main`.

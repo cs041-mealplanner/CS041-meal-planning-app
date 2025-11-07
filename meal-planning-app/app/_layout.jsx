@@ -1,16 +1,50 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
+import React from "react";
+import { StyleSheet } from "react-native";
+import { MD3LightTheme, PaperProvider } from 'react-native-paper';
+import Header from "../components/Header";
+
+
+const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: 'green',
+    accent: 'green',
+    background: '#f9e4bc',
+    onbackground: '#000000',
+  },
+  
+
+}
+
+
 
 export default function RootLayout() {
+  const pathname = usePathname();
+  const router = useRouter();
   return (
-    <Stack
-      screenOptions={{
-        headerTitle: 'Home',       // sets header title globally
-        headerStyle: { backgroundColor: '#6200ee' }, // header bg color
-        headerTintColor: '#fff',   // back button & title color
-      }}
-    />
+      <PaperProvider theme={theme}>
+      {/* Universal Header */}
+      <Header />
+
+      {/* Expo Router Pages */}
+      <Stack screenOptions={{ headerShown: false }} />
+    </PaperProvider>
   );
 }
+
+
+// Styles for the header
+const styles = StyleSheet.create({
+  // Ignore
+  container:{
+    flex: 1,
+    backgroundColor: '#000000ff',
+  },
+ 
+});
+
 
 
 

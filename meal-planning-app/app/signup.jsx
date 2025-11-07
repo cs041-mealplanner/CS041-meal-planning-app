@@ -9,9 +9,10 @@ const router = useRouter();
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
 
-  const handleLogin = () => {
+  const handleSignup = () => {
     // add sign up here for login
     console.log('Sign up pressed');
+    router.replace('/login');
   };
 
   return (
@@ -46,7 +47,7 @@ const router = useRouter();
 
       <Button
         mode="contained"
-        onPress={handleLogin}
+        onPress={handleSignup}
         style={styles.button}
         contentStyle={{ paddingVertical: 8 }}
       >
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+    backgroundColor: '#f9e4bc',
   },
   title: {
     fontSize: 28,

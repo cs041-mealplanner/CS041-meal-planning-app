@@ -11,6 +11,7 @@ const router = useRouter();
   const handleLogin = () => {
     // add logic here for login
     console.log('Loggin pressed');
+    router.replace('/dashboard');
   };
 
   return (
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+    backgroundColor: '#f9e4bc',
   },
   title: {
     fontSize: 28,

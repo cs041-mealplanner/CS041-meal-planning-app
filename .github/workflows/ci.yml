@@ -1,26 +1,29 @@
-name: Node.js CI
+name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Use Node 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
+          cache: "npm"
 
-      - name: Install dependencies
+      - name: Clean install dependencies
         run: npm ci
 
-      - name: Run lint
+      - name: Lint
         run: npm run lint
+
+      - name: Run Jest tests
+        run: npm test -- --runInBand

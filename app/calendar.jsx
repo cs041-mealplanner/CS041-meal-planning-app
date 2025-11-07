@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 
 function Calendar() {
   const router = useRouter();
@@ -39,11 +40,13 @@ function Calendar() {
     return cells;
   };
 
-  return (
+ return (
+  <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <Text style={styles.header}>
         {currentDate.toLocaleString('default', { month: 'long' })} {year}
       </Text>
+
       <View style={styles.nav}>
         <TouchableOpacity onPress={() => changeMonth(-1)} style={styles.navButton}>
           <Text style={styles.navText}>Prev</Text>
@@ -51,11 +54,24 @@ function Calendar() {
         <TouchableOpacity onPress={() => changeMonth(1)} style={styles.navButton}>
           <Text style={styles.navText}>Next</Text>
         </TouchableOpacity>
-    </View>
+      </View>
+
+      <View style={styles.weekdayRow}>
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+          <View key={index} style={styles.weekdayCell}>
+            <Text style={styles.weekdayText}>{day}</Text>
+          </View>
+        ))}
+      </View>
+
       <View style={styles.calendarGrid}>{renderCalendar()}</View>
     </View>
-  );
+  </ScrollView>
+);
+
 }
+
+// STYLE SHEETS
 
 const styles = StyleSheet.create({
   container: {
@@ -90,18 +106,39 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   dayCell: {
-    width: '10%',
-    aspectRatio: 1,
+    width: '14.28%',
+     aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 0.5,
     borderColor: '#ccc',
+
   },
   emptyCell: {
-    width: '10%',
+    width: '14.28%',
     aspectRatio: 1,
+
   },
   dayText: {
     fontSize: 16,
   },
+  weekdayRow: {
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  justifyContent: 'flex-start',
+
+},
+
+weekdayCell: {
+    width: '14.28%',
+    alignItems: 'center',
+    paddingVertical: 6,
+},
+
+weekdayText: {
+  fontWeight: 'bold',
+  fontSize: 14,
+}
 });
 
 export default Calendar;

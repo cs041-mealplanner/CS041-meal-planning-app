@@ -179,19 +179,14 @@ Merges into `main` require all CI jobs to pass before approval.
 ---
 
 ## Release Process
+*(Planned for future sprints)*
+
+The team will adopt **semantic versioning** once the app reaches a functional milestone (e.g., first deployed prototype).  
+
 - Follow **semantic versioning** for releases (`v1.0.0`, `v1.1.0`, etc.).  
 - Minor UI updates and patches can be merged directly to `main` after CI passes and peer review.  
 - Major feature releases require team review and partner approval before tagging a version.
 
 ---
 
-## Support & Contact
-For issues or clarifications:
-- **Team Discord:** `#dev-discussion` channel  
-- **Primary Contact:** Francis Louie Baobao (baobaof@oregonstate.edu)  
-- **TA:** Nischal Aryal (aryaln@oregonstate.edu)  
-- **Partner:** Alexander Ulbrich (alexander.ulbrich@oregonstate.edu)
-
----
-
-_Last updated: November 2, 2025_
+_Last updated: November 6, 2025_

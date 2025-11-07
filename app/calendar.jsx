@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { StyleSheet, View } from 'react-native';
+import { useState } from "react";
+import { StyleSheet } from 'react-native';
 
 function Calendar(){
     const router = useRouter();

@@ -1,32 +1,15 @@
 
-import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Button } from 'react-native-paper';
 
 
 export default function Home() {
-  const router = useRouter();
-
-  const loginPress = () => {
-    console.log("Button pressed!");
-    router.push("/login");
-  };
-
-  const signUpPress = () => {
-    console.log("Button pressed!");
-    router.push("/signup");
-  };
+  
   
   return (
     <View style={styles.container}>
-      <Text>Welcome to the Meal Planning App!</Text>
-      <Button mode="contained" onPress={loginPress} style={styles.button}>
-        Login
-      </Button>
-      <Button mode="outlined" onPress={signUpPress} style={styles.button}>
-        Sign Up
-      </Button>
+      <Text>Home page</Text>
+      
     </View>
   );
 }
@@ -36,9 +19,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: '#f9e4bc',
   },
-  button: {
-    marginTop: 20,
-  },
+  
 });
 

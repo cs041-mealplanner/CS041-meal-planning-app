@@ -1,6 +1,6 @@
 # 🍽️ CS.041 — Meal Planning Web App (Nourishly)
 
-An open-source, cross-platform **meal planner** with productivity features inspired by Crouton.  
+A **meal planner** with productivity features inspired by Crouton.  
 Built using **React Native (Expo)** and **Node.js**, this project is developed as part of the **OSU CS Capstone (CS 461–463)** sequence.
 
 ---
@@ -33,14 +33,13 @@ The app focuses on usability, accessibility, and modular architecture to allow f
 ## Getting Started
 **Requirements**
 - Node.js v20+
-- Expo CLI installed globally
 - Git access to the repository
+- (Optional) VS Code + ESLint extension
 
 **Setup**
 ```bash
 git clone https://github.com/cs041-mealplanner/CS041-meal-planning-app.git
-cd meal-planning-webapp
-npm install
+npm ci
 npm run web
 ```
 

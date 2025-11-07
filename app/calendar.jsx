@@ -1,69 +1,107 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-function Calendar(){
-    const router = useRouter();
+function Calendar() {
+  const router = useRouter();
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-    const [currentDate, setCurrentDate] = useState(new Date())
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const getStartDay = (year, month) => new Date(year, month, 1).getDay(); // 0 = Sunday
 
-
-    const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-    const getStartDay = (year, month) => new Date(year, month, 1).getDay(); // 0 = Sunday
-
-    const changeMonth = (offset) => {
+  const changeMonth = (offset) => {
     const newDate = new Date(year, month + offset, 1);
     setCurrentDate(newDate);
-    };
+  };
 
-    
+  const renderCalendar = () => {
+    const cells = [];
+    const daysInMonth = getDaysInMonth(year, month);
+    const startDay = getStartDay(year, month);
 
-    const renderCalendar = () => {
-        const cells = [];
+    // Empty cells before the first day
+    for (let i = 0; i < startDay; i++) {
+      cells.push(<View key={`empty-${i}`} style={styles.emptyCell} />);
+    }
 
-        const daysInMonth = getDaysInMonth(year, month);
-        const startDay = getStartDay(year, month);
+    // Day cells
+    for (let day = 1; day <= daysInMonth; day++) {
+      cells.push(
+        <View key={day} style={styles.dayCell}>
+          <Text style={styles.dayText}>{day}</Text>
+        </View>
+      );
+    }
 
+    return cells;
+  };
 
-        for (let i = 0; i < startDay; i++) {
-        cells.push(<div key={`empty-${i}`} className="empty-cell"></div>);
-
-        for (let day = 1; day <= daysInMonth; day++) {
-        cells.push(
-        <div key={day} className="day-cell">
-            {day}
-        </div>
-        );
-        }
-
-        return cells;
-        }
-
-    };
-
-    return (
-    <div>
-      <h2>{currentDate.toLocaleString('default', { month: 'long' })} {year}</h2>
-      <button onClick={() => changeMonth(-1)}>Prev</button>
-      <button onClick={() => changeMonth(1)}>Next</button>
-      <div className="calendar-grid">{renderCalendar()}</div>
-    </div>
-
-
-);
-
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>
+        {currentDate.toLocaleString('default', { month: 'long' })} {year}
+      </Text>
+      <View style={styles.nav}>
+        <TouchableOpacity onPress={() => changeMonth(-1)} style={styles.navButton}>
+          <Text style={styles.navText}>Prev</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => changeMonth(1)} style={styles.navButton}>
+          <Text style={styles.navText}>Next</Text>
+        </TouchableOpacity>
+    </View>
+      <View style={styles.calendarGrid}>{renderCalendar()}</View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    
-
-
+  container: {
+    padding: 10,
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  header: {
+    fontSize: 24,
+    textAlign: 'center',
+    marginBottom: 12,
+    fontWeight: 'bold',
+  },
+  nav: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  navButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+  },
+  navText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  dayCell: {
+    width: '10%',
+    aspectRatio: 1,
+    borderWidth: 0.5,
+    borderColor: '#ccc',
+  },
+  emptyCell: {
+    width: '10%',
+    aspectRatio: 1,
+  },
+  dayText: {
+    fontSize: 16,
+  },
 });
-
-
-
 
 export default Calendar;

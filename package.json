@@ -10,7 +10,10 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "node --max_old_space_size=4096 ./node_modules/jest/bin/jest.js --runInBand",
-    "test:watch": "node --max_old_space_size=4096 ./node_modules/jest/bin/jest.js --runInBand --watch"
+    "test:watch": "node --max_old_space_size=4096 ./node_modules/jest/bin/jest.js --runInBand --watch",
+    "build:web:ci": "expo export -p web --non-interactive",
+    "ci:lint": "npm run lint",
+    "ci:test": "npm test -- --runInBand"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

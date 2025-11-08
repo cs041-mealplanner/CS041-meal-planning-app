@@ -1,4 +1,4 @@
-name: CI
+name:  CI – Build, Lint, and Web Bundle Check
 
 on:
   push:
@@ -19,11 +19,16 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Clean install dependencies
+      - name: Clean Install dependencies
         run: npm ci
 
       - name: Lint
-        run: npm run lint
+        run: npm run ci:lint
 
-      - name: Run Jest tests
-        run: npm test -- --runInBand
+      # Keep if/when you have tests; otherwise remove this block for now
+      - name: Unit tests
+        run: npm run ci:test
+
+      # This is the key gate for “red error screen” cases
+      - name: Bundle web (headless) – fail on unresolved modules/assets
+        run: npm run build:web:ci

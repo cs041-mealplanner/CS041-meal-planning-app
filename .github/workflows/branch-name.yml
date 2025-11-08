@@ -1,0 +1,19 @@
+# enforce <type>/<short-desc>-INITIALS pattern for feature branches
+name: Branch name must match convention
+on:
+  pull_request:
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          echo "Checking branch name: $BRANCH"
+          # Pattern: type/short-desc-INITIALS (2–4 uppercase initials)
+          if [[ ! "$BRANCH" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)\/[a-z0-9-]+-[A-Z]{2,4}$ ]]; then
+            echo "::error::Branch '$BRANCH' violates naming convention.
+            Use: type/short-desc-INITIALS (e.g., feat/login-ui-FLDB)."
+            exit 1
+          fi

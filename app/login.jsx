@@ -24,7 +24,7 @@ export default function LoginWeb() {
       {/* LEFT SECTION - image  */}
       <View style={styles.leftPane}>
         <ImageBackground
-          source={require('./assets/images/meal-leftpic.png')}
+          source={require('../assets/images/meal-leftpic.png')}
           resizeMode="cover"
           style={styles.hero}
           imageStyle={{ opacity: 0.9 }}
@@ -39,7 +39,7 @@ export default function LoginWeb() {
           {/* logo and title  */}
           <View style={styles.logoRow}>
             <Image
-              source={require('./assets/images/nourishlylogonoears.png')}
+              source={require('../assets/images/nourishlylogonoears.png')}
               style={{ width: 40, height: 40, marginRight: 10 }}
               resizeMode="contain"
             />

@@ -13,6 +13,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    justifyContent: 'center',
+    paddingHorizontal: 24,
     backgroundColor: '#f9e4bc',
   },
 });

@@ -78,9 +78,12 @@ export default function Header() {
         >
         <Menu.Item onPress={() => router.push("/dashboard")} title="Dashboard" />
         <Menu.Item onPress={() => router.push("/mealplan")} title="Create Meal Plan" />
+        <Menu.Item onPress={() => router.push("/create-meal-plan")} title="Create Meal Plan" />
+        <Menu.Item onPress={() => router.push("/calendar")} title="Calendar" />
         <Menu.Item onPress={() => router.push("/recipes")} title="Your Recipes" />
         <Menu.Item onPress={() => router.push("/groceryList")} title="Grocery List" />
         <Menu.Item onPress={() => router.push("/settings")} title="Settings" />
+        
         </Menu>
     </View>
   );

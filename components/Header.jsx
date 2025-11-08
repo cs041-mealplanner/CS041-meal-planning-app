@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9f4",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: " space-between",
+    justifyContent: "space-between",
     paddingHorizontal: 24,
 
     // Drop shadow 
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   navLinks: {
     flexDirection: "row",
-    allighnItems: "center",
+    alignItems: "center",
     gap: 18,
     
   },

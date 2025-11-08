@@ -57,7 +57,7 @@ export default function RecipeScreen() {
         <View style={[styles.recipeImage, { backgroundColor: "#ddd" }]} />
         )}
         <Text style={styles.recipeTitle}>{item.title}</Text>
-        <TouchableOpacity onPress={() => addToSaved(item)} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => toggleSaveRecipe(item)} style={styles.iconButton}>
         <Ionicons name="add-circle-outline" size={24} color="green" />
         </TouchableOpacity>
     </View>
@@ -71,7 +71,7 @@ export default function RecipeScreen() {
         <View style={[styles.recipeImage, { backgroundColor: "#ddd" }]} />
         )}
         <Text style={styles.recipeTitle}>{item.title}</Text>
-        <TouchableOpacity onPress={() => removeFromSaved(item)} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => toggleSaveRecipe(item)} style={styles.iconButton}>
         <Ionicons name="trash-outline" size={24} color="red" />
         </TouchableOpacity>
     </View>

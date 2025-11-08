@@ -1,6 +1,5 @@
 # enforce conventional Commit PR titles (<type>: <summary>)
 name: PR title must be Conventional Commit
-
 on:
   pull_request:
     types: [opened, edited, synchronize, ready_for_review]
@@ -14,5 +13,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           types: |
-            feat, fix, docs, style, refactor, test, chore, perf, ci, build
+            feat
+            fix
+            docs
+            style
+            refactor
+            test
+            chore
+            perf
+            ci
+            build
           requireScope: false

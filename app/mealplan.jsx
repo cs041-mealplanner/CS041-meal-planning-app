@@ -1,25 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-// arrays to hold meal items and date selection
-const selectedDate = new Date();
-const breakfastPlan = [];
-const lunchPlan = [];
-const dinnerPlan = [];
 
 
 // Meal Plan Component
 export default function CreateMealPlan() {
 
   // State to hold new meal item inputs
-  const [breakfastPlan, setBreakfastPlan] = useState([]);
   const [breakfastItem, setBreakfastItem] = useState("");
+
+  useEffect(() => {
+    // Load meal plans from persistent storage if needed
+  }, []);
+
+  // Custom hook to persist array in local storage
+  function usePersistedArray(key, initialValue) {
+    const [value, setValue] = useState(() => {
+      const storedValue = localStorage.getItem(key);
+      return storedValue ? JSON.parse(storedValue) : initialValue;
+    });
+
+    useEffect(() => {
+      localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]);
+
+    return [value, setValue];
+  }
+
+  const [breakfastPlan, setBreakfastPlan] = usePersistedArray("breakfastPlan", []);
+
 
 
   const [lunchItem, setLunchItem] = useState("");
-  const [lunchPlan, setLunchPlan] = useState([]);
+  const [lunchPlan, setLunchPlan] = usePersistedArray("lunchPlan", []);
 
-  const [dinnerPlan, setDinnerPlan] = useState([]);
+  const [dinnerPlan, setDinnerPlan] = usePersistedArray("dinnerPlan", []);
   const [dinnerItem, setDinnerItem] = useState("");
 
     // Render meal plan table
@@ -78,9 +93,6 @@ export default function CreateMealPlan() {
 
 
 
-
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -93,5 +105,11 @@ const styles = StyleSheet.create({
     borderCollapse: 'tcollapse',
     marginTop: 20,
     border: '1px solid #ccc',
-  }
+    borderStyle: 'solid',
+  },
+  cell: {
+    border: '1px solid #ccc',
+    padding: 8,
+    textAlign: 'center',
+  },
 });

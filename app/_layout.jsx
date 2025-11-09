@@ -25,12 +25,12 @@ export default function RootLayout() {
   const router = useRouter();
   return (
       <PaperProvider theme={theme}>
-      {/* Universal Header */}
-      <Header />
+        {/* Universal Header */}
+        <Header />
 
-      {/* Expo Router Pages */}
-      <Stack screenOptions={{ headerShown: false }} />
-    </PaperProvider>
+        {/* Expo Router Pages */}
+        <Stack screenOptions={{ headerShown: false }} />
+      </PaperProvider>
   );
 }
 

@@ -48,19 +48,21 @@ export default function Header() {
       </View>
 
       {/* Middle — Nav links */}
-      <View style={styles.navLinks}>
-        <TouchableOpacity onPress={() => router.push("/discover")}>
-          <Text style={styles.link}>Discover</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/get-started")}>
-          <Text style={styles.link}>Get Started</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/about")}>
-          <Text style={styles.link}>About Us</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/signup")}>
-          <Text style={styles.link}>Sign Up</Text>
-        </TouchableOpacity>
+      <View style={styles.centerContainer}>
+        <View style={styles.navLinks}>
+          <TouchableOpacity onPress={() => router.push("/discover")}>
+            <Text style={styles.link}>Discover</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/get-started")}>
+            <Text style={styles.link}>Get Started</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/about")}>
+            <Text style={styles.link}>About Us</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/signup")}>
+            <Text style={styles.link}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Right side — menu icon */}
@@ -75,10 +77,11 @@ export default function Header() {
         contentStyle={{ backgroundColor: "#fff", borderRadius: 8 }}
         >
         <Menu.Item onPress={() => router.push("/dashboard")} title="Dashboard" />
+        <Menu.Item onPress={() => router.push("/mealplan")} title="Create Meal Plan" />
         <Menu.Item onPress={() => router.push("/create-meal-plan")} title="Create Meal Plan" />
         <Menu.Item onPress={() => router.push("/calendar")} title="Calendar" />
         <Menu.Item onPress={() => router.push("/recipes")} title="Your Recipes" />
-        <Menu.Item onPress={() => router.push("/grocery-list")} title="Grocery List" />
+        <Menu.Item onPress={() => router.push("/groceryList")} title="Grocery List" />
         <Menu.Item onPress={() => router.push("/settings")} title="Settings" />
         
         </Menu>
@@ -93,7 +96,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
 
     // Drop shadow 
     shadowColor: "#000",         // iOS shadow color
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     marginRight: 6,
-
+    resizeMode: "contain",
   },
   brandText: {
     fontSize: 20,
@@ -124,11 +127,20 @@ const styles = StyleSheet.create({
   },
   navLinks: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 18,
+    
   },
   link: {
     fontSize: 15,
     color: "#5b7a6d",
     fontWeight: "500",
+  },
+  centerContainer:{
+    position: "absolute",
+    left: "50%",
+    right: "50%",
+    alighnItems: "center",
+    transform: [{ translateX: -165 }, { translateY: 0 }],
   },
 });

@@ -1,10 +1,34 @@
-// https://docs.expo.dev/guides/using-eslint/
+// eslint.config.js (flat config)
 const { defineConfig } = require('eslint/config');
-const expoConfig = require('eslint-config-expo/flat');
+const expo = require('eslint-config-expo/flat');
 
 module.exports = defineConfig([
-  expoConfig,
+  // Expo’s recommended config
+  ...expo,
+
+  // Jest/test file globals so ESLint stops complaining
   {
-    ignores: ['dist/*'],
+    files: ['**/*.test.js', '**/*.test.jsx', '**/__tests__/**/*.[jt]s?(x)'],
+    languageOptions: {
+      globals: {
+        jest: true,
+        test: true,
+        expect: true,
+        describe: true,
+        beforeEach: true,
+        afterEach: true,
+        beforeAll: true,
+        afterAll: true,
+      },
+    },
+    rules: {
+      // our test mock returns a component; don't force display-name in tests
+      'react/display-name': 'off',
+    },
+  },
+
+  // ignore build/cache paths
+  {
+    ignores: ['dist/*', '.expo/*', 'node_modules/*', '.jest-cache/*'],
   },
 ]);

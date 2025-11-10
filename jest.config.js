@@ -15,7 +15,7 @@ module.exports = {
       '^react-native-reanimated$': '<rootDir>/__mocks__/react-native-reanimated.js',
       '^react-native-worklets$': '<rootDir>/__mocks__/react-native-worklets.js',
     },
-    testPathIgnorePatterns: ['/node_modules/', '/.expo/'],
+    testPathIgnorePatterns: ['/node_modules/', '/.expo/', '/server/'],
     cacheDirectory: '<rootDir>/.jest-cache',
   };
   

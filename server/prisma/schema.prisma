@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  ingredients   Ingredient[]
+  mealPlans     MealPlan[]
+  groceryLists  GroceryList[]
+  refreshTokens RefreshToken[]
+}
+
+model Ingredient {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  category  String
+  amount    Float?
+  unit      String?
+}
+
+model Recipe {
+  id           String             @id @default(cuid())
+  title        String
+  category     String?
+  calories     Int?
+  ingredients  RecipeIngredient[]
+  mealRecipes  MealRecipe[]
+}
+
+model RecipeIngredient {
+  id         String  @id @default(cuid())
+  recipeId   String
+  recipe     Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name       String
+  amount     Float?
+  unit       String?
+  category   String?
+}
+
+model MealPlan {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         DateTime
+  meals        Meal[]
+  groceryLists GroceryList[]
+}
+
+model Meal {
+  id          String   @id @default(cuid())
+  mealPlanId  String
+  mealPlan    MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  time        String
+  recipes     MealRecipe[]
+}
+
+model MealRecipe {
+  id       String @id @default(cuid())
+  mealId   String
+  meal     Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model GroceryList {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId    String
+  plan      MealPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  items     GroceryListItem[]
+}
+
+model GroceryListItem {
+  id            String      @id @default(cuid())
+  groceryListId String
+  groceryList   GroceryList @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
+  name          String
+  amount        Float?
+  unit          String?
+  category      String?
+}
+
+model RefreshToken {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  ip        String?
+  @@index([userId])
+}

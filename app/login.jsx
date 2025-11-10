@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
+import { login as apiLogin } from './lib/api';
 
 export default function LoginWeb() {
   const router = useRouter();
@@ -14,9 +15,19 @@ export default function LoginWeb() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    console.log('Login pressed');
-    router.replace('/dashboard');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const handleLogin = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await apiLogin({ email, password });
+      router.replace('/dashboard');
+    } catch (e) {
+      setError(e.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -98,6 +109,7 @@ export default function LoginWeb() {
           >
             Log in
           </Button>
+          {!!error && <Text style={{ color: 'crimson', marginTop: 6 }}>{error}</Text>}
 
 
           {/* divider */}

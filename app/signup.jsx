@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, TextInput, Title } from 'react-native-paper';
+import { signup as apiSignup } from './lib/api';
 
 export default function Signup() {
 const router = useRouter();
@@ -9,10 +10,19 @@ const router = useRouter();
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
 
-  const handleSignup = () => {
-    // add sign up here for login
-    console.log('Sign up pressed');
-    router.replace('/login');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const handleSignup = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await apiSignup({ email, password });
+      router.replace('/login');
+    } catch (e) {
+      setError(e.message || 'Sign up failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,6 +63,7 @@ const router = useRouter();
       >
         Sign up
       </Button>
+      {!!error && <Title style={{ color: 'crimson', fontSize: 14, marginTop: 8 }}>{error}</Title>}
     </View>
   );
 } 

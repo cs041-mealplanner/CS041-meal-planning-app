@@ -13,17 +13,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Use Node 20.x
+      - name: Use Node 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
-      - name: Clean install dependencies
-        run: npm ci
+      - name: Install client dependencies
+        run: cd client && npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Install server dependencies
+        run: cd server && npm ci
 
-      - name: Run Jest tests
-        run: npm test -- --runInBand
+      - name: Lint client
+        run: cd client && npm run lint

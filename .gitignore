@@ -26,6 +26,3 @@ yarn-error.*
 # Jest artifacts
 .jest-cache/
 coverage/
-
-# Expo stuff (legacy)
-.expo/

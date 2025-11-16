@@ -1,27 +1,33 @@
 ## Summary
-[Briefly describe what this PR does and why it’s needed.]
+[Briefly describe what this PR does and why it’s needed. Keep it 1–3 sentences.]
 
 ## Changes
 Select all that apply and list any specific files or modules changed.
 
-- [ ] Feature added  
+- [ ] Feature  
 - [ ] Bug fix  
-- [ ] Documentation updated  
 - [ ] Refactor / cleanup  
-- [ ] Security or config change  
+- [ ] Documentation  
+- [ ] CI / tooling  
 - [ ] Other (describe below)
 
-[Optional description]
+[Optional extra context if needed]
+
+---
 
 ## Testing
 [Describe how you tested these changes. Include commands, screenshots, or steps for reviewers to reproduce.]
+
+---
 
 ## Related Issue
 [Closes #<issue-number>
 (Optional) Also relates to: #<other-issue>, REQ-<ID>]
 
+---
+
 ## Checklist
-Before requesting review, confirm the following:
+Before requesting review, confirm:
 
 - [ ] Code builds and runs locally
 - [ ] Code follows project conventions (naming, folder, ESLint)

@@ -49,19 +49,21 @@ export default function Header() {
 
       {/* Middle — Nav links */}
       <View style={styles.centerContainer}>
+        <View style={styles.centerContainer}>
         <View style={styles.navLinks}>
-          <TouchableOpacity onPress={() => router.push("/discover")}>
-            <Text style={styles.link}>Discover</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/get-started")}>
-            <Text style={styles.link}>Get Started</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/about")}>
-            <Text style={styles.link}>About Us</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/signup")}>
-            <Text style={styles.link}>Sign Up</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/discover")}>
+              <Text style={styles.link}>Discover</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/get-started")}>
+              <Text style={styles.link}>Get Started</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/about")}>
+              <Text style={styles.link}>About Us</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/signup")}>
+              <Text style={styles.link}>Sign Up</Text>
+            </TouchableOpacity>
+        </View>
         </View>
       </View>
 
@@ -78,9 +80,12 @@ export default function Header() {
         >
         <Menu.Item onPress={() => router.push("/dashboard")} title="Dashboard" />
         <Menu.Item onPress={() => router.push("/mealplan")} title="Create Meal Plan" />
+        <Menu.Item onPress={() => router.push("/calendar")} title="Calendar" />
+        <Menu.Item onPress={() => router.push("/mealplan")} title="Create Meal Plan" />
         <Menu.Item onPress={() => router.push("/recipes")} title="Your Recipes" />
         <Menu.Item onPress={() => router.push("/groceryList")} title="Grocery List" />
         <Menu.Item onPress={() => router.push("/settings")} title="Settings" />
+        
         </Menu>
     </View>
   );
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9f4",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: " space-between",
+    justifyContent: "space-between",
     paddingHorizontal: 24,
 
     // Drop shadow 
@@ -124,7 +129,7 @@ const styles = StyleSheet.create({
   },
   navLinks: {
     flexDirection: "row",
-    allighnItems: "center",
+    alignItems: "center",
     gap: 18,
     
   },

@@ -1,12 +1,12 @@
 import { Edit, Plus, Trash2 } from "lucide-react-native";
 import { useState } from "react";
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const CATEGORY_KEYWORDS = {

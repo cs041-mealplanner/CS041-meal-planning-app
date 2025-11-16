@@ -1,12 +1,97 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-export default function GroceryList() {
+
+
+// Meal Plan Component
+export default function CreateMealPlan() {
+
+  // State to hold new meal item inputs
+  const [breakfastItem, setBreakfastItem] = useState("");
+
+  useEffect(() => {
+    // Load meal plans from persistent storage if needed
+  }, []);
+
+  // Custom hook to persist array in local storage
+  function usePersistedArray(key, initialValue) {
+    const [value, setValue] = useState(() => {
+      const storedValue = localStorage.getItem(key);
+      return storedValue ? JSON.parse(storedValue) : initialValue;
+    });
+
+    useEffect(() => {
+      localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]);
+
+    return [value, setValue];
+  }
+
+  const [breakfastPlan, setBreakfastPlan] = usePersistedArray("breakfastPlan", []);
+
+
+
+  const [lunchItem, setLunchItem] = useState("");
+  const [lunchPlan, setLunchPlan] = usePersistedArray("lunchPlan", []);
+
+  const [dinnerPlan, setDinnerPlan] = usePersistedArray("dinnerPlan", []);
+  const [dinnerItem, setDinnerItem] = useState("");
+
+    // Render meal plan table
     return(
         <View style={styles.container}>
-            <Text>meal plan page</Text>
+            <h1>Create a Meal Plan</h1>
+            <div>
+              <label htmlFor="add_breakfast_item">New Breakfast Item: </label>
+              <input type="text" value={breakfastItem} onChange={(e) => setBreakfastItem(e.target.value)}/>
+              <button onClick={() =>  {
+                setBreakfastPlan([...breakfastPlan, breakfastItem]);
+                setBreakfastItem("");
+              }}>Add</button>
+            </div>
+            
+            <div>
+              <label htmlFor="add_lunch_item">New Lunch Item: </label>
+              <input type="text" value={lunchItem} onChange={(e) => setLunchItem(e.target.value)} />
+              <button onClick={() =>  {
+                setLunchPlan([...lunchPlan, lunchItem]);
+                setLunchItem("");
+              }}>Add</button>
+            </div>
+            <div>
+              <label htmlFor="add_dinner_item">New Dinner Item: </label>
+              <input type="text" value={dinnerItem} onChange={(e) => setDinnerItem(e.target.value)} />
+              <button onClick={() =>  {
+                setDinnerPlan([...dinnerPlan, dinnerItem]);
+                setDinnerItem("");
+              }}>Add</button>
+            </div>
+
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Breakfast</th>
+                  <th>Lunch</th>
+                  <th>Dinner</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: Math.max(breakfastPlan.length, lunchPlan.length, dinnerPlan.length) }).map((_, index) => (
+                  <tr key={index}>
+                    <td>{breakfastPlan[index] || ""}</td>
+                    <td>{lunchPlan[index] || ""}</td>
+                    <td>{dinnerPlan[index] || ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
         </View>
+        
     );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -14,5 +99,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: '#f9e4bc',
+  },
+  table: {
+    width: '80%',
+    borderCollapse: 'tcollapse',
+    marginTop: 20,
+    border: '1px solid #ccc',
+    borderStyle: 'solid',
+  },
+  cell: {
+    border: '1px solid #ccc',
+    padding: 8,
+    textAlign: 'center',
   },
 });

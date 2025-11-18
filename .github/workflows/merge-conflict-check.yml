@@ -1,0 +1,46 @@
+# Workflow: Merge Conflict Detection
+# Purpose:
+#   Prevents merging a PR that contains unresolved merge conflicts with the base branch.
+#   This workflow performs a no-commit merge attempt against the latest version of the
+#   base branch (usually 'main'). If a conflict is detected, the workflow fails and blocks the merge.
+#   Ensures that reviewers only see conflict-free PRs and protects the stability of 'main'.
+
+name: Merge Conflict Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  check-merge-conflict:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect merge conflicts with base branch
+        run: |
+          set -e
+
+          BASE_REF="${{ github.base_ref }}"
+          HEAD_REF="${{ github.head_ref }}"
+
+          echo "Base branch: $BASE_REF"
+          echo "Head branch: $HEAD_REF"
+
+          git fetch origin "$BASE_REF"
+
+          if git merge --no-commit --no-ff "origin/$BASE_REF"; then
+            echo "No merge conflicts detected."
+            git merge --abort || git reset --hard HEAD
+          else
+            echo "::error ::Merge conflict detected between '$HEAD_REF' and '$BASE_REF'."
+            git merge --abort || git reset --hard HEAD
+            exit 1
+          fi

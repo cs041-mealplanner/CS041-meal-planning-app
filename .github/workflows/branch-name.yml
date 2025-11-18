@@ -1,0 +1,33 @@
+# Workflow: Branch Name Validation
+# Purpose:
+#   Ensures all pull requests come from correctly formatted branch names
+#   that follow the team's convention:
+#       <type>/<short-description>-<AUTHOR>
+#   Allowed <type> values match our Conventional Commits policy.
+#   This prevents inconsistent branches and enforces repo discipline.
+
+name: Branch Name Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate branch name
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF}"
+          echo "Checking branch name: $BRANCH_NAME"
+
+          REGEX='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)\/[a-z0-9-]+-[A-Z]{2,4}$'
+
+          if [[ "$BRANCH_NAME" =~ $REGEX ]]; then
+            echo "Branch name is valid."
+          else
+            echo "::error ::Invalid branch name '$BRANCH_NAME'."
+            echo "Expected: <type>/<short-description>-<AUTHOR>"
+            exit 1
+          fi

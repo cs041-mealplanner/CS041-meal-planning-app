@@ -1,0 +1,32 @@
+# Workflow: Pull Request Title Validation
+# Purpose:
+#   Verifies that all PR titles follow the Conventional Commits standard:
+#       <type>(optional-scope): short summary
+#   This keeps commit history, changelogs, and PR lists clean and searchable.
+#   Enforces consistency across all contributors and improves review clarity.
+
+name: PR Title Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+jobs:
+  check-pr-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate PR title
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          echo "Checking PR title: $TITLE"
+
+          REGEX='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)(\([a-zA-Z0-9_-]+\))?: .+$'
+
+          if [[ "$TITLE" =~ $REGEX ]]; then
+            echo "PR title is valid."
+          else
+            echo "::error ::Invalid PR title format."
+            echo "Expected: <type>(optional-scope): summary"
+            exit 1
+          fi

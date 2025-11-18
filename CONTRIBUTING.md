@@ -35,19 +35,6 @@ npm run server   # starts Express API server
 
 ---
 
-## Repository Structure
-
-```
-client/             # React (Vite) web app
-server/             # Express backend API
-legacy-RN-Expo/     # Archived old Expo + React Native app
-.github/            # CI workflows and templates
-```
-
-The `legacy-RN-Expo/` folder is preserved **only for reference** and is not part of active development.
-
----
-
 ## Commit Messages (Conventional Commits)
 
 We follow the **Conventional Commits** standard.
@@ -93,11 +80,11 @@ We use a **feature-branch workflow** with `main` as the stable branch.
 
 **Examples**
 ```
-feat/login-page-FLDB
+feat/login-page-CHH
 fix/grocery-endpoint-KL
 docs/readme-update-LPL
 refactor/state-cleanup-XS
-test/jest-setup-CHH
+test/vitest-setup-FLDB
 ```
 
 **Guidelines**
@@ -174,24 +161,40 @@ npm run lint -- --fix   # optional auto-fix
 
 ---
 
-## Testing (Planned — Jest)
+## Testing (Sprint 4 — Vitest)
 
-Testing will be introduced in **Sprint 4** using **Jest** (client + server).
+Automated testing will be introduced in Sprint 4 using Vitest for the React (Vite) frontend.
+Vitest is the recommended test runner for Vite and provides fast, zero-config integration with modern React tooling.
 
-Planned structure:
-```
-client/tests/
-server/tests/
-```
+### Planned File Structure
 
-Definition of Done (temporary):
-- Lint passes
-- Manual verification completed
-- No breaking errors in client/server
+client/tests/        # Vitest unit/component tests for the frontend
+server/tests/        # (Planned) backend tests added in a later sprint
 
-Once Jest is added:
-- CI will run `npm test`
-- Coverage reports saved as artifacts
+### Frontend Testing (client/)
+
+Vitest will be configured together with React Testing Library to support:
+- Component rendering tests
+- Hook and utility tests
+- DOM interaction tests
+- Snapshot or state-based behavioral tests (if needed)
+
+Once Vitest is installed:
+- Running `npm test` inside the `client/` directory will execute the test suite
+- CI will include a `npm test` step to block merges on failing tests
+- Coverage reporting may be added in later sprints if needed
+
+### Backend Testing (server/)
+
+Backend tests will be added in a follow-up PR.
+The team may use Vitest in a Node environment or Supertest for Express API route testing.
+This will be finalized once backend endpoints stabilize.
+
+### Temporary Definition of Done (until Vitest is fully enabled)
+
+- Lint passes (client)
+- Manual feature verification completed
+- No breaking runtime errors when running both client and server
 
 ---
 
@@ -205,7 +208,7 @@ CI currently performs:
 3. Run lint (`client`)  
 
 Future additions:
-- Run Jest test suite
+- Run Vitest test suite
 - Coverage reporting
 - Build validation
 
@@ -242,4 +245,4 @@ Major releases require team + partner approval.
 
 ---
 
-_Last updated: November 14, 2025_
+_Last updated: November 18, 2025_

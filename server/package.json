@@ -5,8 +5,10 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node src/index.js"
+    "test": "vitest",
+    "dev": "node src/index.js",
+    "lint": "eslint ."
+    
   },
   "keywords": [],
   "author": "",
@@ -15,5 +17,14 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "supertest": "^7.1.4",
+    "vitest": "^4.0.10"
   }
 }

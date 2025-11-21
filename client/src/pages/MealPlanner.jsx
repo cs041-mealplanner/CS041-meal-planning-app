@@ -3,7 +3,7 @@ import '../styles/MealPlanner.css';
 
 export default function MealPlanner() {
 
-    const date = new Date();
+    // const date = new Date();
 
     const [breakfastPlan, setBreakfastPlan] = useState([]);
     const [lunchPlan, setLunchPlan] = useState([]);

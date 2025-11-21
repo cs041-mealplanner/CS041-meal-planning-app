@@ -1,26 +1,19 @@
-import { render, screen } from "@testing-library/react";
-import App from "./App";
+import { render, screen } from '@testing-library/react';
+import App from './App';
 
-// Mock "fetch" globally (prevents real API calls during tests)
-global.fetch = vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve({ status: "ok" }),
-  })
-);
+describe('App', () => {
+  it('renders the homepage hero and nav', () => {
+    render(<App />);
 
-// 
-test("renders health status from API", async () => {
-  // Render the App component into the test DOM
-  render(<App />);
+    // Navbar brand
+    expect(screen.getByText(/Nourishly/i)).toBeInTheDocument();
 
-  // Verify the initial UI state before the fetch resolves
-  expect(screen.getByText(/API health status/i)).toBeInTheDocument();
-  expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    // Hero headline
+    expect(
+      screen.getByText(/Plan Your Meals With Ease/i)
+    ).toBeInTheDocument();
 
-  // Wait for the component to update after the mocked fetch resolves
-  const statusEl = await screen.findByText(/ok/i); // Waits until mock fetch resolves
-
-  // Confirm that the final UI shows the fetched API status
-  expect(statusEl).toBeInTheDocument();
+    // One of the "Get Started" buttons
+    expect(screen.getAllByText(/Get Started/i)[0]).toBeInTheDocument();
+  });
 });

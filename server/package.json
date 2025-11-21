@@ -25,6 +25,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^7.2.1",
     "supertest": "^7.1.4",
-    "vitest": "^4.0.10"
+    "vitest": "^4.0.10",
+    "jsdom": "^27.2.0"
   }
 }

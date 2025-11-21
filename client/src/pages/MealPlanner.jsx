@@ -73,7 +73,6 @@ export default function MealPlanner() {
                 </div>
 
             </div>
-
         </div >
     );
 }

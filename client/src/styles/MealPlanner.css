@@ -1,4 +1,45 @@
-button {
+/*==========================================*/
+/* style sheet for MealPlanner page */
+/*==========================================*/
+
+
+/* used to see div borders for debugging */
+/* div {
+    border: #000000 2px solid;
+} */
+
+.header-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    overflow-x: auto;
+    display: flex;
+    margin: 20px;
+}
+
+.meal-item-inputs-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.input-container {
+    margin-bottom: 10px;
+    display: inline-block;
+    margin: 40px;
+}
+
+.add-items-header {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+.add-button {
     background-color: #4CAF50;
     /* Green */
     border: none;
@@ -11,4 +52,23 @@ button {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 12px;
+}
+
+.add-button:hover {
+    background-color: #4645a0;
+}
+
+.meal-item-input {
+    padding: 8px;
+    font-size: 16px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+
+
+.mealplan-table {
+    width: 100%;
+    border-collapse: collapse;
 }

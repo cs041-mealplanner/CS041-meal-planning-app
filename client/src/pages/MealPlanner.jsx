@@ -1,27 +1,27 @@
+import { useState } from 'react';
 import '../styles/MealPlanner.css';
 
 export default function MealPlanner() {
 
     const date = new Date();
 
-    const breakfast = ["Oatmeal with Fruits", "Scrambled Eggs", "Yogurt Parfait", "Pancakes", "Smoothie Bowl"];
-    const lunch = ["Grilled Chicken Salad", "Turkey Sandwich", "Veggie Wrap", "Quinoa Bowl", "Sushi"];
-    const dinner = ["Baked Salmon with Veggies", "Pasta Primavera", "Stir-fried Tofu", "Beef Tacos", "Chicken Curry"];
+    const [breakfastPlan, setBreakfastPlan] = useState([]);
+    const [lunchPlan, setLunchPlan] = useState([]);
+    const [dinnerPlan, setDinnerPlan] = useState([]);
 
-    class MealPlan {
-        constructor(breakfast, lunch, dinner) {
-            this.breakfast = breakfast;
-            this.lunch = lunch;
-            this.dinner = dinner;
-        }
-    }
+    const [breakfastItem, setBreakfastItem] = useState("");
+    const [lunchItem, setLunchItem] = useState("");
+    const [dinnerItem, setDinnerItem] = useState("");
+
 
     return (
-        <div className="px-8 py-12">
-            <section className="text-center">
+        <div className='mealplanner-page-container'>
+            <div className='header-container'>
                 <h1 className="text-4xl font-bold mb-4">Selected Meal Plan</h1>
-                <button>Add</button>
-                <table>
+            </div>
+
+            <div className="table-container">
+                <table className='mealplan-table'>
                     <thead>
                         <tr>
                             <th className="px-4 py-2">Breakfast</th>
@@ -30,20 +30,51 @@ export default function MealPlanner() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td className="border px-4 py-2" >Oatmeal with Fruits</td>
-                            <td className="border px-4 py-2">Grilled Chicken Salad</td>
-                            <td className="border px-4 py-2">Baked Salmon with Veggies</td>
-                        </tr>
-                        <tr>
-                            <td className="border px-4 py-2">Scrambled Eggs</td>
-                            <td className="border px-4 py-2">Turkey Sandwich</td>
-                            <td className="border px-4 py-2">Pasta Primavera</td>
-                        </tr>
+                        {Array.from({ length: Math.max(breakfastPlan.length, lunchPlan.length, dinnerPlan.length) }).map((_, index) => (
+                            <tr key={index}>
+                                <td className="border px-4 py-2">{breakfastPlan[index] || ""}</td>
+                                <td className="border px-4 py-2">{lunchPlan[index] || ""}</td>
+                                <td className="border px-4 py-2">{dinnerPlan[index] || ""}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
-            </section>
-        </div>
+
+            </div>
+
+            <div className='meal-item-inputs-container'>
+                <h3 className='add-items-header'>Add Meal Items</h3>
+
+                <div className="input-container">
+                    <input type="text" placeholder="Enter breakfast Item" className="meal-item-input" value={breakfastItem} onChange={(e) => setBreakfastItem(e.target.value)} />
+                    <button className="add-button" onClick={() => {
+                        if (breakfastItem.trim() === "") return;
+                        setBreakfastPlan([...breakfastPlan, breakfastItem]);
+                        setBreakfastItem("");
+                    }}>Add</button>
+                </div>
+
+                <div className="input-container">
+                    <input type="text" placeholder="Enter lunch Item" className="meal-item-input" value={lunchItem} onChange={(e) => setLunchItem(e.target.value)} />
+                    <button className="add-button" onClick={() => {
+                        if (lunchItem.trim() === "") return;
+                        setLunchPlan([...lunchPlan, lunchItem]);
+                        setLunchItem("");
+                    }}>Add</button>
+                </div>
+
+                <div className="input-container">
+                    <input type="text" placeholder="Enter dinner Item" className="meal-item-input" value={dinnerItem} onChange={(e) => setDinnerItem(e.target.value)} />
+                    <button className="add-button" onClick={() => {
+                        if (dinnerItem.trim() === "") return;
+                        setDinnerPlan([...dinnerPlan, dinnerItem]);
+                        setDinnerItem("");
+                    }}>Add</button>
+                </div>
+
+            </div>
+
+        </div >
     );
 }
 

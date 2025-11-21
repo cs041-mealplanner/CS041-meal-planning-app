@@ -49,8 +49,8 @@ export default function WeeklyCalendar() {
                         key={day}
                         className={`p-4 border rounded-xl text-center transition
               ${day.format("YYYY-MM-DD") === today
-                                ? "bg-blue-100 border-primary"
-                                : "bg-blue-100 "}
+                                ? "bg-green-100 border-primary"
+                                : "bg-green-50 "}
             `}
                     >
                         <div className="font-semibold">{day.format("ddd")}</div>

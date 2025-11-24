@@ -1,0 +1,27 @@
+name: Rebuild Lockfile
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Regenerate client lockfile
+        run: |
+          cd client
+          rm -rf node_modules package-lock.json
+          npm install
+
+      - name: Commit lockfile
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add client/package-lock.json
+          git commit -m "ci: regenerate Linux lockfile"
+          git push

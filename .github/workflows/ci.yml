@@ -19,12 +19,11 @@ jobs:
           node-version: "22"
           cache: "npm"
 
-      - name: Install client dependencies (Linux Rollup workaround - Ignore the Windows lockfile for the client on Linux)
+      - name: Install client dependencies
         run: |
           cd client
-          rm -f package-lock.json
-          npm install --no-audit --no-fund
-
+          npm ci
+        
       - name: Install server dependencies
         run: cd server && npm ci
 
@@ -35,7 +34,7 @@ jobs:
         run: cd server && npm run lint
 
       - name: Test client
-        run: cd client && npm run test:run
+        run: cd client && npm test
       
       - name: Test server
         run: cd server && npm test

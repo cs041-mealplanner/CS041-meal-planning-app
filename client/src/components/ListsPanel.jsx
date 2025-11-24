@@ -53,8 +53,8 @@ export default function ListsPanel() {
                 <button
                     onClick={() => setActiveTab("grocery")}
                     className={`px-4 py-2 font-medium ${activeTab === "grocery"
-                            ? "border-b-2 border-blue-600"
-                            : "text-gray-500"
+                        ? "border-b-2 border-primary"
+                        : "text-gray-500"
                         }`}
                 >
                     Grocery List
@@ -63,8 +63,8 @@ export default function ListsPanel() {
                 <button
                     onClick={() => setActiveTab("recipes")}
                     className={`px-4 py-2 font-medium ${activeTab === "recipes"
-                            ? "border-b-2 border-blue-600"
-                            : "text-gray-500"
+                        ? "border-b-2 border-blue-600"
+                        : "text-gray-500 hover:brightness-50 transition"
                         }`}
                 >
                     Recipe List
@@ -82,12 +82,12 @@ export default function ListsPanel() {
                             ? setGroceryInput(e.target.value)
                             : setRecipeInput(e.target.value)
                     }
-                    className="border p-2 rounded-lg w-full"
+                    className="border p-2 rounded-lg w-full "
                 />
 
                 <button
                     onClick={handleAddItem}
-                    className="bg-blue-600 text-white px-4 rounded-lg"
+                    className="bg-primary text-white px-4 rounded-lg hover:brightness-110 transition"
                 >
                     Add
                 </button>

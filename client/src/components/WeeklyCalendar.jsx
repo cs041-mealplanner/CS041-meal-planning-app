@@ -25,7 +25,7 @@ export default function WeeklyCalendar() {
             <div className="flex justify-between items-center mb-4">
                 <button
                     onClick={prevWeek}
-                    className="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300"
+                    className="px-3 py-1 bg-white rounded-lg hover:brightness-110 transition"
                 >
                     ←
                 </button>
@@ -36,7 +36,7 @@ export default function WeeklyCalendar() {
 
                 <button
                     onClick={nextWeek}
-                    className="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300"
+                    className="px-3 py-1 bg-white rounded-lg hover:brightness-110 transition"
                 >
                     →
                 </button>
@@ -49,15 +49,15 @@ export default function WeeklyCalendar() {
                         key={day}
                         className={`p-4 border rounded-xl text-center transition
               ${day.format("YYYY-MM-DD") === today
-                                ? "bg-blue-100 border-blue-500"
-                                : "bg-gray-50"}
+                                ? "bg-green-100 border-primary"
+                                : "bg-green-50 "}
             `}
                     >
                         <div className="font-semibold">{day.format("ddd")}</div>
                         <div className="text-2xl">{day.format("D")}</div>
 
                         {/* Placeholder meal area */}
-                        <div className="mt-2 text-sm text-gray-400 italic">
+                        <div className="mt-2 text-sm text-primary italic">
                             (meals here)
                         </div>
                     </div>

@@ -1,16 +1,11 @@
-import cors from "cors";
-import dotenv from "dotenv";
-import express from "express";
+// src/index.js
+// Server entry point
+// -------------------------------
+// Starts the HTTP server in normal runtime.
+// Tests import the app from app.js instead,
+// so we don’t start a real server during Vitest runs.
 
-dotenv.config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+import app from "./app.js";
 
 const PORT = process.env.PORT || 3001;
 

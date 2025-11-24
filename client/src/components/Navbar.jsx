@@ -13,7 +13,7 @@ export default function Header() {
                     <li><Link to="/" className="hover:text-blue-600">Home</Link></li>
                     <li><Link to="#recipes" className="hover:text-blue-600">Recipes</Link></li>
                     <li><Link to="/dashboard" className="hover:text-blue-600">Dash board</Link></li>
-                    <li><Link to="#mealplanner" className="hover:text-blue-600">Meal planner</Link></li>
+                    <li><Link to="/mealplanner" className="hover:text-blue-600">Meal planner</Link></li>
                 </ul>
 
                 {/* Login */}

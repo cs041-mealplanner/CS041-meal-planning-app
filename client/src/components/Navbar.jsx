@@ -9,11 +9,11 @@ export default function Header() {
                 </div>
 
                 {/* Navigation links */}
-                <ul className="hidden md:flex space-x-8 font-medium">
-                    <li><Link to="/" className="text-primary hover:brightness-125">Home</Link></li>
-                    <li><Link to="#recipes" className="text-primary hover:brightness-125">Recipes</Link></li>
-                    <li><Link to="/dashboard" className="text-primary hover:brightness-125">Dash board</Link></li>
-                    <li><Link to="#mealplanner" className="text-primary hover:brightness-125">Meal planner</Link></li>
+                <ul className="hidden md:flex space-x-8 text-gray-700 font-medium">
+                    <li><Link to="/" className="hover:text-blue-600">Home</Link></li>
+                    <li><Link to="#recipes" className="hover:text-blue-600">Recipes</Link></li>
+                    <li><Link to="/dashboard" className="hover:text-blue-600">Dash board</Link></li>
+                    <li><Link to="/mealplanner" className="hover:text-blue-600">Meal planner</Link></li>
                 </ul>
 
                 {/* Login */}

@@ -5,10 +5,10 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "preinstall": "node ../scripts/block-npm-install.js",
     "test": "vitest",
     "dev": "node src/index.js",
     "lint": "eslint ."
-    
   },
   "keywords": [],
   "author": "",
@@ -24,8 +24,8 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^7.2.1",
+    "jsdom": "^27.2.0",
     "supertest": "^7.1.4",
-    "vitest": "^4.0.10",
-    "jsdom": "^27.2.0"
+    "vitest": "^4.0.10"
   }
 }

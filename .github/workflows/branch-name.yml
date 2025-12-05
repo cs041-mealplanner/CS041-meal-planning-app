@@ -22,7 +22,7 @@ jobs:
           BRANCH_NAME="${GITHUB_HEAD_REF}"
           echo "Checking branch name: $BRANCH_NAME"
 
-          REGEX='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)\/[a-z0-9-]+-[A-Z]{2,4}$'
+          REGEX='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build)\/[a-zA-Z0-9-]+-[A-Z]{2,4}$'
 
           if [[ "$BRANCH_NAME" =~ $REGEX ]]; then
             echo "Branch name is valid."

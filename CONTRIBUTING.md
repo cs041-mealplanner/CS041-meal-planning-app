@@ -120,6 +120,67 @@ To prevent unreviewable, oversized PRs, the following rules are now **mandatory*
 
 ---
 
+## Dependency Installation Rules
+
+To prevent accidental lockfile corruption and inconsistent installs across machines, **plain `npm install` is disabled** in **root**, **client/**, and **server/**.
+
+### Installing dependencies normally  
+Use `npm ci` — this installs exactly from the lockfile:
+
+    npm ci
+    cd client && npm ci
+    cd server && npm ci
+
+`npm install` without a package name will fail with a clear error message.
+
+### Adding or updating a dependency intentionally  
+Always perform dependency changes from the **repo root**, using the provided helper commands.
+
+**Client dependencies:**
+
+    npm run add:dep:client -- <package> [--save-dev]
+
+Examples:
+
+    npm run add:dep:client -- react-icons
+    npm run add:dep:client -- @testing-library/user-event --save-dev
+
+**Server dependencies:**
+
+    npm run add:dep:server -- <package> [--save-dev]
+
+Examples:
+
+    npm run add:dep:server -- supertest --save-dev
+
+**Root-level tools (rare):**
+
+    npm run add:dep -- <package>
+
+These commands safely bypass the install blocker and update the correct `package.json` + `package-lock.json`.
+
+### Uninstalling dependencies  
+Uninstall operations do **not** trigger the install blocker:
+
+    cd client
+    npm uninstall <package> --save-dev
+
+or:
+
+    cd server
+    npm uninstall <package> --save-dev
+
+### Why this rule exists  
+- Prevents random lockfile rewrites  
+- Ensures deterministic installs (`npm ci`)  
+- Avoids multi-platform lockfile drift  
+- Guarantees that new dependencies are added intentionally and reviewed in PRs  
+
+This system protects the repository from broken installs and inconsistent environments.
+
+
+---
+
 ## Issues & Planning
 
 We use GitHub Issues primarily for:

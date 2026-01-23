@@ -36,7 +36,7 @@ function LogIn() {
                 />
             </div>
 
-            ({/* RIGHT SIDE - form section */})
+            {/* RIGHT SIDE - form section */}
             <div className="w-full lg:w-1/2 flex items-center justify-center bg-[#E8E3D8] px-8">
                 <div className="w-full max-w-md">
                     {/* card container */}

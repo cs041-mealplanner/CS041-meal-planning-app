@@ -6,6 +6,8 @@ adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any unauthenticated user can "create", "read", "update", 
 and "delete" any "Todo" records.
 =========================================================================*/
+
+//NEED TO UPDATE TO FIT OUT APP
 const schema = a.schema({
   Todo: a
     .model({

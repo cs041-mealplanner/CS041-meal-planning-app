@@ -7,11 +7,9 @@
     "client": "npm --prefix client run dev",
     "server": "npm --prefix server run dev",
     "lint": "npm --prefix client run lint",
-
     "dev:client": "npm --prefix client run dev",
     "dev:server": "npm --prefix server run dev",
     "dev:all": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-
     "add:dep": "node ./scripts/add-dependencies.js .",
     "add:dep:client": "node ./scripts/add-dependencies.js client",
     "add:dep:server": "node ./scripts/add-dependencies.js server",
@@ -23,6 +21,16 @@
     "node": ">=22 <23"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "@aws-amplify/backend": "^1.20.0",
+    "@aws-amplify/backend-cli": "^1.8.2",
+    "aws-cdk-lib": "^2.234.1",
+    "concurrently": "^9.2.1",
+    "constructs": "^10.4.5",
+    "esbuild": "^0.27.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "aws-amplify": "^6.16.0"
   }
 }

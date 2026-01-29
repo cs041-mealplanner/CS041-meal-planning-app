@@ -13,6 +13,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "aws-amplify": "^6.16.0",
     "dayjs": "^1.11.19",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

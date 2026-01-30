@@ -5,32 +5,58 @@ This guide explains how to set up, code, test, review, and release updates so th
 ---
 
 ## Code of Conduct
+
 Our team follows Oregon State University’s Capstone professionalism and collaboration guidelines.
 All members are expected to communicate respectfully through Discord, GitHub, and meetings.
-Conflicts are addressed through private check-ins and team discussions before escalation to the TA or partner.
+Conflicts are addressed through private check-ins and team discussions before escalation to the TA or project partner.
 
 ---
 
 ## Getting Started
 
-**Requirements**
-- Node.js 22+
-- Git & GitHub access (collaborator permissions)
+### Requirements
 
-**Setup**
+* Node.js **22.x**
+* Git
+* GitHub access (collaborator permissions)
 
-First time setup:
+### Setup
+
+First-time setup:
+
 ```
 git clone <repo-url>
 cd CS041-meal-planning-app
+
 cd client && npm ci && cd ..
 cd server && npm ci && cd ..
 ```
 
-To run both services after installing (in separate concurrent terminals):
+> **Important:** Plain `npm install` is intentionally **blocked** in this repository.
+> Always use `npm ci` for deterministic installs based on the committed lockfiles.
+
+### Running the App
+
+From the repository root:
+
+**Recommended (run client + server together):**
+
 ```
-npm run client   # starts Vite React web client
-npm run server   # starts Express API server
+npm run dev:all
+```
+
+**Run services individually:**
+
+```
+npm run dev:client   # React (Vite) client
+npm run dev:server   # Express API server
+```
+
+**Aliases (still supported):**
+
+```
+npm run client
+npm run server
 ```
 
 ---
@@ -39,31 +65,33 @@ npm run server   # starts Express API server
 
 We follow the **Conventional Commits** standard.
 
-**Format**
+### Format
+
 ```
 <type>(optional scope): <short imperative summary>
 ```
 
-**Allowed types**
+### Allowed types
 
-| Type | Description |
-|------|-------------|
-| **feat** | Add a new feature |
-| **fix** | Bug fix |
-| **docs** | Documentation changes |
-| **style** | Formatting only |
-| **refactor** | Code restructure |
-| **test** | Add/update tests |
-| **chore** | Maintenance & configs |
-| **perf** | Performance improvements |
-| **ci** | Workflow changes |
-| **build** | Dependency/build updates |
+| Type         | Description              |
+| ------------ | ------------------------ |
+| **feat**     | Add a new feature        |
+| **fix**      | Bug fix                  |
+| **docs**     | Documentation changes    |
+| **style**    | Formatting only          |
+| **refactor** | Code restructure         |
+| **test**     | Add/update tests         |
+| **chore**    | Maintenance & configs    |
+| **perf**     | Performance improvements |
+| **ci**       | Workflow changes         |
+| **build**    | Dependency/build updates |
 
-**Examples**
+### Examples
+
 ```
 feat(client): add meal calendar UI
 fix(server): correct /recipes response
-docs: update README for new architecture
+docs: update README for current scripts
 ci: update Node version to 22
 ```
 
@@ -73,12 +101,14 @@ ci: update Node version to 22
 
 We use a **feature-branch workflow** with `main` as the stable branch.
 
-**Branch naming**
+### Branch naming
+
 ```
 <type>/<short-description>-<initials>
 ```
 
-**Examples**
+### Examples
+
 ```
 feat/login-page-CHH
 fix/grocery-endpoint-KL
@@ -87,123 +117,143 @@ refactor/state-cleanup-XS
 test/vitest-setup-FLDB
 ```
 
-**Guidelines**
-- Always branch off `main`
-- One feature per branch
-- PR required before merge
-- Squash merge only
-- Keep PRs small and reviewable
+### Guidelines
+
+* Always branch off `main`
+* One feature or fix per branch
+* Pull Request required before merge
+* Squash merge only
+* Keep PRs small and reviewable
 
 ---
 
 ## Pull Request Rules
 
-To prevent unreviewable, oversized PRs, the following rules are now **mandatory**:
+To prevent oversized or unreviewable PRs, the following rules are **mandatory**:
 
 ### Required for every PR
-- **Must link at least one Issue #**  
-- **Must be focused** (one feature or fix only)  
-- **Must pass CI** (lint now, tests later)  
-- **Cannot merge your own PR**  
-- **At least 1 reviewer approval**  
 
-### PR Size Rules
-- **≤ 200 lines changed** (recommended)
-- If > 200 lines:
-  - Must notify the team in Discord **before opening PR**
-  - Requires **2 reviewers**
-  - Must clearly explain why scope is large (e.g., boilerplate, migration)
+* **Must link at least one GitHub Issue**
+* **Must be focused** (one feature or fix)
+* **Must pass CI** (lint + tests)
+* **Cannot merge your own PR**
+* **At least 1 reviewer approval**
+
+### PR Size Guidelines
+
+* **≤ 200 lines changed** (recommended)
+* If > 200 lines:
+
+  * Notify the team in Discord before opening the PR
+  * Requires **2 reviewers**
+  * Clearly explain why the scope is large (e.g., boilerplate, migration)
 
 ### Weekly Expectations
-- **2–3 PRs per member per week**
-- Each PR should be meaningful and tied to an Issue or planned feature
+
+* **2–3 PRs per member per week**
+* Each PR should be meaningful and tied to an Issue or planned task
 
 ---
 
 ## Dependency Installation Rules
 
-To prevent accidental lockfile corruption and inconsistent installs across machines, **plain `npm install` is disabled** in **root**, **client/**, and **server/**.
+To prevent lockfile corruption and inconsistent installs across machines, **plain `npm install` is disabled** in the repository root, `client/`, and `server/`.
 
-### Installing dependencies normally  
-Use `npm ci` — this installs exactly from the lockfile:
+### Installing dependencies normally
 
-    npm ci
-    cd client && npm ci
-    cd server && npm ci
+Use `npm ci` (installs exactly from the lockfile):
 
-`npm install` without a package name will fail with a clear error message.
+```
+npm ci
+cd client && npm ci
+cd server && npm ci
+```
 
-### Adding or updating a dependency intentionally  
-Always perform dependency changes from the **repo root**, using the provided helper commands.
+### Adding or updating a dependency intentionally
+
+All dependency changes must be done from the **repository root** using the helper scripts.
 
 **Client dependencies:**
 
-    npm run add:dep:client -- <package> [--save-dev]
+```
+npm run add:dep:client -- <package> [--save-dev]
+```
 
 Examples:
 
-    npm run add:dep:client -- react-icons
-    npm run add:dep:client -- @testing-library/user-event --save-dev
+```
+npm run add:dep:client -- react-icons
+npm run add:dep:client -- @testing-library/user-event --save-dev
+```
 
 **Server dependencies:**
 
-    npm run add:dep:server -- <package> [--save-dev]
+```
+npm run add:dep:server -- <package> [--save-dev]
+```
 
 Examples:
 
-    npm run add:dep:server -- supertest --save-dev
+```
+npm run add:dep:server -- supertest --save-dev
+```
 
 **Root-level tools (rare):**
 
-    npm run add:dep -- <package>
+```
+npm run add:dep -- <package>
+```
 
-These commands safely bypass the install blocker and update the correct `package.json` + `package-lock.json`.
+### Uninstalling dependencies
 
-### Uninstalling dependencies  
-Uninstall operations do **not** trigger the install blocker:
+Uninstalling does **not** trigger the install blocker:
 
-    cd client
-    npm uninstall <package> --save-dev
+```
+cd client
+npm uninstall <package>
+```
 
 or:
 
-    cd server
-    npm uninstall <package> --save-dev
+```
+cd server
+npm uninstall <package>
+```
 
-### Why this rule exists  
-- Prevents random lockfile rewrites  
-- Ensures deterministic installs (`npm ci`)  
-- Avoids multi-platform lockfile drift  
-- Guarantees that new dependencies are added intentionally and reviewed in PRs  
+### Why this rule exists
 
-This system protects the repository from broken installs and inconsistent environments.
-
+* Prevents accidental lockfile rewrites
+* Ensures deterministic installs (`npm ci`)
+* Avoids multi-platform lockfile drift
+* Guarantees dependency changes are intentional and reviewed
 
 ---
 
 ## Issues & Planning
 
-We use GitHub Issues primarily for:
-- Tracking major features
-- Logging backend tasks
-- Documenting bugs
-- Organizing future milestones
+GitHub Issues are used for:
 
-Not every tiny UI change needs an Issue, but all PRs should reference one.
+* Tracking major features
+* Backend or infrastructure tasks
+* Bug reports
+* Organizing milestones
+
+Not every small UI change needs an Issue, but **all PRs must reference one**.
 
 ---
 
 ## Code Style, Linting & Formatting
 
-We use **ESLint** in the `client/` workspace.
+Linting is enforced for **client and server** code.
 
-**Local commands**
+### Local commands
+
 ```
 npm run lint
-npm run lint -- --fix   # optional auto-fix
 ```
 
-**Editor recommended settings (`.vscode/settings.json`)**
+### Editor recommendations (`.vscode/settings.json`)
+
 ```
 {
   "editor.formatOnSave": true,
@@ -213,97 +263,99 @@ npm run lint -- --fix   # optional auto-fix
 }
 ```
 
-**Conventions**
-- Components use PascalCase
-- Helpers/utilities use camelCase
-- Remove unused imports/variables
-- No stray console.logs in PRs
-- Group imports: std → third-party → local
+### Conventions
+
+* Components use PascalCase
+* Helpers/utilities use camelCase
+* Remove unused imports and variables
+* No stray `console.log` in PRs
+* Group imports: standard → third-party → local
 
 ---
 
-## Testing (Sprint 4 — Vitest)
+## Testing (Vitest)
 
-Automated testing will be introduced in Sprint 4 using Vitest for the React (Vite) frontend.
-Vitest is the recommended test runner for Vite and provides fast, zero-config integration with modern React tooling.
+The project uses **Vitest** for automated testing.
 
-### Planned File Structure
+### Running tests (from repo root)
 
-client/tests/        # Vitest unit/component tests for the frontend
-server/tests/        # (Planned) backend tests added in a later sprint
+Frontend tests:
 
-### Frontend Testing (client/)
+```
+npm run test:client
+```
 
-Vitest will be configured together with React Testing Library to support:
-- Component rendering tests
-- Hook and utility tests
-- DOM interaction tests
-- Snapshot or state-based behavioral tests (if needed)
+Backend tests:
 
-Once Vitest is installed:
-- Running `npm test` inside the `client/` directory will execute the test suite
-- CI will include a `npm test` step to block merges on failing tests
-- Coverage reporting may be added in later sprints if needed
+```
+npm run test:server
+```
 
-### Backend Testing (server/)
+Run all tests:
 
-Backend tests will be added in a follow-up PR.
-The team may use Vitest in a Node environment or Supertest for Express API route testing.
-This will be finalized once backend endpoints stabilize.
+```
+npm run test:all
+```
 
-### Temporary Definition of Done (until Vitest is fully enabled)
+### Notes
 
-- Lint passes (client)
-- Manual feature verification completed
-- No breaking runtime errors when running both client and server
+* Tests are expanded incrementally as features stabilize.
+* Contributors should run relevant tests locally before requesting PR review.
+
+---
+
+## Definition of Done (Current)
+
+A change is considered **done** when:
+
+* Lint passes
+* Relevant tests pass
+* Manual verification is completed
+* Client and server run without runtime errors
 
 ---
 
 ## CI/CD
 
-GitHub Actions workflow: `.github/workflows/ci.yml`
+GitHub Actions workflows live in `.github/workflows/`.
 
 CI currently performs:
-1. Install `client` dependencies  
-2. Install `server` dependencies  
-3. Run lint (`client`)  
 
-Future additions:
-- Run Vitest test suite
-- Coverage reporting
-- Build validation
+1. Dependency install (`client` and `server`)
+2. Lint (`client` and `server`)
+3. Tests (`client` and `server`)
 
-All PRs must pass CI before merging.
+All required CI checks must pass before merging.
 
 ---
 
 ## Security & Secrets
-- Never commit API keys or credentials
-- Use `.env` for local secrets
-- Rotate sensitive tokens immediately if leaked
-- Report issues to the team + TA
+
+* Never commit API keys or credentials
+* Use `.env` files for local secrets
+* Rotate credentials immediately if leaked
+* Report security issues to the team and TA
 
 ---
 
 ## Documentation Expectations
-- Update **README.md** and **CONTRIBUTING.md** when behavior changes
-- Add comments for non-obvious logic
-- Architecture/deployment docs will be added in later sprints
+
+* Update **README.md** and **CONTRIBUTING.md** when behavior or scripts change
+* Comment non-obvious logic
+* Architecture and deployment docs will be added once hosting is finalized
 
 ---
 
 ## Release Process (Future)
 
-We will adopt semantic versioning once deployment begins:
+Semantic versioning will be adopted once deployment begins:
 
 ```
 v1.0.0 — first working prototype
 v1.1.0 — new features
-v1.1.1 — patches/hotfixes
+v1.1.1 — patches / hotfixes
 ```
-
-Major releases require team + partner approval.
 
 ---
 
-_Last updated: November 18, 2025_
+*Last updated: January 30, 2026*

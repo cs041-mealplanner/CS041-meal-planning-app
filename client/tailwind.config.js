@@ -12,7 +12,7 @@ export default {
                 primaryDark: "#404F41",
                 muted: "#6C7A6F",
 
-                // backgrounds (Figma)
+                // backgrounds
                 secondarybg: "#E6D8C3",  // page background
                 mainbg: "#EFE5D6",       // hero / light panel bg
                 subtle: "#F1F6ED",       // subtle panels

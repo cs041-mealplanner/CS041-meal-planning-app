@@ -1,5 +1,3 @@
-// layout-only UI pass (Figma parity). No backend wiring.
-
 const mealsMock = Array.from({ length: 6 }).map((_, i) => ({
     id: i,
     title: "Grilled Chicken",

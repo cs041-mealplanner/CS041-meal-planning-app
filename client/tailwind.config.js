@@ -1,19 +1,27 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        primary: "#5D866C",
-        mainbg: "#C2A68C",
-        secondarybg: "#E6D8C3",
-        headerbg: "#F5F5F0",
-      }
-    },
-  },
-  plugins: [],
-}
+    content: [
+        "./index.html",
+        "./src/**/*.{js,jsx,ts,tsx}",
+    ],
+    theme: {
+        extend: {
+            colors: {
+                // canonical (Figma)
+                primary: "#6B8E75",
+                primaryDark: "#404F41",
+                muted: "#6C7A6F",
 
+                // backgrounds (Figma)
+                secondarybg: "#E6D8C3",  // page background
+                mainbg: "#EFE5D6",       // hero / light panel bg
+                subtle: "#F1F6ED",       // subtle panels
+                headerbg: "#F5F5F0",     // header/footer base
+
+                // plain white
+                card: "#FFFFFF",
+            },
+        },
+    },
+    plugins: [],
+};

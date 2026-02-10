@@ -17,9 +17,10 @@ export default {
                 mainbg: "#EFE5D6",       // hero / light panel bg
                 subtle: "#F1F6ED",       // subtle panels
                 headerbg: "#F5F5F0",     // header/footer base
-
-                // plain white
                 card: "#FFFFFF",
+            },
+            boxShadow: {
+                nav: "0px 8px 18px rgba(15,25,15,0.08)",
             },
         },
     },

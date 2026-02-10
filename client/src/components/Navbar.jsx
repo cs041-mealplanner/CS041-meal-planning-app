@@ -3,7 +3,7 @@ const logoUrl = new URL("../../assets/images/nourishlylogonoears.png", import.me
 
 export default function Header() {
     return (
-        <header className="w-full border-b border-stone-300 bg-headerbg shadow-nav">
+        <header className="relative z-20 w-full border-b border-stone-300 bg-headerbg shadow-nav">
             <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                 {/* Title and logo (placeholder: text only) */}
                 <div className="flex items-center gap-3">

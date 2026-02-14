@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import dishesData from '../data/dish.json';
 
@@ -6,16 +5,17 @@ function RecipeDetail() {
     const { id } = useParams();   // get recipe ID from URL
     const navigate = useNavigate();
 
-    const [recipe, setRecipe] = useState(null);
+    // load recipe data (TEMPORARY - replace with API call in future)
+    // useEffect(() => {
+    //     const recipeData = dishesData.find(dish => dish.id === parseInt(id));
+    //     if (recipeData) {
+    //         setRecipe(recipeData);
+    //     }
+    // }, [id]);
 
-    // load recipe data
-    useEffect(() => {
-        const recipeData = dishesData.find(dish => dish.id === parseInt(id));
-        if (recipeData) {
-            setRecipe(recipeData);
-        }
-    }, [id]);
-
+    const recipe = dishesData.find(
+        dish => dish.id === parseInt(id, 10)
+    ) || null;
 
     const addToGroceryList = () => {
         // get existing grocery list from localStorage
@@ -44,7 +44,7 @@ function RecipeDetail() {
     if (!recipe) {
         return (
             <div className="min-h-screen bg-[#E8E3D8] flex items-center justify-center">
-                <div className="text-xl text-gray-600">Loading recipe...</div>
+                <div className="text-xl text-gray-600">Recipe not found.</div>
             </div>
         );
     }

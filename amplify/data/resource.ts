@@ -31,20 +31,25 @@ const schema = a.schema({
   ]),
 
   Meal: a.model({
-    name: a.string().required(), //Breakfast, Lunch, Dinner 
+    name: a.string().required(), //Meal name ex "Ceasar Salad"
+    mealType: a.string().required(), //breakfast, lunch, dinner
+    image: a.string(), //URL to meal image
+    servings: a.integer(), //number of servings
+    prepTime: a.integer(), //prep time in minutes
+    cookTime: a.integer(), //cook time in minutes 
     mealPlanId: a.id().required(),
+    nutrition: a.json(), //JSON object to store nutrition info like calories, protein, carbs, fat
   })
   .authorization((allow) => [
     allow.owner(),
   ]),
 
-  Food: a.model({
-    name: a.string().required(),
-    calories: a.integer(),
-    protein: a.integer(),
-    carbs: a.integer(),
-    fat: a.integer(),
-    mealId: a.id().required(),
+  Ingredient: a.model({
+    item: a.string().required(), //ingredient name
+    amount: a.string(),  // 2 cups, 1 tbsp, etc
+    category: a.string(), // dairy, produce, meat, etc
+    mealId: a.id().required(), //links to meal
+    
   })
   .authorization((allow) => [
     allow.owner(),

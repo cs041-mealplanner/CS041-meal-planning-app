@@ -20,6 +20,36 @@ const schema = a.schema({
     allow.owner(),
     allow.authenticated().to(['read']),
   ]),
+
+  MealPlan: a.model({
+    title: a.string().required(),
+    data: a.date(),
+    userId: a.id().required(),
+  })
+  .authorization((allow) => [
+    allow.owner(),
+  ]),
+
+  Meal: a.model({
+    name: a.string().required(), //Breakfast, Lunch, Dinner 
+    mealPlanId: a.id().required(),
+  })
+  .authorization((allow) => [
+    allow.owner(),
+  ]),
+
+  Food: a.model({
+    name: a.string().required(),
+    calories: a.integer(),
+    protein: a.integer(),
+    carbs: a.integer(),
+    fat: a.integer(),
+    mealId: a.id().required(),
+  })
+  .authorization((allow) => [
+    allow.owner(),
+  ]),
+
 });
 
 export type Schema = ClientSchema<typeof schema>;

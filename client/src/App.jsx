@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Navbar";
 import ConfirmSignup from "./pages/confirmSignup";
@@ -6,8 +7,11 @@ import Home from "./pages/Home";
 import MealPlanner from "./pages/MealPlanner";
 import SignUp from "./pages/sign-in";
 
+import GroceryList from './pages/grocery-list';
+import IngredientPage from './pages/ingredient-page';
+
 export default function App() {
-  return (
+  return ( 
     <BrowserRouter>
 
       {/* Header on every page*/}
@@ -20,6 +24,10 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/confirm-signup" element={<ConfirmSignup />} />
+
+        <Route path="/recipe/:id" element={<IngredientPage />} />
+        <Route path="/grocery" element={<GroceryList />} />
+
       </Routes>
     </BrowserRouter>
   );

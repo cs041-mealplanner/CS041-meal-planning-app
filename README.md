@@ -1,36 +1,33 @@
 # 🍽️ CS.041 — Meal Planning Web App (Nourishly)
 
+A meal‑planning web application built as part of the **OSU CS Capstone (CS 461–463)** sequence.
 
-A meal planner web app with recipe management, grocery list generation, and weekly meal planning.
-Built as part of the **OSU CS Capstone (CS 461–463)** sequence.
-
-The project uses a **React (Vite) web client** and an **Express server**.
+Nourishly uses a **React (Vite) web client** and an **Express API server** to support meal planning, recipes, and grocery‑list workflows.
 
 ---
 
 ## Team Members
-- Che-Han Hsu — hsuche@oregonstate.edu
-- Lapatrada Liawpairoj — liawpail@oregonstate.edu
-- Kyle Lund — lundkyl@oregonstate.edu
-- Xander Sniffen — sniffenx@oregonstate.edu
-- Louie Baobao — baobaof@oregonstate.edu
 
-**Partner:** Alexander Ulbrich — alexander.ulbrich@oregonstate.edu  
-**TA/Mentor:** Nischal Aryal — aryaln@oregonstate.edu
+* Che‑Han Hsu — [hsuche@oregonstate.edu](mailto:hsuche@oregonstate.edu)
+* Lapatrada Liawpairoj — [liawpail@oregonstate.edu](mailto:liawpail@oregonstate.edu)
+* Kyle Lund — [lundkyl@oregonstate.edu](mailto:lundkyl@oregonstate.edu)
+* Xander Sniffen — [sniffenx@oregonstate.edu](mailto:sniffenx@oregonstate.edu)
+* Louie Baobao — [baobaof@oregonstate.edu](mailto:baobaof@oregonstate.edu)
+
+**Project Partner:** Alexander Ulbrich — [alexander.ulbrich@oregonstate.edu](mailto:alexander.ulbrich@oregonstate.edu)
+**TA / Mentor:** Nischal Aryal — [aryaln@oregonstate.edu](mailto:aryaln@oregonstate.edu)
 
 ---
 
 ## Project Overview
 
-Nourishly aims to provide an integrated workflow for meal planning, recipe management, and grocery list creation.
+Nourishly focuses on providing a structured workflow for:
 
-### Core Features (Planned)
+* Meal planning and weekly organization
+* Recipe and ingredient tracking
+* Grocery list generation
 
-- Create, edit, and delete meal plans
-- Auto-generate grocery lists
-- Recipe + ingredient tracking
-- Weekly meal calendar
-- Custom user preferences
+The current codebase emphasizes **clean architecture, CI reliability, and developer workflow** while core features continue to be implemented incrementally.
 
 ---
 
@@ -38,40 +35,20 @@ Nourishly aims to provide an integrated workflow for meal planning, recipe manag
 
 ### Frontend — React + Vite
 
-- Located in `client/`
-- Fast dev server, HMR, ESBuild
-- UI components, routing, and main user experience
+* Located in `client/`
+* Vite dev server with fast HMR
+* UI components, routing, and user‑facing logic
 
 ### Backend — Node.js + Express
 
-- Located in `server/`
-- API endpoints, data processing, health checks
+* Located in `server/`
+* REST API endpoints and health checks
 
 ### Tooling
 
-- Node.js 22.x
-- ESLint (client)
-- GitHub Actions CI (install + lint)
-
-### Legacy Mobile App (Archived)
-
-The original Expo/React Native implementation now lives in:
-
-`legacy-RN-Expo/`
-
-This folder is **preserved for reference only** and is not used by the current web version.
-
----
-
-## UI / UX Designs
-
-Wireframes and UI prototypes can be viewed on Figma:
-
-**Figma:**  
-https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App
-
-Designer: **Lapatrada Liawpairoj (Mint)**  
-_Last updated: Nov 2025_
+* **Node.js 22.x**
+* **ESLint** (client)
+* **GitHub Actions CI** (dependency install + lint; tests added as applicable)
 
 ---
 
@@ -79,32 +56,33 @@ _Last updated: Nov 2025_
 
 ### Requirements
 
-- Node.js 22.x
-- Git
-- (Optional) VS Code with ESLint extension
+* Node.js 22.x
+* Git
+* (Recommended) VS Code with ESLint extension
 
 ### Clone the repository
 
-```
+```bash
 git clone https://github.com/cs041-mealplanner/CS041-meal-planning-app.git
 cd CS041-meal-planning-app
 ```
 
----
+### Install dependencies
 
-## Installing Dependencies
+> **Note:** Plain `npm install` is intentionally **blocked** in this repository.
+> Use `npm ci` for deterministic installs based on the committed lockfiles.
 
-### Install frontend dependencies
+Frontend:
 
-```
+```bash
 cd client
 npm ci
 cd ..
 ```
 
-### Install backend dependencies
+Backend:
 
-```
+```bash
 cd server
 npm ci
 cd ..
@@ -114,48 +92,54 @@ cd ..
 
 ## Running the App
 
-### Start the Express server
+You can run the client and server **from the repository root** using the provided npm scripts.
 
-`npm run server`
+### Run both client and server (recommended)
 
-### Start the React (Vite) client
+```bash
+npm run dev:all
+```
 
-`npm run client`
+### Run services individually
 
-- Vite dev server typically runs at:
-  http://localhost:5173
-- Express server exposes health check at:
-  http://localhost:PORT/health
+Client (React + Vite):
+
+```bash
+npm run dev:client
+```
+
+Server (Express API):
+
+```bash
+npm run dev:server
+```
+
+* Vite dev server typically runs at: `http://localhost:5173`
+* Express exposes a health check at: `http://localhost:<PORT>/health`
 
 ---
 
+## Linting & CI
 
-## Linting
+Linting is currently enforced for the **client**.
 
-Currently, linting is configured for the **client**.
+From the repository root:
 
-From the project root:
+```bash
+npm run lint
+```
 
-`npm run lint`
-
-This runs ESLint inside `client/`.
+GitHub Actions CI runs on every pull request and blocks merges if required checks fail.
 
 ---
 
-## Legacy Expo App
+## UI / UX Designs
 
-The previous mobile-first implementation has been archived under:
+Design prototypes and wireframes are maintained in Figma:
 
-`legacy-RN-Expo/`
+[https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App](https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App)
 
-It contains:
-
-- Expo Router screens
-- React Native components
-- Assets + icons
-- Jest / Expo test configs
-
-These files are not used by the current stack but preserved for reference.
+Designer: **Lapatrada Liawpairoj (Mint)**
 
 ---
 

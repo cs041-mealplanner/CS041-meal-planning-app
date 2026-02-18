@@ -1,0 +1,662 @@
+[
+    {
+        "id": 1,
+        "name": "Scrambled Eggs & Toast",
+        "image": "/assets/images/scrambled-eggs.png",
+        "servings": 1,
+        "prep_time": 2,
+        "cook_time": 5,
+        "meal": "breakfast",
+        "nutrition": {
+            "calories": 340,
+            "protein": 20,
+            "carbs": 28,
+            "fat": 16,
+            "fiber": 2,
+            "sodium": 480
+        },
+        "ingredients": [
+            {
+                "item": "Eggs",
+                "amount": "2 large",
+                "category": "Dairy"
+            },
+            {
+                "item": "Butter",
+                "amount": "1 tbsp",
+                "category": "Dairy"
+            },
+            {
+                "item": "Bread",
+                "amount": "2 slices",
+                "category": "Pantry"
+            },
+            {
+                "item": "Salt",
+                "amount": "1 pinch",
+                "category": "Spices & Seasonings"
+            },
+            {
+                "item": "Pepper",
+                "amount": "1 pinch",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Avocado Toast",
+        "image": "/assets/images/avocado-toast.png",
+        "servings": 1,
+        "prep_time": 5,
+        "cook_time": 2,
+        "meal": "breakfast",
+        "nutrition": {
+            "calories": 320,
+            "protein": 8,
+            "carbs": 32,
+            "fat": 18,
+            "fiber": 10,
+            "sodium": 340
+        },
+        "ingredients": [
+            {
+                "item": "Bread",
+                "amount": "2 slices",
+                "category": "Pantry"
+            },
+            {
+                "item": "Avocado",
+                "amount": "1 whole",
+                "category": "Produce"
+            },
+            {
+                "item": "Lemon juice",
+                "amount": "1 tsp",
+                "category": "Produce"
+            },
+            {
+                "item": "Salt",
+                "amount": "1 pinch",
+                "category": "Spices & Seasonings"
+            },
+            {
+                "item": "Red pepper flakes",
+                "amount": "1 pinch",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Greek Yogurt Bowl",
+        "image": "/assets/images/yogurt-bowl.png",
+        "servings": 1,
+        "prep_time": 3,
+        "cook_time": 0,
+        "meal": "breakfast",
+        "nutrition": {
+            "calories": 380,
+            "protein": 18,
+            "carbs": 52,
+            "fat": 10,
+            "fiber": 6,
+            "sodium": 90
+        },
+        "ingredients": [
+            {
+                "item": "Greek yogurt",
+                "amount": "1 cup",
+                "category": "Dairy"
+            },
+            {
+                "item": "Honey",
+                "amount": "2 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Granola",
+                "amount": "1/4 cup",
+                "category": "Pantry"
+            },
+            {
+                "item": "Mixed berries",
+                "amount": "1/2 cup",
+                "category": "Produce"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Peanut Butter Banana Smoothie",
+        "image": "/assets/images/pb-smoothie.png",
+        "servings": 1,
+        "prep_time": 3,
+        "cook_time": 0,
+        "meal": "breakfast",
+        "nutrition": {
+            "calories": 420,
+            "protein": 14,
+            "carbs": 58,
+            "fat": 16,
+            "fiber": 6,
+            "sodium": 180
+        },
+        "ingredients": [
+            {
+                "item": "Banana",
+                "amount": "1 large",
+                "category": "Produce"
+            },
+            {
+                "item": "Peanut butter",
+                "amount": "2 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Milk",
+                "amount": "1 cup",
+                "category": "Dairy"
+            },
+            {
+                "item": "Honey",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Ice",
+                "amount": "1/2 cup",
+                "category": "Pantry"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Grilled Cheese Sandwich",
+        "image": "/assets/images/grilled-cheese.png",
+        "servings": 1,
+        "prep_time": 2,
+        "cook_time": 6,
+        "meal": "lunch",
+        "nutrition": {
+            "calories": 450,
+            "protein": 18,
+            "carbs": 38,
+            "fat": 24,
+            "fiber": 2,
+            "sodium": 890
+        },
+        "ingredients": [
+            {
+                "item": "Bread",
+                "amount": "2 slices",
+                "category": "Pantry"
+            },
+            {
+                "item": "Cheddar cheese",
+                "amount": "2 slices",
+                "category": "Dairy"
+            },
+            {
+                "item": "Butter",
+                "amount": "2 tbsp",
+                "category": "Dairy"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Chicken Quesadilla",
+        "image": "/assets/images/quesadilla.png",
+        "servings": 2,
+        "prep_time": 5,
+        "cook_time": 8,
+        "meal": "lunch",
+        "nutrition": {
+            "calories": 380,
+            "protein": 28,
+            "carbs": 32,
+            "fat": 16,
+            "fiber": 3,
+            "sodium": 720
+        },
+        "ingredients": [
+            {
+                "item": "Tortillas",
+                "amount": "2 large",
+                "category": "Pantry"
+            },
+            {
+                "item": "Cooked chicken",
+                "amount": "1 cup shredded",
+                "category": "Meat & Poultry"
+            },
+            {
+                "item": "Shredded cheese",
+                "amount": "1 cup",
+                "category": "Dairy"
+            },
+            {
+                "item": "Butter",
+                "amount": "1 tbsp",
+                "category": "Dairy"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Tuna Salad",
+        "image": "/assets/images/tuna-salad.png",
+        "servings": 1,
+        "prep_time": 5,
+        "cook_time": 0,
+        "meal": "lunch",
+        "nutrition": {
+            "calories": 320,
+            "protein": 32,
+            "carbs": 8,
+            "fat": 18,
+            "fiber": 2,
+            "sodium": 640
+        },
+        "ingredients": [
+            {
+                "item": "Canned tuna",
+                "amount": "1 can (5oz)",
+                "category": "Pantry"
+            },
+            {
+                "item": "Mayonnaise",
+                "amount": "2 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Celery",
+                "amount": "1 stalk chopped",
+                "category": "Produce"
+            },
+            {
+                "item": "Lemon juice",
+                "amount": "1 tsp",
+                "category": "Produce"
+            },
+            {
+                "item": "Salt",
+                "amount": "to taste",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Pasta with Marinara",
+        "image": "/assets/images/pasta-marinara.png",
+        "servings": 2,
+        "prep_time": 5,
+        "cook_time": 15,
+        "meal": "dinner",
+        "nutrition": {
+            "calories": 420,
+            "protein": 14,
+            "carbs": 72,
+            "fat": 8,
+            "fiber": 6,
+            "sodium": 680
+        },
+        "ingredients": [
+            {
+                "item": "Pasta",
+                "amount": "8 oz",
+                "category": "Pantry"
+            },
+            {
+                "item": "Marinara sauce",
+                "amount": "2 cups",
+                "category": "Pantry"
+            },
+            {
+                "item": "Parmesan cheese",
+                "amount": "1/4 cup grated",
+                "category": "Dairy"
+            },
+            {
+                "item": "Garlic powder",
+                "amount": "1 tsp",
+                "category": "Spices & Seasonings"
+            },
+            {
+                "item": "Olive oil",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Chicken & Rice Bowl",
+        "image": "/assets/images/chicken-rice.png",
+        "servings": 2,
+        "prep_time": 10,
+        "cook_time": 25,
+        "meal": "dinner",
+        "nutrition": {
+            "calories": 480,
+            "protein": 36,
+            "carbs": 52,
+            "fat": 12,
+            "fiber": 3,
+            "sodium": 560
+        },
+        "ingredients": [
+            {
+                "item": "Chicken breast",
+                "amount": "8 oz",
+                "category": "Meat & Poultry"
+            },
+            {
+                "item": "White rice",
+                "amount": "1 cup uncooked",
+                "category": "Pantry"
+            },
+            {
+                "item": "Soy sauce",
+                "amount": "2 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Butter",
+                "amount": "1 tbsp",
+                "category": "Dairy"
+            },
+            {
+                "item": "Salt",
+                "amount": "to taste",
+                "category": "Spices & Seasonings"
+            },
+            {
+                "item": "Pepper",
+                "amount": "to taste",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Baked Salmon",
+        "image": "/assets/images/baked-salmon.png",
+        "servings": 2,
+        "prep_time": 5,
+        "cook_time": 15,
+        "meal": "dinner",
+        "nutrition": {
+            "calories": 420,
+            "protein": 38,
+            "carbs": 4,
+            "fat": 26,
+            "fiber": 1,
+            "sodium": 480
+        },
+        "ingredients": [
+            {
+                "item": "Salmon fillet",
+                "amount": "8 oz",
+                "category": "Meat & Poultry"
+            },
+            {
+                "item": "Lemon",
+                "amount": "1/2 whole",
+                "category": "Produce"
+            },
+            {
+                "item": "Olive oil",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Garlic powder",
+                "amount": "1 tsp",
+                "category": "Spices & Seasonings"
+            },
+            {
+                "item": "Salt",
+                "amount": "to taste",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Stir-Fry Veggies & Rice",
+        "image": "/assets/images/stir-fry.png",
+        "servings": 2,
+        "prep_time": 10,
+        "cook_time": 12,
+        "meal": "dinner",
+        "nutrition": {
+            "calories": 340,
+            "protein": 8,
+            "carbs": 58,
+            "fat": 10,
+            "fiber": 5,
+            "sodium": 720
+        },
+        "ingredients": [
+            {
+                "item": "Mixed vegetables",
+                "amount": "3 cups frozen",
+                "category": "Produce"
+            },
+            {
+                "item": "White rice",
+                "amount": "1 cup cooked",
+                "category": "Pantry"
+            },
+            {
+                "item": "Soy sauce",
+                "amount": "3 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Sesame oil",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Garlic",
+                "amount": "2 cloves minced",
+                "category": "Produce"
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Tacos",
+        "image": "/assets/images/tacos.png",
+        "servings": 3,
+        "prep_time": 10,
+        "cook_time": 10,
+        "meal": "dinner",
+        "nutrition": {
+            "calories": 380,
+            "protein": 24,
+            "carbs": 36,
+            "fat": 16,
+            "fiber": 6,
+            "sodium": 640
+        },
+        "ingredients": [
+            {
+                "item": "Ground beef",
+                "amount": "1 lb",
+                "category": "Meat & Poultry"
+            },
+            {
+                "item": "Taco shells",
+                "amount": "6 shells",
+                "category": "Pantry"
+            },
+            {
+                "item": "Shredded cheese",
+                "amount": "1 cup",
+                "category": "Dairy"
+            },
+            {
+                "item": "Lettuce",
+                "amount": "1 cup shredded",
+                "category": "Produce"
+            },
+            {
+                "item": "Taco seasoning",
+                "amount": "1 packet",
+                "category": "Spices & Seasonings"
+            },
+            {
+                "item": "Salsa",
+                "amount": "1/2 cup",
+                "category": "Pantry"
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Overnight Oats",
+        "image": "/assets/images/overnight-oats.png",
+        "servings": 1,
+        "prep_time": 5,
+        "cook_time": 0,
+        "meal": "breakfast",
+        "nutrition": {
+            "calories": 360,
+            "protein": 12,
+            "carbs": 56,
+            "fat": 10,
+            "fiber": 8,
+            "sodium": 140
+        },
+        "ingredients": [
+            {
+                "item": "Rolled oats",
+                "amount": "1/2 cup",
+                "category": "Pantry"
+            },
+            {
+                "item": "Milk",
+                "amount": "3/4 cup",
+                "category": "Dairy"
+            },
+            {
+                "item": "Chia seeds",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Maple syrup",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Vanilla extract",
+                "amount": "1/2 tsp",
+                "category": "Pantry"
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Caprese Salad",
+        "image": "/assets/images/caprese-salad.png",
+        "servings": 2,
+        "prep_time": 8,
+        "cook_time": 0,
+        "meal": "lunch",
+        "nutrition": {
+            "calories": 280,
+            "protein": 14,
+            "carbs": 8,
+            "fat": 22,
+            "fiber": 2,
+            "sodium": 420
+        },
+        "ingredients": [
+            {
+                "item": "Fresh mozzarella",
+                "amount": "8 oz",
+                "category": "Dairy"
+            },
+            {
+                "item": "Tomatoes",
+                "amount": "2 large",
+                "category": "Produce"
+            },
+            {
+                "item": "Fresh basil",
+                "amount": "1/4 cup",
+                "category": "Produce"
+            },
+            {
+                "item": "Olive oil",
+                "amount": "2 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Balsamic vinegar",
+                "amount": "1 tbsp",
+                "category": "Pantry"
+            },
+            {
+                "item": "Salt",
+                "amount": "to taste",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Chicken Noodle Soup",
+        "image": "/assets/images/chicken-soup.png",
+        "servings": 4,
+        "prep_time": 10,
+        "cook_time": 20,
+        "meal": "lunch",
+        "nutrition": {
+            "calories": 240,
+            "protein": 20,
+            "carbs": 28,
+            "fat": 6,
+            "fiber": 3,
+            "sodium": 820
+        },
+        "ingredients": [
+            {
+                "item": "Cooked chicken",
+                "amount": "2 cups shredded",
+                "category": "Meat & Poultry"
+            },
+            {
+                "item": "Egg noodles",
+                "amount": "2 cups",
+                "category": "Pantry"
+            },
+            {
+                "item": "Chicken broth",
+                "amount": "6 cups",
+                "category": "Pantry"
+            },
+            {
+                "item": "Carrots",
+                "amount": "2 medium chopped",
+                "category": "Produce"
+            },
+            {
+                "item": "Celery",
+                "amount": "2 stalks chopped",
+                "category": "Produce"
+            },
+            {
+                "item": "Salt",
+                "amount": "to taste",
+                "category": "Spices & Seasonings"
+            }
+        ]
+    }
+]

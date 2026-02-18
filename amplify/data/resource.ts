@@ -7,22 +7,67 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 // Define your Data schema
+
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
+  User: a
+  .model({
+    id: a.id(), //cognito user id
+    email:a.string().required(),
+    name: a.string().required(),
+    createdAt: a.datetime(),
+  })
+  .authorization((allow) => [
+    allow.owner(),
+    allow.authenticated().to(['read']),
+  ]),
+
+  MealPlan: a.model({
+    title: a.string().required(),
+    data: a.date(),
+    userId: a.id().required(),
+  })
+  .authorization((allow) => [
+    allow.owner(),
+  ]),
+
+  Meal: a.model({
+    name: a.string().required(), //Meal name ex "Ceasar Salad"
+    mealType: a.string().required(), //breakfast, lunch, dinner
+    image: a.string(), //URL to meal image
+    servings: a.integer(), //number of servings
+    prepTime: a.integer(), //prep time in minutes
+    cookTime: a.integer(), //cook time in minutes 
+    mealPlanId: a.id().required(),
+    nutrition: a.json(), //JSON object to store nutrition info like calories, protein, carbs, fat
+  })
+  .authorization((allow) => [
+    allow.owner(),
+  ]),
+
+  Ingredient: a.model({
+    item: a.string().required(), //ingredient name
+    amount: a.string(),  // 2 cups, 1 tbsp, etc
+    category: a.string(), // dairy, produce, meat, etc
+    mealId: a.id().required(), //links to meal
+    
+  })
+  .authorization((allow) => [
+    allow.owner(),
+  ]),
+
 });
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
-  authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+  authorizationModes:{
+    defaultAuthorizationMode: 'userPool',
   },
 });
+
+
+
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a

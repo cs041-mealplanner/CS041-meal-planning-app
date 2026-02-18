@@ -7,22 +7,32 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 // Define your Data schema
+
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
+  User: a
+  .model({
+    id: a.id(), //cognito user id
+    email:a.string().required(),
+    name: a.string().required(),
+    createdAt: a.datetime(),
+  })
+  .authorization((allow) => [
+    allow.owner(),
+    allow.authenticated().to(['read']),
+  ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
-  authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+  authorizationModes:{
+    defaultAuthorizationMode: 'userPool',
   },
 });
+
+
+
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a

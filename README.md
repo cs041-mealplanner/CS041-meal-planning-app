@@ -31,6 +31,14 @@ The current codebase emphasizes **clean architecture, CI reliability, and develo
 
 ---
 
+## Live Deployment
+
+The application is deployed via AWS Amplify:
+
+https://main.d2hvbdc7xxhqmv.amplifyapp.com/
+
+---
+
 ## Architecture & Tech Stack
 
 ### Frontend — React + Vite
@@ -121,15 +129,12 @@ npm run dev:server
 
 ## Linting & CI
 
-Linting is currently enforced for the **client**.
-
-From the repository root:
+Linting is enforced via GitHub Actions CI.  
+Run locally from the repository root:
 
 ```bash
 npm run lint
 ```
-
-GitHub Actions CI runs on every pull request and blocks merges if required checks fail.
 
 ---
 

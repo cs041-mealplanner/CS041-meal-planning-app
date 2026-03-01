@@ -5,11 +5,8 @@ import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import MealPlanner from "./pages/MealPlanner";
 
-import GroceryList from './pages/grocery-list';
-import IngredientPage from './pages/ingredient-page';
-
 export default function App() {
-  return (
+  return ( 
     <BrowserRouter>
 
       {/* Header on every page*/}

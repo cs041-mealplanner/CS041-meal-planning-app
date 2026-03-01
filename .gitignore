@@ -26,3 +26,8 @@ yarn-error.*
 # Jest artifacts
 .jest-cache/
 coverage/
+
+# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*

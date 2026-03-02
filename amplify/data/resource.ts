@@ -7,12 +7,58 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 // Define your Data schema
+
+
+//NEED TO UPDATE TO FIT OUT APP
 const schema = a.schema({
-  Todo: a
+
+  User: a
     .model({
-      content: a.string(),
+      id: a.id(),
+      email: a.string().required(),
+      name: a.string().required(),
+      createdAt: a.datetime(),
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization((allow) => [
+      allow.owner(),
+      allow.authenticated().to(['read']),
+    ]),
+
+  MealPlan: a
+    .model({
+      title: a.string().required(),
+      date: a.date(),
+      userId: a.id().required(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+    ]),
+
+  Meal: a
+    .model({
+      name: a.string().required(),
+      mealType: a.string().required(),
+      image: a.string(),
+      servings: a.integer(),
+      prepTime: a.integer(),
+      cookTime: a.integer(),
+      mealPlanId: a.id().required(),
+      nutrition: a.json(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+    ]),
+
+  Ingredient: a
+    .model({
+      item: a.string().required(),
+      amount: a.string(),
+      category: a.string(),
+      mealId: a.id().required(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -20,9 +66,10 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+    defaultAuthorizationMode: 'userPool',
   },
 });
+
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a

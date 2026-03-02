@@ -11,29 +11,64 @@ and "delete" any "Todo" records.
 
 //NEED TO UPDATE TO FIT OUT APP
 const schema = a.schema({
+
   User: a
-  .model({
-    id: a.id(), //cognito user id
-    email:a.string().required(),
-    name: a.string().required(),
-    createdAt: a.datetime(),
-  })
-  .authorization((allow) => [
-    allow.owner(),
-    allow.authenticated().to(['read']),
-  ]),
+    .model({
+      id: a.id(),
+      email: a.string().required(),
+      name: a.string().required(),
+      createdAt: a.datetime(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+      allow.authenticated().to(['read']),
+    ]),
+
+  MealPlan: a
+    .model({
+      title: a.string().required(),
+      date: a.date(),
+      userId: a.id().required(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+    ]),
+
+  Meal: a
+    .model({
+      name: a.string().required(),
+      mealType: a.string().required(),
+      image: a.string(),
+      servings: a.integer(),
+      prepTime: a.integer(),
+      cookTime: a.integer(),
+      mealPlanId: a.id().required(),
+      nutrition: a.json(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+    ]),
+
+  Ingredient: a
+    .model({
+      item: a.string().required(),
+      amount: a.string(),
+      category: a.string(),
+      mealId: a.id().required(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
-  authorizationModes:{
+  authorizationModes: {
     defaultAuthorizationMode: 'userPool',
   },
 });
-
-
 
 
 /*== STEP 2 ===============================================================

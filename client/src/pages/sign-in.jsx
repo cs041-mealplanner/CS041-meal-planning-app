@@ -7,8 +7,8 @@ function SignUp() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
+    // const [error, setError] = useState('');
+    // const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();

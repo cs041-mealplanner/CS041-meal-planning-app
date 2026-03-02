@@ -7,8 +7,8 @@ import Home from "./pages/Home";
 import MealPlanner from "./pages/MealPlanner";
 import SignUp from "./pages/sign-in";
 
-import GroceryList from './pages/grocery-list';
-import IngredientPage from './pages/ingredient-page';
+import GroceryList from "./pages/GroceryList";
+import IngredientPage from "./pages/IngredientPage";
 
 export default function App() {
   return ( 

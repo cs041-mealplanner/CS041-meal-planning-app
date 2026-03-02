@@ -8,6 +8,8 @@ and "delete" any "Todo" records.
 =========================================================================*/
 // Define your Data schema
 
+
+//NEED TO UPDATE TO FIT OUT APP
 const schema = a.schema({
   User: a
   .model({

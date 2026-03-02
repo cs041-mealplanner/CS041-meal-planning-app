@@ -7,14 +7,14 @@ function SignUp() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
-    // const [error, setError] = useState('');
+    const [error, setError] = useState('');
     // const [message, setMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         // add: sign up logic
         setError('');
-        setMessage('');
+        //setMessage('');
         if (!agreedToTerms){
             setError('You must agree to the terms to create an account.');
             return;

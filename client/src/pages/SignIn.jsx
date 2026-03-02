@@ -73,6 +73,7 @@ function SignUp() {
 
                         {/* form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {error && <div className="text-red-500 text-sm">{error}</div>}
 
                             {/* email field */}
                             <div>

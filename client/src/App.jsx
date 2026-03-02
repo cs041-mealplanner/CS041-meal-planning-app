@@ -5,7 +5,7 @@ import ConfirmSignup from "./pages/confirmSignup";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import MealPlanner from "./pages/MealPlanner";
-import SignUp from "./pages/sign-in";
+import SignUp from "./pages/SignIn";
 
 import GroceryList from "./pages/GroceryList";
 import IngredientPage from "./pages/IngredientPage";

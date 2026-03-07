@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import dishesData from '../data/dish.json';
+import * as groceryRepo from '../features/groceryList/groceryListRepo';
 
 function RecipeDetail() {
     const { id } = useParams();   // get recipe ID from URL
@@ -17,26 +18,36 @@ function RecipeDetail() {
         dish => dish.id === parseInt(id, 10)
     ) || null;
 
-    const addToGroceryList = () => {
-        // get existing grocery list from localStorage
-        const existingList = JSON.parse(localStorage.getItem('groceryList') || '[]');
+    const addToGroceryList = async () => {
+        try {
+            const existingItems = await groceryRepo.loadItems();
+            const existingNames = new Map(existingItems.map(i => [i.name.toLowerCase(), i]));
 
-        // add ALL ingredient from this recipe
-        const newItems = recipe.ingredients.map((item, idx) => ({
-            id: Date.now() + Math.random() + idx,
-            name: item.item,
-            quantity: item.amount,
-            category: item.category,
-            source: `From ${recipe.name}`,
-            checked: false
-        }));
+            for (const ingredient of recipe.ingredients) {
+                const key = ingredient.item.toLowerCase();
+                if (existingNames.has(key)) {
+                    // Merge quantity by appending
+                    const existing = existingNames.get(key);
+                    const merged = existing.quantity
+                        ? `${existing.quantity} + ${ingredient.amount}`
+                        : ingredient.amount;
+                    await groceryRepo.updateItem(existing.id, { quantity: merged });
+                } else {
+                    await groceryRepo.addItem({
+                        name: ingredient.item,
+                        quantity: ingredient.amount,
+                        category: ingredient.category,
+                        source: `From ${recipe.name}`,
+                        checked: false,
+                    });
+                }
+            }
 
-
-        const updatedList = [...existingList, ...newItems];
-        localStorage.setItem('groceryList', JSON.stringify(updatedList));
-
-        alert(`Added all ${recipe.ingredients.length} ingredients to your grocery list!`);
-        navigate('/grocery');
+            navigate('/grocery');
+        } catch (err) {
+            console.error('Failed to add to grocery list:', err);
+            alert('Failed to add ingredients. Please try again.');
+        }
     };
 
 

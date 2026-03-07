@@ -59,6 +59,26 @@ const schema = a.schema({
     .authorization((allow) => [
       allow.owner(),
     ]),
+
+  GroceryList: a
+    .model({
+      name: a.string().required(),
+      createdAt: a.datetime(),
+      items: a.hasMany('GroceryListItem', 'groceryListId'),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  GroceryListItem: a
+    .model({
+      name: a.string().required(),
+      quantity: a.string(),
+      category: a.string(),
+      source: a.string(),
+      checked: a.boolean(),
+      groceryListId: a.id().required(),
+      groceryList: a.belongsTo('GroceryList', 'groceryListId'),
+    })
+    .authorization((allow) => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

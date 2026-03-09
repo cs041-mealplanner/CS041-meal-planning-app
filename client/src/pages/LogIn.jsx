@@ -22,13 +22,13 @@ function LogIn() {
     };
 
     return (
-        <div className="min-h-screen flex">
+        <div className="h-[calc(100vh-72px)] flex overflow-hidden">
             {/* LEFT SIDE - image section */}
-            <div className="hidden lg:flex lg:w-1/2 relative">
+            <div className="hidden lg:block lg:w-1/2 h-full overflow-hidden">
                 <img
                     src="assets/images/left-mealpic.png"   // make sure correct pic
                     alt="Left meal plan"
-                    className="object-cover w-full h-full"
+                    className="w-full h-full object-cover object-center"
                 />
             </div>
 

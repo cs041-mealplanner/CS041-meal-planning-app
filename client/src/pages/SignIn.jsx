@@ -40,7 +40,7 @@ function SignUp() {
     return (
         <div className="min-h-screen flex">
             {/* LEFT SIDE - image section */}
-            <div className="hidden lg:flex lg:w-1/2 relative">
+            <div className="hidden lg:flex lg:w-1/2 min-h-[calc(100vh-80px)] overflow-hidden">
                 <img
                     src="assets/images/left-mealpic.png"   // make sure correct pic
                     alt="Left meal plan"

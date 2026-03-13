@@ -2,7 +2,7 @@
 
 A meal‑planning web application built as part of the **OSU CS Capstone (CS 461–463)** sequence.
 
-Nourishly uses a **React (Vite) web client** and an **Express API server** to support meal planning, recipes, and grocery‑list workflows.
+Nourishly uses a **React (Vite) web client** with **AWS Amplify services** providing backend infrastructure for authentication, data, and hosting.
 
 ---
 
@@ -47,16 +47,15 @@ https://main.d2hvbdc7xxhqmv.amplifyapp.com/
 * Vite dev server with fast HMR
 * UI components, routing, and user‑facing logic
 
-### Backend — Node.js + Express
+### Backend Infrastructure — AWS Amplify
 
-* Located in `server/`
-* REST API endpoints and health checks
+Backend services are provided through **AWS Amplify**, which manages authentication, data access, and deployment infrastructure for the application.
 
 ### Tooling
 
-* **Node.js 22.x**
+* **Node.js 20.x**
 * **ESLint** (client)
-* **GitHub Actions CI** (dependency install + lint; tests added as applicable)
+* **GitHub Actions CI** (client dependency install, lint, and test checks)
 
 ---
 
@@ -64,7 +63,7 @@ https://main.d2hvbdc7xxhqmv.amplifyapp.com/
 
 ### Requirements
 
-* Node.js 22.x
+* Node.js 20.x
 * Git
 * (Recommended) VS Code with ESLint extension
 
@@ -88,42 +87,23 @@ npm ci
 cd ..
 ```
 
-Backend:
-
-```bash
-cd server
-npm ci
-cd ..
-```
-
 ---
 
 ## Running the App
 
-You can run the client and server **from the repository root** using the provided npm scripts.
-
-### Run both client and server (recommended)
-
-```bash
-npm run dev:all
-```
-
-### Run services individually
-
-Client (React + Vite):
+Start the development server from the repository root:
 
 ```bash
 npm run dev:client
 ```
 
-Server (Express API):
+The Vite development server typically runs at:
 
-```bash
-npm run dev:server
+```
+http://localhost:5173
 ```
 
-* Vite dev server typically runs at: `http://localhost:5173`
-* Express exposes a health check at: `http://localhost:<PORT>/health`
+Backend functionality such as authentication and data access is handled through AWS Amplify services.
 
 ---
 

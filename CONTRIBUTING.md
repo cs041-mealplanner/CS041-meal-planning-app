@@ -142,7 +142,7 @@ To prevent oversized or unreviewable PRs, the following rules are **mandatory**:
 
 ## Dependency Installation Rules
 
-To prevent lockfile corruption and inconsistent installs across machines, plain `npm install` is disabled in the repository root and `client/`
+To prevent lockfile corruption and inconsistent installs across machines, plain `npm install` is disabled in the repository root and `client/`.
 
 ### Installing dependencies normally
 

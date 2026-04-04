@@ -2,8 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Navbar";
 
-<<<<<<< HEAD
-=======
 import ConfirmSignup from "./pages/confirmSignup";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -15,7 +13,6 @@ import MealPlanner from "./pages/MealPlanner";
 import Recipes from "./pages/Recipes";
 import SignUp from "./pages/SignUp";
 
->>>>>>> main
 export default function App() {
   return (
     <BrowserRouter>

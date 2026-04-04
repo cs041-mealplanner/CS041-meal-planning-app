@@ -16,7 +16,7 @@ Conflicts are addressed through private check-ins and team discussions before es
 
 ### Requirements
 
-* Node.js **22.x**
+* Node.js **20.x**
 * Git
 * GitHub access (collaborator permissions)
 
@@ -29,7 +29,6 @@ git clone <repo-url>
 cd CS041-meal-planning-app
 
 cd client && npm ci && cd ..
-cd server && npm ci && cd ..
 ```
 
 > **Important:** Plain `npm install` is intentionally **blocked** in this repository.
@@ -39,25 +38,12 @@ cd server && npm ci && cd ..
 
 From the repository root:
 
-**Recommended (run client + server together):**
-
-```
-npm run dev:all
+```bash
+npm run dev:client
 ```
 
-**Run services individually:**
-
-```
-npm run dev:client   # React (Vite) client
-npm run dev:server   # Express API server
-```
-
-**Aliases (still supported):**
-
-```
-npm run client
-npm run server
-```
+This starts the React (Vite) development server for the client application.
+Backend services such as authentication and data access are provided through AWS Amplify.
 
 ---
 
@@ -90,9 +76,8 @@ We follow the **Conventional Commits** standard.
 
 ```
 feat(client): add meal calendar UI
-fix(server): correct /recipes response
-docs: update README for current scripts
-ci: update Node version to 22
+docs: update README for Amplify workflow
+ci: update GitHub Actions to client-only checks
 ```
 
 ---
@@ -157,7 +142,7 @@ To prevent oversized or unreviewable PRs, the following rules are **mandatory**:
 
 ## Dependency Installation Rules
 
-To prevent lockfile corruption and inconsistent installs across machines, **plain `npm install` is disabled** in the repository root, `client/`, and `server/`.
+To prevent lockfile corruption and inconsistent installs across machines, plain `npm install` is disabled in the repository root and `client/`.
 
 ### Installing dependencies normally
 
@@ -166,7 +151,6 @@ Use `npm ci` (installs exactly from the lockfile):
 ```
 npm ci
 cd client && npm ci
-cd server && npm ci
 ```
 
 ### Adding or updating a dependency intentionally
@@ -186,18 +170,6 @@ npm run add:dep:client -- react-icons
 npm run add:dep:client -- @testing-library/user-event --save-dev
 ```
 
-**Server dependencies:**
-
-```
-npm run add:dep:server -- <package> [--save-dev]
-```
-
-Examples:
-
-```
-npm run add:dep:server -- supertest --save-dev
-```
-
 **Root-level tools (rare):**
 
 ```
@@ -210,13 +182,6 @@ Uninstalling does **not** trigger the install blocker:
 
 ```
 cd client
-npm uninstall <package>
-```
-
-or:
-
-```
-cd server
 npm uninstall <package>
 ```
 
@@ -244,7 +209,7 @@ Not every small UI change needs an Issue, but **all PRs must reference one**.
 
 ## Code Style, Linting & Formatting
 
-Linting is enforced for **client and server** code.
+Linting is enforced for **client** code.
 
 ### Local commands
 
@@ -275,32 +240,19 @@ npm run lint
 
 ## Testing (Vitest)
 
-The project uses **Vitest** for automated testing.
+The project currently uses **Vitest** for client-side automated testing.
 
 ### Running tests (from repo root)
 
-Frontend tests:
-
-```
+```bash
 npm run test:client
-```
-
-Backend tests:
-
-```
-npm run test:server
-```
-
-Run all tests:
-
-```
-npm run test:all
 ```
 
 ### Notes
 
 * Tests are expanded incrementally as features stabilize.
 * Contributors should run relevant tests locally before requesting PR review.
+* Amplify-backed functionality is currently validated with manual smoke testing until additional automated coverage is added.
 
 ---
 
@@ -311,7 +263,7 @@ A change is considered **done** when:
 * Lint passes
 * Relevant tests pass
 * Manual verification is completed
-* Client and server run without runtime errors
+* Client runs without runtime errors, and affected tooling/docs are updated as needed
 
 ---
 
@@ -321,9 +273,9 @@ GitHub Actions workflows live in `.github/workflows/`.
 
 CI currently performs:
 
-1. Dependency install (`client` and `server`)
-2. Lint (`client` and `server`)
-3. Tests (`client` and `server`)
+1. Dependency install (`client`)
+2. Lint (`client`)
+3. Tests (`client`)
 
 All required CI checks must pass before merging.
 
@@ -342,7 +294,7 @@ All required CI checks must pass before merging.
 
 * Update **README.md** and **CONTRIBUTING.md** when behavior or scripts change
 * Comment non-obvious logic
-* Architecture and deployment docs will be added once hosting is finalized
+* Architecture and deployment docs should be updated when backend infrastructure or developer workflows change.
 
 ---
 
@@ -358,4 +310,4 @@ v1.1.1 — patches / hotfixes
 
 ---
 
-*Last updated: January 30, 2026*
+*Last updated: March 13, 2026*

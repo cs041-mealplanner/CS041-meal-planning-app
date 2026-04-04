@@ -2,18 +2,24 @@ import { render, screen } from '@testing-library/react';
 import App from './App';
 
 describe('App', () => {
-  it('renders the homepage hero and nav', () => {
+  it('renders the landing page hero and navbar', () => {
     render(<App />);
 
-    // Navbar brand
-    expect(screen.getByText(/Nourishly/i)).toBeInTheDocument();
-
-    // Hero headline
+    // Navbar brand link
     expect(
-      screen.getByText(/Plan Your Meals With Ease/i)
+      screen.getByRole('link', { name: /Nourishly/i })
     ).toBeInTheDocument();
 
-    // One of the "Get Started" buttons
-    expect(screen.getAllByText(/Get Started/i)[0]).toBeInTheDocument();
+    // Navbar login link
+    expect(
+      screen.getByRole('link', { name: /Login/i })
+    ).toBeInTheDocument();
+
+    // Landing page hero heading
+    expect(
+      screen.getByRole('heading', {
+        name: /Plan your perfect\s*week of meals/i,
+      })
+    ).toBeInTheDocument();
   });
 });

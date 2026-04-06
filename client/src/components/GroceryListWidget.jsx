@@ -1,25 +1,16 @@
 // Grocery section for Dashboard
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function GroceryListWidget() {
     const navigate = useNavigate();
-    const [items, setItems] = useState([]);
 
     // load grocery items from localStorage
-    useEffect(() => {
-        const loadItems = () => {
-            const saved = localStorage.getItem('groceryList');
-            if (saved) {
-                return JSON.parse(saved);
-            }
-            return [];
-        };
-
-        setItems(loadItems());
-    }, []);
-
+    const [items, setItems] = useState(() => {
+        const saved = localStorage.getItem('groceryList');
+        return saved ? JSON.parse(saved) : [];
+    });
 
     const toggleCheck = (id) => {
         const updatedItems = items.map(item =>

@@ -1,18 +1,45 @@
 // log in page
+import { signIn } from "aws-amplify/auth";
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // for navigation
+import { useLocation, useNavigate } from 'react-router-dom'; // for navigation
+import AuthPageLayout from '../components/AuthPageLayout';
+import { useAuth } from '../context/auth-context';
 
 function LogIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { setUser } = useAuth();
 
-    const handleSubmit = (e) => {
+    const redirectTo = location.state?.from?.pathname || '/dashboard';
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // add login logic
-        console.log('Login submitted:', { email, password });
-        // navigate('/dashboard'); // go ?? after login--make sure
+        setError('');
+        setIsSubmitting(true);
+
+        try {
+            const result = await signIn({
+                username: email,
+                password,
+            });
+
+            if (result.isSignedIn) {
+                setUser({ username: email });
+                navigate(redirectTo, { replace: true });
+                return;
+            }
+
+            setError('Additional sign-in steps are required for this account.');
+        } catch (err) {
+            setError(err.message || 'Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleGoogleLogin = () => {
@@ -26,41 +53,16 @@ function LogIn() {
     };
 
     return (
-        <div className="min-h-screen flex">
-            {/* LEFT SIDE - image section */}
-            <div className="hidden lg:flex lg:w-1/2 relative">
-                <img
-                    src="assets/images/left-mealpic.png"   // make sure correct pic
-                    alt="Left meal plan"
-                    className="object-cover w-full h-full"
-                />
-            </div>
-
-            {/* RIGHT SIDE - form section */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center bg-[#E8E3D8] px-8">
-                <div className="w-full max-w-md">
-                    {/* card container */}
-                    <div className="bg-white rounded-3xl shadow-lg p-8 lg:p-12">
-
-                        {/* logo section */}
-                        <div className="flex items-center justify-center mb-8">
-                            <img
-                                src="assets/images/nourishlylogonoears.png"   // make sure correct pic
-                                alt="Nourishly icon"
-                                className="w-12 h-12 mr-3"
-                            />
-                            <h1 className="text-4xl font-semibold text-[#6B8E6F]">
-                                Nourishly
-                            </h1>
-                        </div>
-
+        <AuthPageLayout>
+            <div className="w-full rounded-3xl bg-white p-8 shadow-lg lg:p-10">
                         {/* title */}
-                        <h2 className="text-2xl font-medium text-[#6B8E6F] text-center mb-8">
+                        <h2 className="text-3xl font-bold text-[#6B8E6F] text-center mb-8">
                             Log in
                         </h2>
 
                         {/* form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {error && <div className="text-sm text-red-500">{error}</div>}
 
                             {/* email field */}
                             <div>
@@ -123,20 +125,22 @@ function LogIn() {
 
                             {/* forgot password link */}
                             <div className="text-right">
-                                <a
-                                    href="#"
+                                <button
+                                    type="button"
+                                    onClick={() => navigate('/forgot-password')}
                                     className="text-sm text-gray-500 hover:text-[#6B8E6F] transition"
                                 >
                                     Forgot your password?
-                                </a>
+                                </button>
                             </div>
 
                             {/* submit button */}
                             <button
                                 type="submit"
+                                disabled={isSubmitting}
                                 className="w-full bg-[#6B8E6F] text-white py-3 rounded-lg font-medium hover:bg-[#5a7a5e] transition duration-200"
                             >
-                                Log in
+                                {isSubmitting ? 'Logging in...' : 'Log in'}
                             </button>
 
                         </form>
@@ -196,10 +200,8 @@ function LogIn() {
                             <a href="#" className="hover:text-[#6B8E6F] ml-1">Privacy</a> •
                             <a href="#" className="hover:text-[#6B8E6F] ml-1">Terms</a>
                         </div>
-                    </div>
-                </div>
             </div>
-        </div>
+        </AuthPageLayout>
     );
 }
 

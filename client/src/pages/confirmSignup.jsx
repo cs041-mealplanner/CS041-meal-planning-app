@@ -1,8 +1,11 @@
 import { confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function ConfirmSignup() {
-  const [email, setEmail] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const email = searchParams.get("email") || "";
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -21,7 +24,7 @@ export default function ConfirmSignup() {
       setMessage("Account verified! You can now log in.");
 
       setTimeout(() => {
-        window.location.href = "/login";
+        navigate("/login", { replace: true });
       }, 2000);
 
     } catch (err) {
@@ -45,19 +48,20 @@ export default function ConfirmSignup() {
           Verify Your Account
         </h2>
 
+        {email ? (
+          <p className="mb-4 text-center text-sm text-gray-600">
+            Verification code sent to <span className="font-medium">{email}</span>
+          </p>
+        ) : (
+          <p className="mb-4 text-center text-sm text-red-600">
+            We could not determine your email. Please go back to sign up and try again.
+          </p>
+        )}
+
         {error && <div className="text-red-600 text-sm mb-3">{error}</div>}
         {message && <div className="text-green-600 text-sm mb-3">{message}</div>}
 
         <form onSubmit={handleConfirm} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            className="w-full p-3 bg-gray-100 rounded"
-            required
-          />
-
           <input
             type="text"
             placeholder="Verification Code"
@@ -67,13 +71,18 @@ export default function ConfirmSignup() {
             required
           />
 
-          <button className="w-full bg-[#6B8E6F] text-white py-3 rounded">
+          <button
+            disabled={!email}
+            className="w-full bg-[#6B8E6F] text-white py-3 rounded disabled:cursor-not-allowed disabled:opacity-60"
+          >
             Confirm Account
           </button>
         </form>
 
         <button
+          type="button"
           onClick={resendCode}
+          disabled={!email}
           className="text-sm text-[#6B8E6F] mt-4 underline"
         >
           Resend code

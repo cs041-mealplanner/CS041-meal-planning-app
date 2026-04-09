@@ -6,7 +6,7 @@ export default function RecipeCard({ recipe }) {
 
     return (
         <div
-            onClick={() => navigate(`/recipe/${recipe.id}`)}
+            onClick={() => navigate(`/recipes/${recipe.id}`)}
             className="bg-card rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200"
         >
             {/* Recipe Image */}

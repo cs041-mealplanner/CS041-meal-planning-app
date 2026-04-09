@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 import ConfirmSignup from "./pages/confirmSignup";
 import Dashboard from "./pages/Dashboard";
@@ -15,24 +17,69 @@ import SignUp from "./pages/SignUp";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Header />
+    <AuthProvider>
+      <BrowserRouter>
+        <Header />
 
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/confirm-signup" element={<ConfirmSignup />} />
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/confirm-signup" element={<ConfirmSignup />} />
 
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/meal-planner" element={<MealPlanner />} />
-        <Route path="/recipes" element={<Recipes />} />
-        <Route path="/recipe/:id" element={<IngredientPage />} />
-        <Route path="/grocery" element={<GroceryList />} />
-      </Routes>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/meal-planner"
+            element={
+              <ProtectedRoute>
+                <MealPlanner />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recipes"
+            element={
+              <ProtectedRoute>
+                <Recipes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recipe/:id"
+            element={
+              <ProtectedRoute>
+                <IngredientPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recipes/:id"
+            element={
+              <ProtectedRoute>
+                <IngredientPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/grocery"
+            element={
+              <ProtectedRoute>
+                <GroceryList />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-      <Footer />
-    </BrowserRouter>
+        <Footer />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

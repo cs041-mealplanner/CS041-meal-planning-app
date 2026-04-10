@@ -19,66 +19,70 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Header />
+        <div className="flex min-h-screen flex-col">
+          <Header />
 
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/confirm-signup" element={<ConfirmSignup />} />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/confirm-signup" element={<ConfirmSignup />} />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/meal-planner"
-            element={
-              <ProtectedRoute>
-                <MealPlanner />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/recipes"
-            element={
-              <ProtectedRoute>
-                <Recipes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/recipe/:id"
-            element={
-              <ProtectedRoute>
-                <IngredientPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/recipes/:id"
-            element={
-              <ProtectedRoute>
-                <IngredientPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/grocery"
-            element={
-              <ProtectedRoute>
-                <GroceryList />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meal-planner"
+                element={
+                  <ProtectedRoute>
+                    <MealPlanner />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recipes"
+                element={
+                  <ProtectedRoute>
+                    <Recipes />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recipe/:id"
+                element={
+                  <ProtectedRoute>
+                    <IngredientPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recipes/:id"
+                element={
+                  <ProtectedRoute>
+                    <IngredientPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/grocery"
+                element={
+                  <ProtectedRoute>
+                    <GroceryList />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
 
-        <Footer />
+          <Footer />
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );

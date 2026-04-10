@@ -1,22 +1,32 @@
 const authImageUrl = new URL("../../assets/images/left-mealpic.png", import.meta.url).href;
 
-export default function AuthPageLayout({ children, formWidth = "max-w-md" }) {
-  return (
-    <div className="bg-[#E8E3D8]">
-      <div className="mx-auto grid min-h-[calc(100vh-10rem)] max-w-[1440px] items-center gap-8 px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(26rem,30rem)] lg:gap-20 lg:px-8">
-        <div className="relative hidden lg:flex items-center justify-center">
-          <div className="h-[min(72vh,700px)] w-full overflow-hidden">
-            <img
-              src={authImageUrl}
-              alt="Healthy meal planning"
-              className="h-full w-full object-cover object-center"
-            />
-          </div>
-        </div>
+export default function AuthPageLayout({
+  children,
+  formWidth = "max-w-md",
+  showImage = true,
+}) {
+  if (!showImage) {
+    return (
+      <div className="flex w-full min-h-[calc(100vh-11.25rem)] items-center justify-center bg-[#E8E3D8] px-6 py-8 lg:px-10">
+        <div className={`w-full ${formWidth}`}>{children}</div>
+      </div>
+    );
+  }
 
-        <div className="flex items-center justify-center py-6">
-          <div className={`w-full ${formWidth}`}>{children}</div>
+  return (
+    <div className="grid w-full min-h-[calc(100vh-11.25rem)] bg-[#E8E3D8] lg:grid-cols-2">
+      <div className="relative hidden lg:block">
+        <div className="h-full w-full overflow-hidden">
+          <img
+            src={authImageUrl}
+            alt="Healthy meal planning"
+            className="absolute left-1/2 top-1/2 h-[118%] w-full max-w-none -translate-x-1/2 -translate-y-1/2 object-cover object-[center_38%]"
+          />
         </div>
+      </div>
+
+      <div className="flex items-center justify-center px-6 py-8 lg:px-10">
+        <div className={`w-full ${formWidth}`}>{children}</div>
       </div>
     </div>
   );

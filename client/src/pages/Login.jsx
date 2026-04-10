@@ -194,12 +194,6 @@ function LogIn() {
                             </button>
                         </div>
 
-                        {/* footer */}
-                        <div className="mt-8 text-center text-xs text-gray-500">
-                            © Nourishly 2025 •
-                            <a href="#" className="hover:text-[#6B8E6F] ml-1">Privacy</a> •
-                            <a href="#" className="hover:text-[#6B8E6F] ml-1">Terms</a>
-                        </div>
             </div>
         </AuthPageLayout>
     );

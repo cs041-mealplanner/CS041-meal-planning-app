@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCurrentUser, signOut as amplifySignOut } from "aws-amplify/auth";
-import { AuthContext } from "./auth-context";
+import { AuthContext } from "./useAuth";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

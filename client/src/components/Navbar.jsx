@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/auth-context";
+import { useAuth } from "../context/useAuth";
 const logoUrl = new URL("../../assets/images/nourishlylogonoears.png", import.meta.url).href;
 
 export default function Header() {

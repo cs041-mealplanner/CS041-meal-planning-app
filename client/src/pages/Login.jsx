@@ -3,7 +3,7 @@ import { signIn } from "aws-amplify/auth";
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // for navigation
 import AuthPageLayout from '../components/AuthPageLayout';
-import { useAuth } from '../context/auth-context';
+import { useAuth } from '../context/useAuth';
 
 function LogIn() {
     const [email, setEmail] = useState('');

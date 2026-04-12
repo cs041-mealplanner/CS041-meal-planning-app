@@ -24,7 +24,7 @@ export default function Landing() {
 
                 <button
                     type="button"
-                    onClick={() => navigate("/sign-up")}
+                    onClick={() => navigate("/login")}
                     className="mt-8 rounded-xl bg-primary px-8 py-3 text-base font-semibold text-white"
                     style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
                 >
@@ -152,7 +152,7 @@ export default function Landing() {
 
                     <button
                         type="button"
-                        onClick={() => navigate("/sign-up")}
+                        onClick={() => navigate("/login")}
                         className="mt-8 rounded-xl bg-white px-8 py-3 text-base font-semibold text-primaryDark"
                     >
                         Get Started

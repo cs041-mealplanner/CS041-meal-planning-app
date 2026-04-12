@@ -1,6 +1,8 @@
 // sign in page
 import { signUp } from "aws-amplify/auth";
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import AuthPageLayout from "../components/AuthPageLayout";
 
 function SignUp() {
     const [email, setEmail] = useState('');
@@ -8,15 +10,19 @@ function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     // const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         // add: sign up logic
         setError('');
+        setIsSubmitting(true);
         //setMessage('');
         if (!agreedToTerms){
             setError('You must agree to the terms to create an account.');
+            setIsSubmitting(false);
             return;
         }
 
@@ -30,44 +36,20 @@ function SignUp() {
                     },
                 },
             });
-            window.location.href = "/confirm-signup";   
+            navigate(`/confirm-signup?email=${encodeURIComponent(email)}`, { replace: true });
         } catch(err){
             setError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
         console.log('Sign up submitted:', { email, password, agreedToTerms });
     };
 
     return (
-        <div className="min-h-screen flex">
-            {/* LEFT SIDE - image section */}
-            <div className="hidden lg:flex lg:w-1/2 relative">
-                <img
-                    src="assets/images/left-mealpic.png"   // make sure correct pic
-                    alt="Left meal plan"
-                    className="object-cover w-full h-full"
-                />
-            </div>
-
-            {/* RIGHT SIDE - form section */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center bg-[#E8E3D8] px-8">
-                <div className="w-full max-w-md">
-                    {/* card container */}
-                    <div className="bg-white rounded-3xl shadow-lg p-8 lg:p-12">
-
-                        {/* logo section */}
-                        <div className="flex items-center justify-center mb-8">
-                            <img
-                                src="assets/images/nourishlylogonoears.png"   // make sure correct pic
-                                alt="Nourishly icon"
-                                className="w-12 h-12 mr-3"
-                            />
-                            <h1 className="text-4xl font-semibold text-[#6B8E6F]">
-                                Nourishly
-                            </h1>
-                        </div>
-
+        <AuthPageLayout>
+            <div className="w-full rounded-3xl bg-white p-8 shadow-lg lg:p-10">
                         {/* title */}
-                        <h2 className="text-2xl font-medium text-[#6B8E6F] text-center mb-8">
+                        <h2 className="text-3xl font-bold text-[#6B8E6F] text-center mb-8">
                             Create an account
                         </h2>
 
@@ -139,9 +121,10 @@ function SignUp() {
                             {/* submit button */}
                             <button
                                 type="submit"
+                                disabled={isSubmitting}
                                 className="w-full bg-[#6B8E6F] text-white py-3 rounded-lg font-medium hover:bg-[#5a7a5e] transition duration-200"
                             >
-                                Create an account
+                                {isSubmitting ? 'Creating account...' : 'Create an account'}
                             </button>
 
                             {/* terms checkbox */}
@@ -167,17 +150,8 @@ function SignUp() {
                                 </label>
                             </div>
                         </form>
-
-                        {/* footer */}
-                        <div className="mt-8 text-center text-xs text-gray-500">
-                            © Nourishly 2025 •
-                            <a href="#" className="hover:text-[#6B8E6F] ml-1">Privacy</a> •
-                            <a href="#" className="hover:text-[#6B8E6F] ml-1">Terms</a>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
+        </AuthPageLayout>
     );
 }
 

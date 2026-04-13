@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import RecipeCard from '../components/RecipeCard';
 
+
 const FILTER_TAGS = ['All', 'Vegetarian', 'Vegan', 'High Protein', 'Low Carb'];
-const RECIPES_PER_PAGE = 16;
+const RECIPES_PER_PAGE = 6;
+const MAX_RECIPES = 18;     // LOCK at 18 cards max
 const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 const API_BASE = 'https://api.spoonacular.com/recipes';
+
 
 export default function Recipes() {
     const [recipes, setRecipes] = useState([]);
@@ -17,6 +20,7 @@ export default function Recipes() {
     const [hasMore, setHasMore] = useState(true);
     const [totalResults, setTotalResults] = useState(0);
 
+
     // fetch recipes from Spoonacular API
     const fetchRecipes = async (reset = false) => {
         if (!API_KEY) {
@@ -28,9 +32,16 @@ export default function Recipes() {
         setLoading(true);
         setError(null);
 
+
         try {
             const currentOffset = reset ? 0 : offset;
-            let url = `${API_BASE}/complexSearch?apiKey=${API_KEY}&number=${RECIPES_PER_PAGE}&offset=${currentOffset}&addRecipeNutrition=true&fillIngredients=true`;
+
+            // Add random offset for variety (different recipes each time)
+            const randomOffset = Math.floor(Math.random() * 50);
+
+
+            let url = `${API_BASE}/complexSearch?apiKey=${API_KEY}&number=${RECIPES_PER_PAGE}&offset=${currentOffset + randomOffset}&addRecipeNutrition=true&fillIngredients=true`;
+
 
             // add search query
             if (searchQuery) {
@@ -38,7 +49,7 @@ export default function Recipes() {
             }
 
 
-            // add filter parameters
+            // add filter parameter
             switch (activeFilter) {
                 case 'Vegetarian':
                     url += '&diet=vegetarian';
@@ -58,11 +69,13 @@ export default function Recipes() {
 
             const response = await fetch(url);
 
+
             if (!response.ok) {
                 throw new Error('Failed to fetch recipes. Please try again.');
             }
 
             const data = await response.json();
+
 
             if (reset) {
                 setRecipes(data.results);
@@ -73,7 +86,10 @@ export default function Recipes() {
             }
 
             setTotalResults(data.totalResults);
-            setHasMore(data.results.length === RECIPES_PER_PAGE && (reset ? RECIPES_PER_PAGE : offset + RECIPES_PER_PAGE) < Math.min(data.totalResults, 100));
+
+            // stop at MAX_RECIPES (18 cards)
+            const currentTotal = reset ? data.results.length : recipes.length + data.results.length;
+            setHasMore(currentTotal < MAX_RECIPES && data.results.length === RECIPES_PER_PAGE);
 
         } catch (err) {
             setError(err.message);
@@ -124,6 +140,7 @@ export default function Recipes() {
                 {/* Search Bar */}
                 <form onSubmit={handleSearch} className="mb-8">
                     <div className="flex gap-3">
+
                         <input
                             type="text"
                             value={searchInput}
@@ -131,6 +148,7 @@ export default function Recipes() {
                             placeholder="Search recipes by name..."
                             className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         />
+
                         <button
                             type="submit"
                             className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primaryDark transition-colors font-medium"
@@ -162,6 +180,7 @@ export default function Recipes() {
                 {error && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
                         <p className="text-red-800 mb-4">{error}</p>
+
                         <button
                             onClick={() => fetchRecipes(true)}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -172,7 +191,7 @@ export default function Recipes() {
                 )}
 
 
-                {/* Loading State (Initial) */}
+                {/* Loading State */}
                 {loading && recipes.length === 0 && (
                     <div className="flex justify-center items-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -180,24 +199,28 @@ export default function Recipes() {
                 )}
 
 
-                {/* Empty State (No Results from Search) */}
+                {/* Empty State (IF no results from search) */}
                 {!loading && recipes.length === 0 && searchQuery && !error && (
                     <div className="text-center py-20">
                         <svg className="mx-auto h-16 w-16 text-muted mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
+
                         <h3 className="text-xl font-semibold text-primaryDark mb-2">
                             No recipes found for "{searchQuery}"
                         </h3>
+
                         <p className="text-muted mb-6">
                             Try a different keyword or clear your search.
                         </p>
+
                         <button
                             onClick={handleBrowseAll}
                             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primaryDark transition-colors"
                         >
                             Browse All Recipes
                         </button>
+
                     </div>
                 )}
 
@@ -213,7 +236,7 @@ export default function Recipes() {
 
 
                         {/* Load More Button */}
-                        {hasMore && !loading && totalResults <= 100 && (
+                        {hasMore && !loading && (
                             <div className="text-center">
                                 <button
                                     onClick={handleLoadMore}
@@ -237,7 +260,9 @@ export default function Recipes() {
                         {!hasMore && recipes.length > 0 && (
                             <div className="text-center py-8">
                                 <p className="text-muted">
-                                    That's everything! Try adjusting your filters to see more recipes.
+                                    {recipes.length >= MAX_RECIPES
+                                        ? `Showing ${MAX_RECIPES} recipes. Try adjusting your filters for different results.`
+                                        : "That's everything! Try adjusting your filters to see more recipes."}
                                 </p>
                             </div>
                         )}

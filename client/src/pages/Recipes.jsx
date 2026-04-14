@@ -18,7 +18,6 @@ export default function Recipes() {
     const [activeFilter, setActiveFilter] = useState('All');
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const [totalResults, setTotalResults] = useState(0);
 
 
     // fetch recipes from Spoonacular API
@@ -84,8 +83,6 @@ export default function Recipes() {
                 setRecipes(prev => [...prev, ...data.results]);
                 setOffset(prev => prev + RECIPES_PER_PAGE);
             }
-
-            setTotalResults(data.totalResults);
 
             // stop at MAX_RECIPES (18 cards)
             const currentTotal = reset ? data.results.length : recipes.length + data.results.length;

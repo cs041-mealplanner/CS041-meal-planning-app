@@ -1,16 +1,48 @@
 // Grocery section for Dashboard
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 
 export default function GroceryListWidget() {
     const navigate = useNavigate();
+
 
     // load grocery items from localStorage
     const [items, setItems] = useState(() => {
         const saved = localStorage.getItem('groceryList');
         return saved ? JSON.parse(saved) : [];
     });
+
+
+    // Reload data when component mounts or becomes visible
+    useEffect(() => {
+        const loadItems = () => {
+            const saved = localStorage.getItem('groceryList');
+            setItems(saved ? JSON.parse(saved) : []);
+        };
+
+        // Load immediately
+        loadItems();
+
+
+        // Reload when window regains focus (user comes back to tab)
+        const handleFocus = () => loadItems();
+        window.addEventListener('focus', handleFocus);
+
+
+        // Reload when storage changes in another tab
+        const handleStorage = (e) => {
+            if (e.key === 'groceryList') loadItems();
+        };
+        window.addEventListener('storage', handleStorage);
+
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('storage', handleStorage);
+        };
+    }, []);
 
     const toggleCheck = (id) => {
         const updatedItems = items.map(item =>
@@ -98,7 +130,6 @@ export default function GroceryListWidget() {
                                 className={`flex-1 ${item.checked ? 'line-through text-muted' : 'text-primaryDark'
                                     }`}
                             >
-
                                 {item.name}
                             </span>
                         </div>

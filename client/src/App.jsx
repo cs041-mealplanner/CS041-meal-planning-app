@@ -8,10 +8,10 @@ import ConfirmSignup from "./pages/confirmSignup";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import GroceryList from "./pages/GroceryList";
-import IngredientPage from "./pages/IngredientPage";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import MealPlanner from "./pages/MealPlanner";
+import RecipeDetail from "./pages/RecipeDetail";
 import Recipes from "./pages/Recipes";
 import SignUp from "./pages/SignUp";
 
@@ -55,18 +55,10 @@ export default function App() {
                 }
               />
               <Route
-                path="/recipe/:id"
-                element={
-                  <ProtectedRoute>
-                    <IngredientPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/recipes/:id"
                 element={
                   <ProtectedRoute>
-                    <IngredientPage />
+                    <RecipeDetail />
                   </ProtectedRoute>
                 }
               />

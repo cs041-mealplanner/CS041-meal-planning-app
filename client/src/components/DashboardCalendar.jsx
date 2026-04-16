@@ -2,11 +2,10 @@
 
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import dishes from '../data/dish.json';
 import { loadMealPlanEntries } from '../features/mealPlanner/mealPlannerRepo';
 
 
-export default function DashboardCalendar() {
+export default function DashboardCalendar({ allRecipes = [] }) {
     // Get current week (Sun-Sat)
     const currentWeekStart = dayjs().startOf('week');
     const days = useMemo(() =>
@@ -26,20 +25,23 @@ export default function DashboardCalendar() {
             entry => entry.date === date.format('YYYY-MM-DD')
         );
 
+
         // Sort by slot order (breakfast, lunch, dinner)
         const slotOrder = { breakfast: 0, lunch: 1, dinner: 2 };
         dayEntries.sort((a, b) => slotOrder[a.slot] - slotOrder[b.slot]);
 
+
         // Map to dish names
         return dayEntries.map(entry => {
-            const dish = dishes.find(d => d.id === entry.dishId);
+            const dish = allRecipes.find(d => d.id === entry.dishId);
             return dish ? dish.name : 'Unknown';
         });
     };
 
+
     // Display logic: show all meals the user planned
     const getDisplayMeals = (meals) => {
-        return meals; // show everything they planned
+        return meals;    // show everything they planned
     };
 
 
@@ -63,6 +65,7 @@ export default function DashboardCalendar() {
                                 } ${isPast ? 'opacity-60' : ''}`}
                         >
 
+
                             {/* Day label */}
                             <div className="text-center mb-2">
                                 <div className="text-xs font-medium text-muted">
@@ -73,6 +76,7 @@ export default function DashboardCalendar() {
                                     }`}>
                                     {day.format('D')}
                                 </div>
+
                             </div>
 
 

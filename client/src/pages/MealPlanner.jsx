@@ -1,10 +1,9 @@
 // meal planner page
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMealPlanner } from "../features/mealPlanner/useMealPlanner";
 
-import dishes from "../data/dish.json";
 
 function AddMealCard({ label, onClick }) {
     return (
@@ -22,6 +21,7 @@ function AddMealCard({ label, onClick }) {
         </button>
     );
 }
+
 
 function MealCard({ meal }) {
     return (
@@ -42,6 +42,7 @@ function MealCard({ meal }) {
     );
 }
 
+
 function DayPill({ d, label, active, onClick }) {
     return (
         <button
@@ -57,6 +58,7 @@ function DayPill({ d, label, active, onClick }) {
         </button>
     );
 }
+
 
 function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId }) {
     if (!open || !slot) return null;
@@ -101,18 +103,22 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId })
                                     alt={d.name}
                                     className="h-16 w-16 rounded-xl object-cover"
                                 />
+
                                 <div className="min-w-0">
                                     <div className="truncate text-sm font-bold text-neutral-800">
                                         {d.name}
                                     </div>
+
                                     <div className="mt-1 text-xs text-neutral-500">
                                         {d.nutrition?.calories ?? "?"} kcal
                                     </div>
                                 </div>
+
                             </button>
                         ))}
                     </div>
                 </div>
+
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <button
@@ -123,13 +129,44 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId })
                         Cancel
                     </button>
                 </div>
+
             </div>
         </div>
     );
 }
 
+
 export default function MealPlanner() {
     const navigate = useNavigate();
+
+    // load recipe pool and manual recipes from localStorage
+    const [poolRecipes, setPoolRecipes] = useState([]);
+    const [manualRecipes, setManualRecipes] = useState([]);
+
+    useEffect(() => {
+        const loadRecipes = () => {
+            const savedPool = localStorage.getItem('recipePool');
+            const savedManual = localStorage.getItem('manualRecipes');
+            setPoolRecipes(savedPool ? JSON.parse(savedPool) : []);
+            setManualRecipes(savedManual ? JSON.parse(savedManual) : []);
+        };
+
+        loadRecipes();
+
+        // Reload when window gets focus (when user comes back from adding recipe)
+        const handleFocus = () => loadRecipes();
+        window.addEventListener('focus', handleFocus);
+
+        return () => window.removeEventListener('focus', handleFocus);
+    }, []);
+
+
+    // combine pool + manual recipes
+    // not using dish.json anymore
+    const allRecipes = useMemo(() => {
+        return [...poolRecipes, ...manualRecipes];
+    }, [poolRecipes, manualRecipes]);
+
 
     // destructuring values/actions returned by useMealPlanner() into local variables
     const {
@@ -146,14 +183,17 @@ export default function MealPlanner() {
         removeMeal,
     } = useMealPlanner();
 
+
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerSlot, setPickerSlot] = useState(null);
 
+
     const dishById = useMemo(() => {
         const map = new Map();
-        for (const d of dishes) map.set(d.id, d);
+        for (const d of allRecipes) map.set(d.id, d);
         return map;
-    }, []);
+    }, [allRecipes]);
+
 
     const mealsForDay = useMemo(() => {
         const dayEntries = entries
@@ -165,21 +205,23 @@ export default function MealPlanner() {
                 const dish = dishById.get(e.dishId);
                 return dish
                     ? {
-                          id: `${e.date}|${e.slot}|${e.dishId}`,
-                          title: dish.name,
-                          meta: `${dish.nutrition?.calories ?? "?"} kcal • ${e.slot}`,
-                          imageUrl: dish.image,
-                      }
+                        id: `${e.date}|${e.slot}|${e.dishId}`,
+                        title: dish.name,
+                        meta: `${dish.nutrition?.calories ?? "?"} kcal • ${e.slot}`,
+                        imageUrl: dish.image,
+                    }
                     : null;
             })
             .filter(Boolean);
     }, [entries, selectedYmd, dishById]);
+
 
     const weekLabel = useMemo(() => {
         if (!weekDays || weekDays.length === 0) return "";
 
         const start = weekDays[0].dateObj;
         const end = weekDays[6].dateObj;
+
 
         const sameMonth =
             start.getMonth() === end.getMonth() &&
@@ -197,6 +239,7 @@ export default function MealPlanner() {
         return `${monthStart} ${startDay} - ${monthEnd} ${endDay}`;
     }, [weekDays]);
 
+
     const formattedSelectedDate = useMemo(() => {
         if (!selectedYmd) return "";
 
@@ -210,10 +253,13 @@ export default function MealPlanner() {
         });
     }, [selectedYmd]);
 
+
     const dishesForPickerSlot = useMemo(() => {
         if (!pickerSlot) return [];
-        return dishes.filter((d) => d.meal === pickerSlot);
-    }, [pickerSlot]);
+        // All recipes
+        return allRecipes;
+    }, [pickerSlot, allRecipes]);
+
 
     function openPicker(slot) {
         setPickerSlot(slot);
@@ -231,6 +277,7 @@ export default function MealPlanner() {
         closePicker();
     }
 
+
     return (
         <div className="min-h-screen bg-secondarybg">
             <DishPickerModal
@@ -241,40 +288,44 @@ export default function MealPlanner() {
                 onSelectDishId={selectDish}
             />
 
-            {/* HERO */}
-            <section className="w-full border-b border-stone-300 bg-gradient-to-b from-mainbg to-[#FFF7ED]">
-                <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-stretch gap-0 px-6 py-14 md:grid-cols-2">
-                    <div className="py-2">
-                        <h1 className="text-4xl font-bold leading-tight text-primaryDark md:text-5xl">
-                            Plan your perfect week of meals
+
+            {/* HERO SECTION */}
+            <section className="bg-mainbg">
+                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 lg:grid-cols-2 lg:px-6 lg:py-16">
+                    <div className="flex flex-col justify-center text-center lg:text-left">
+                        <h1 className="text-4xl font-extrabold leading-tight text-neutral-700 md:text-5xl">
+                            Plan Your Week,
+                            <br />
+                            One Meal at a Time
                         </h1>
 
-                        <p className="mt-4 text-lg text-muted">
-                            Build a plan, track calories, and generate a shopping list in seconds.
+                        <p className="mt-4 text-lg text-neutral-500">
+                            Build a personalized meal plan and let us handle the rest.
                         </p>
 
-                        <div className="mt-6 flex flex-wrap gap-3">
+                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             <button
                                 type="button"
-                                onClick={() => {
+                                onClick={() =>
                                     document
                                         .getElementById("meal-plan-builder")
-                                        ?.scrollIntoView({ behavior: "smooth" });
-                                }}
+                                        ?.scrollIntoView({ behavior: "smooth" })
+                                }
                                 className="rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white"
                                 style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
                             >
-                                Create My Plan
+                                Get Started
                             </button>
 
                             <button
                                 type="button"
-                                onClick={() => console.log("TODO: Browse Recipes")} // TODO: navigate to recipe browsing page
+                                onClick={() => navigate('/recipes')}
                                 className="rounded-xl border border-primary bg-transparent px-5 py-3 text-base font-semibold text-primary"
                                 style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
                             >
                                 Browse Recipes
                             </button>
+
                         </div>
                     </div>
 
@@ -283,6 +334,7 @@ export default function MealPlanner() {
                             className="w-full max-w-md overflow-hidden rounded-3xl bg-card"
                             style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
                         >
+
                             <img
                                 src="https://placehold.co/493x403"
                                 alt="Meal"
@@ -290,14 +342,17 @@ export default function MealPlanner() {
                             />
                         </div>
                     </div>
+
                 </div>
             </section>
 
+
             {/* BUILD MEAL PLAN CARD */}
-            <section 
+            <section
                 id="meal-plan-builder"
                 className="mx-auto mt-10 w-full max-w-6xl px-4"
-                >
+            >
+
                 <div
                     className="rounded-3xl bg-card px-6 py-10 md:px-10"
                     style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
@@ -340,6 +395,7 @@ export default function MealPlanner() {
                                             >
                                                 Replace
                                             </button>
+
                                             <button
                                                 type="button"
                                                 onClick={() => removeMeal(selectedYmd, slot)}
@@ -347,6 +403,7 @@ export default function MealPlanner() {
                                             >
                                                 Remove
                                             </button>
+
                                         </div>
                                     </div>
 
@@ -360,10 +417,13 @@ export default function MealPlanner() {
                                             <div className="text-base font-bold text-neutral-800">
                                                 {dish.name}
                                             </div>
+
                                             <div className="mt-1 text-sm text-neutral-500">
                                                 {dish.nutrition?.calories ?? "?"} kcal
                                             </div>
+
                                         </div>
+
                                     </div>
                                 </div>
                             );
@@ -387,9 +447,11 @@ export default function MealPlanner() {
                         >
                             {isDirty ? "Save Plan" : "Saved ✓"}
                         </button>
+
                     </div>
                 </div>
             </section>
+
 
             {/* WEEK SELECTOR */}
             <section className="mx-auto mt-10 w-full max-w-6xl px-4">
@@ -427,8 +489,10 @@ export default function MealPlanner() {
                             />
                         ))}
                     </div>
+
                 </div>
             </section>
+
 
             {/* MEALS FOR SELECTED DAY */}
             <section className="mx-auto mt-10 w-full max-w-6xl px-4 pb-14">

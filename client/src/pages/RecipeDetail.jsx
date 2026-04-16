@@ -16,13 +16,34 @@ export default function RecipeDetail() {
 
     useEffect(() => {
         const fetchRecipeDetail = async () => {
+            // Check if this is a manual recipe
+            if (id.startsWith('manual-')) {
+                try {
+                    const manualRecipes = JSON.parse(localStorage.getItem('manualRecipes') || '[]');
+                    const recipe = manualRecipes.find(r => r.id === id);
+
+                    if (recipe) {
+                        setRecipe(recipe);
+                    } else {
+                        setError('Recipe not found');
+                    }
+                    setLoading(false);
+                } catch (err) {
+                    console.error('Error loading manual recipe:', err);
+                    setError('Failed to load recipe');
+                    setLoading(false);
+                }
+                return;
+            }
+
+
+            // other, fetch from Spoonacular API
             if (!API_KEY) {
                 console.error('Spoonacular API key not configured.');
                 setError('Unable to load recipe details.');
                 setLoading(false);
                 return;
             }
-
 
             try {
                 setLoading(true);
@@ -36,9 +57,9 @@ export default function RecipeDetail() {
                     throw new Error('Failed to fetch recipe details');
                 }
 
+
                 const data = await response.json();
                 setRecipe(data);
-
             } catch (err) {
                 console.error('Recipe fetch error:', err);
                 setError('Failed to load recipe. Please try again.');
@@ -52,9 +73,15 @@ export default function RecipeDetail() {
     }, [id]);
 
 
+    // Helper function - to get nutrition value
+    const getNutritionValue = (nutrientName) => {
+        if (!recipe?.nutrition?.nutrients) return 0;
+        const nutrient = recipe.nutrition.nutrients.find(n => n.name === nutrientName);
+        return nutrient ? Math.round(nutrient.amount) : 0;
+    };
+
     const addToGroceryList = () => {
         if (!recipe) return;
-
 
         // Get existing grocery list from localStorage
         const existingList = JSON.parse(localStorage.getItem('groceryList') || '[]');
@@ -73,32 +100,76 @@ export default function RecipeDetail() {
         const updatedList = [...existingList, ...newItems];
         localStorage.setItem('groceryList', JSON.stringify(updatedList));
 
+
         alert(`Added all ${recipe.extendedIngredients.length} ingredients to your grocery list!`);
         navigate('/grocery');
     };
 
 
     const addToMealPlan = () => {
-        // TODO: Implement add to meal plan functionality
-        alert('Add to Meal Plan - Coming soon!');
+        if (!recipe) return;
+
+
+        // Transform Spoonacular recipe
+        const poolRecipe = {
+            id: `pool-${recipe.id}`,
+            name: recipe.title,
+            image: recipe.image,
+            servings: recipe.servings,
+            prep_time: recipe.preparationMinutes || 0,
+            cook_time: recipe.cookingMinutes || 0,
+            meal: 'any',          // Spoonacular doesn't categorize by meal type
+            nutrition: {
+                calories: getNutritionValue('Calories'),
+                protein: getNutritionValue('Protein'),
+                carbs: getNutritionValue('Carbohydrates'),
+                fat: getNutritionValue('Fat'),
+                fiber: getNutritionValue('Fiber'),
+                sodium: getNutritionValue('Sodium')
+            },
+            ingredients: recipe.extendedIngredients.map(ing => ({
+                item: ing.name,
+                amount: `${ing.amount} ${ing.unit}`,
+                category: ing.aisle || 'Pantry'
+            }))
+        };
+
+
+        // Get existing pool from localStorage
+        const existingPool = JSON.parse(localStorage.getItem('recipePool') || '[]');
+
+        // Check if already in pool
+        const alreadyExists = existingPool.some(r => r.id === poolRecipe.id);
+
+
+        if (alreadyExists) {
+            alert('This recipe is already in your meal plan pool!');
+            navigate('/meal-planner');
+            return;
+        }
+
+        // Add to pool (cap at 20 recipes max)
+        if (existingPool.length >= 20) {
+            alert('Pool is full (max 20 recipes). Remove a recipe to add more.');
+            navigate('/meal-planner');
+            return;
+        }
+
+        const updatedPool = [...existingPool, poolRecipe];
+        localStorage.setItem('recipePool', JSON.stringify(updatedPool));
+
+        alert(`Added "${recipe.title}" to your meal plan pool!`);
+        navigate('/meal-planner');
     };
 
 
     const handleBack = () => {
-        // If browser has history, go back; otherwise go to recipes
+        // If browser has history, go back, or go to recipes
         if (window.history.length > 1) {
             navigate(-1);
         } else {
             navigate('/recipes');
         }
-    };
-
-
-    // Helper to get nutrition value
-    const getNutritionValue = (nutrientName) => {
-        if (!recipe?.nutrition?.nutrients) return 0;
-        const nutrient = recipe.nutrition.nutrients.find(n => n.name === nutrientName);
-        return nutrient ? Math.round(nutrient.amount) : 0;
     };
 
 
@@ -120,12 +191,14 @@ export default function RecipeDetail() {
                     <h2 className="text-2xl font-bold text-primaryDark mb-4">
                         {error || 'Recipe not found'}
                     </h2>
+
                     <button
                         onClick={() => navigate('/recipes')}
                         className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primaryDark transition-colors"
                     >
                         Back to Recipes
                     </button>
+
                 </div>
             </div>
         );
@@ -169,7 +242,6 @@ export default function RecipeDetail() {
                                 {recipe.title}
                             </h1>
 
-
                             {/* Time & Servings */}
                             <div className="flex gap-12 mb-6">
                                 <div className="text-center">
@@ -179,7 +251,6 @@ export default function RecipeDetail() {
 
                                 <div className="text-center">
                                     <div className="text-xs text-muted uppercase mb-1">Prep Time</div>
-
                                     <div className="text-3xl font-bold text-primary">
                                         {recipe.preparationMinutes || 0}min
                                     </div>
@@ -187,12 +258,11 @@ export default function RecipeDetail() {
 
                                 <div className="text-center">
                                     <div className="text-xs text-muted uppercase mb-1">Cook Time</div>
-
                                     <div className="text-3xl font-bold text-primary">
                                         {recipe.cookingMinutes || 0}min
                                     </div>
-
                                 </div>
+
                             </div>
                         </div>
 
@@ -210,6 +280,7 @@ export default function RecipeDetail() {
                                     </div>
 
                                     <div className="text-xs text-muted">Calories</div>
+
                                 </div>
 
                                 <div>
@@ -218,6 +289,7 @@ export default function RecipeDetail() {
                                     </div>
 
                                     <div className="text-xs text-muted">Protein</div>
+
                                 </div>
 
                                 <div>
@@ -250,7 +322,9 @@ export default function RecipeDetail() {
                                     </div>
 
                                     <div className="text-xs text-muted">Sodium</div>
+
                                 </div>
+
                             </div>
                         </div>
 
@@ -263,21 +337,26 @@ export default function RecipeDetail() {
                             >
                                 Add to Grocery List
                             </button>
+
                             <button
                                 onClick={addToMealPlan}
                                 className="w-full py-3 bg-card text-primary border-2 border-primary rounded-lg hover:bg-subtle transition-colors font-medium text-lg"
                             >
                                 Add to Meal Plan
                             </button>
+
                         </div>
+
                     </div>
                 </div>
+
 
                 {/* Ingredients Section */}
                 <div className="bg-card rounded-lg shadow-md p-8">
                     <div className="mb-6">
                         <h2 className="text-3xl font-bold text-primaryDark">Ingredients</h2>
                     </div>
+
 
                     {/* Ingredients Grid */}
                     <div className="grid md:grid-cols-2 gap-4">
@@ -289,12 +368,15 @@ export default function RecipeDetail() {
                                 <div className="font-medium text-primaryDark">
                                     {ingredient.name}
                                 </div>
+
                                 <div className="text-sm text-muted ml-4">
                                     {ingredient.amount} {ingredient.unit}
                                 </div>
+
                             </div>
                         ))}
                     </div>
+
 
                     {/* Bottom hint */}
                     <div className="mt-6 pt-6 border-t border-gray-200">
@@ -302,6 +384,7 @@ export default function RecipeDetail() {
                             Click "Add to Grocery List" to add all ingredients to your shopping list
                         </p>
                     </div>
+
                 </div>
             </div>
         </div>

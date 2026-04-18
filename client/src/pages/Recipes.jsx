@@ -102,6 +102,7 @@ export default function Recipes() {
 
             const response = await fetch(url);
 
+
             if (!response.ok) {
                 throw new Error('Failed to fetch recipes. Please try again.');
             }
@@ -208,6 +209,7 @@ export default function Recipes() {
                 {/* Search Bar */}
                 <form onSubmit={handleSearch} className="mb-8">
                     <div className="flex gap-3">
+
                         <input
                             type="text"
                             value={searchInput}
@@ -259,7 +261,7 @@ export default function Recipes() {
                 )}
 
 
-                {/* Loading State (Initial) */}
+                {/* Loading State */}
                 {loading && recipes.length === 0 && (
                     <div className="flex justify-center items-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -267,7 +269,7 @@ export default function Recipes() {
                 )}
 
 
-                {/* Empty State (No Results from Search) */}
+                {/* Empty State (IF no results from search) */}
                 {!loading && recipes.length === 0 && searchQuery && !error && (
                     <div className="text-center py-20">
 
@@ -305,7 +307,7 @@ export default function Recipes() {
 
 
                         {/* Load More Button */}
-                        {hasMore && !loading && totalResults <= 100 && (
+                        {hasMore && !loading && (
                             <div className="text-center">
                                 <button
                                     onClick={handleLoadMore}

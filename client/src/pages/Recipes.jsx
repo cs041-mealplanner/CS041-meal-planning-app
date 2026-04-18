@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AddRecipe from '../components/AddRecipe';
 import RecipeCard from '../components/RecipeCard';
 
@@ -20,7 +20,6 @@ export default function Recipes() {
     const [searchInput, setSearchInput] = useState('');
     const [activeFilter, setActiveFilter] = useState('All');
     const [displayCount, setDisplayCount] = useState(RECIPES_PER_PAGE);      // to show
-    const [totalResults, setTotalResults] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -49,7 +48,7 @@ export default function Recipes() {
 
 
     // fetch recipes from Spoonacular API
-    const fetchRecipes = async () => {
+    const fetchRecipes = useCallback(async () => {
         if (!API_KEY) {
             console.error('Spoonacular API key not configured.');
 
@@ -58,7 +57,6 @@ export default function Recipes() {
             setAllRecipes(shuffled);
             setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
             setDisplayCount(RECIPES_PER_PAGE);
-            setTotalResults(manualRecipes.length);
 
             return;
         }
@@ -118,7 +116,6 @@ export default function Recipes() {
             setAllRecipes(shuffled);
             setRecipes(shuffled.slice(0, RECIPES_PER_PAGE)); // Show first 6
             setDisplayCount(RECIPES_PER_PAGE);
-            setTotalResults(combined.length);
 
         } catch (err) {
             setError(err.message);
@@ -132,13 +129,13 @@ export default function Recipes() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [activeFilter, manualRecipes, searchQuery]);
 
 
     // load and when filter changes or manual recipes change
     useEffect(() => {
         fetchRecipes();
-    }, [activeFilter, searchQuery, manualRecipes]);
+    }, [fetchRecipes]);
 
 
     // handle search
@@ -252,7 +249,7 @@ export default function Recipes() {
                         <p className="text-red-800 mb-4">{error}</p>
 
                         <button
-                            onClick={() => fetchRecipes(true)}
+                            onClick={fetchRecipes}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                         >
                             Try Again

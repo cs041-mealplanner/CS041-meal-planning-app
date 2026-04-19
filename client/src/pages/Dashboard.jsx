@@ -1,16 +1,29 @@
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardCalendar from '../components/DashboardCalendar';
 import GroceryListWidget from '../components/GroceryListWidget';
 import MealCard from '../components/MealCard';
-import dishes from '../data/dish.json';
 import { loadMealPlanEntries } from '../features/mealPlanner/mealPlannerRepo';
 
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const today = dayjs().format('YYYY-MM-DD');
+
+
+    // Load recipes from localStorage
+    const [allRecipes, setAllRecipes] = useState([]);
+
+
+    useEffect(() => {
+        const loadRecipes = () => {
+            const poolRecipes = JSON.parse(localStorage.getItem('recipePool') || '[]');
+            const manualRecipes = JSON.parse(localStorage.getItem('manualRecipes') || '[]');
+            setAllRecipes([...poolRecipes, ...manualRecipes]);
+        };
+        loadRecipes();
+    }, []);
 
 
     // Load today's meals
@@ -26,13 +39,15 @@ export default function Dashboard() {
 
         // Map to dish objects
         return todayEntries
-            .map(entry => dishes.find(d => d.id === entry.dishId))
-            .filter(Boolean); // Remove any null/undefined
-    }, [today]);
+            .map(entry => allRecipes.find(d => d.id === entry.dishId))
+            .filter(Boolean);   // Remove any null/undefined
+    }, [today, allRecipes]);
+
 
     return (
         <div className="min-h-screen bg-mainbg">
             <div className="max-w-7xl mx-auto px-6 py-12 space-y-10">
+
 
                 {/* Welcome Section */}
                 <div>
@@ -43,7 +58,9 @@ export default function Dashboard() {
                     <p className="text-lg text-muted">
                         New day, new meals — nourish your body and mind.
                     </p>
+
                 </div>
+
 
                 {/* Meals for Today */}
                 <section>
@@ -68,7 +85,6 @@ export default function Dashboard() {
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                                 />
                             </svg>
-
 
                             <h3 className="text-xl font-semibold text-primaryDark mb-2">
                                 No meals planned for today
@@ -100,7 +116,7 @@ export default function Dashboard() {
 
                 {/* Weekly Calendar weekly */}
                 <section>
-                    <DashboardCalendar />
+                    <DashboardCalendar allRecipes={allRecipes} />
                 </section>
 
 

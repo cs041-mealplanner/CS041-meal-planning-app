@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import AddRecipe from '../components/AddRecipe';
 import RecipeCard from '../components/RecipeCard';
 
 
@@ -11,60 +12,91 @@ const API_BASE = 'https://api.spoonacular.com/recipes';
 
 export default function Recipes() {
     const [recipes, setRecipes] = useState([]);
+    const [manualRecipes, setManualRecipes] = useState([]);
+    const [allRecipes, setAllRecipes] = useState([]);           // store full
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchInput, setSearchInput] = useState('');
     const [activeFilter, setActiveFilter] = useState('All');
-    const [offset, setOffset] = useState(0);
-    const [hasMore, setHasMore] = useState(true);
+    const [displayCount, setDisplayCount] = useState(RECIPES_PER_PAGE);      // to show
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+    // Load manual recipes from localStorage on mount
+    useEffect(() => {
+        const loadManualRecipes = () => {
+            const saved = localStorage.getItem('manualRecipes');
+            setManualRecipes(saved ? JSON.parse(saved) : []);
+        };
+
+        loadManualRecipes();
+    }, []);
+
+
+    // Shuffle array helper
+    const shuffleArray = (array) => {
+        const shuffled = [...array];
+
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        return shuffled;
+    };
 
 
     // fetch recipes from Spoonacular API
-    const fetchRecipes = async (reset = false) => {
+    const fetchRecipes = useCallback(async () => {
         if (!API_KEY) {
             console.error('Spoonacular API key not configured.');
-            setError('Unable to load recipes. Please try again later.');
+
+            // Show manual recipes only if API is not configured
+            const shuffled = shuffleArray(manualRecipes);
+            setAllRecipes(shuffled);
+            setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
+            setDisplayCount(RECIPES_PER_PAGE);
+
             return;
         }
+
 
         setLoading(true);
         setError(null);
 
 
         try {
-            const currentOffset = reset ? 0 : offset;
-
-            // Add random offset for variety (different recipes each time)
-            const randomOffset = Math.floor(Math.random() * 50);
-
-
-            let url = `${API_BASE}/complexSearch?apiKey=${API_KEY}&number=${RECIPES_PER_PAGE}&offset=${currentOffset + randomOffset}&addRecipeNutrition=true&fillIngredients=true`;
-
+            // Fetch 50 recipes to have a good pool for randomization
+            let url = `${API_BASE}/complexSearch?apiKey=${API_KEY}&number=50&addRecipeNutrition=true&fillIngredients=true`;
 
             // add search query
             if (searchQuery) {
                 url += `&query=${encodeURIComponent(searchQuery)}`;
             }
 
-
-            // add filter parameter
+            // add filter parameters
             switch (activeFilter) {
                 case 'Vegetarian':
                     url += '&diet=vegetarian';
                     break;
+
                 case 'Vegan':
                     url += '&diet=vegan';
                     break;
+
                 case 'High Protein':
                     url += '&minProtein=25';
                     break;
+
                 case 'Low Carb':
                     url += '&maxCarbs=30';
                     break;
+
                 default:
                     break;
             }
+
 
             const response = await fetch(url);
 
@@ -76,32 +108,34 @@ export default function Recipes() {
             const data = await response.json();
 
 
-            if (reset) {
-                setRecipes(data.results);
-                setOffset(RECIPES_PER_PAGE);
-            } else {
-                setRecipes(prev => [...prev, ...data.results]);
-                setOffset(prev => prev + RECIPES_PER_PAGE);
-            }
+            // Combine manual recipes + API recipes, then shuffle
+            const combined = [...manualRecipes, ...data.results];
+            const shuffled = shuffleArray(combined);
 
-            // stop at MAX_RECIPES (18 cards)
-            const currentTotal = reset ? data.results.length : recipes.length + data.results.length;
-            setHasMore(currentTotal < MAX_RECIPES && data.results.length === RECIPES_PER_PAGE);
+
+            setAllRecipes(shuffled);
+            setRecipes(shuffled.slice(0, RECIPES_PER_PAGE)); // Show first 6
+            setDisplayCount(RECIPES_PER_PAGE);
 
         } catch (err) {
             setError(err.message);
+
+            // error, show manual recipes only
+            const shuffled = shuffleArray(manualRecipes);
+            setAllRecipes(shuffled);
+            setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
+            setDisplayCount(RECIPES_PER_PAGE);
+
         } finally {
             setLoading(false);
         }
-    };
+    }, [activeFilter, manualRecipes, searchQuery]);
 
-    // load and when filter changes
+
+    // load and when filter changes or manual recipes change
     useEffect(() => {
-        setRecipes([]);
-        setOffset(0);
-        setHasMore(true);
-        fetchRecipes(true);
-    }, [activeFilter, searchQuery]);
+        fetchRecipes();
+    }, [fetchRecipes]);
 
 
     // handle search
@@ -116,23 +150,58 @@ export default function Recipes() {
         setActiveFilter(filter);
     };
 
-    // handle load more
+
+    // handle load more - show more from the shuffled batch
     const handleLoadMore = () => {
-        fetchRecipes(false);
+        const newDisplayCount = Math.min(displayCount + RECIPES_PER_PAGE, MAX_RECIPES, allRecipes.length);
+
+        setDisplayCount(newDisplayCount);
+        setRecipes(allRecipes.slice(0, newDisplayCount));
     };
+
+
+    // Check if we can load more -- to match the limit we set
+    const hasMore = displayCount < Math.min(MAX_RECIPES, allRecipes.length);
 
 
     // handle browse all (reset search and filter)
     const handleBrowseAll = () => {
         setSearchInput('');
         setSearchQuery('');
+
         setActiveFilter('All');
+    };
+
+
+    // Save manual recipe
+    const handleSaveManualRecipe = (newRecipe) => {
+        const updatedManual = [...manualRecipes, newRecipe];
+
+        setManualRecipes(updatedManual);
+        localStorage.setItem('manualRecipes', JSON.stringify(updatedManual));
+
+        // Refresh the displayed recipes to include the new one
+        const combined = [...updatedManual, ...allRecipes];
+        setRecipes(combined.slice(0, displayCount));
     };
 
 
     return (
         <div className="min-h-screen bg-mainbg">
             <div className="max-w-7xl mx-auto px-6 py-12">
+
+                {/* Page Header with Create Button */}
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold text-primaryDark">Browse Recipes</h1>
+
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primaryDark transition-colors font-medium flex items-center gap-2"
+                    >
+                        <span className="text-xl">+</span> Create Recipe
+                    </button>
+                </div>
+
 
                 {/* Search Bar */}
                 <form onSubmit={handleSearch} className="mb-8">
@@ -152,6 +221,7 @@ export default function Recipes() {
                         >
                             Search
                         </button>
+
                     </div>
                 </form>
 
@@ -179,7 +249,7 @@ export default function Recipes() {
                         <p className="text-red-800 mb-4">{error}</p>
 
                         <button
-                            onClick={() => fetchRecipes(true)}
+                            onClick={fetchRecipes}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                         >
                             Try Again
@@ -199,6 +269,7 @@ export default function Recipes() {
                 {/* Empty State (IF no results from search) */}
                 {!loading && recipes.length === 0 && searchQuery && !error && (
                     <div className="text-center py-20">
+
                         <svg className="mx-auto h-16 w-16 text-muted mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -256,6 +327,7 @@ export default function Recipes() {
                         {/* End of Results */}
                         {!hasMore && recipes.length > 0 && (
                             <div className="text-center py-8">
+
                                 <p className="text-muted">
                                     {recipes.length >= MAX_RECIPES
                                         ? `Showing ${MAX_RECIPES} recipes. Try adjusting your filters for different results.`
@@ -266,6 +338,14 @@ export default function Recipes() {
                     </>
                 )}
             </div>
+
+
+            {/* add user Recipe */}
+            <AddRecipe
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSaveManualRecipe}
+            />
         </div>
     );
 }

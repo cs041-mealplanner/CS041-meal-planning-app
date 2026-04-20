@@ -33,7 +33,7 @@ function GroceryList() {
     }, [groceryItems]);
 
 
-    const categories = ['Produce', 'Meat & Poultry', 'Pantry', 'Spices & Seasonings', 'Dairy'];
+    const defaultCategories = ['Produce', 'Meat & Poultry', 'Pantry', 'Spices & Seasonings', 'Dairy'];
 
     const toggleCheck = (id) => {
         setGroceryItems(items =>
@@ -95,6 +95,13 @@ function GroceryList() {
     const filteredItems = groceryItems.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const categories = Array.from(new Set([
+        ...defaultCategories,
+        ...filteredItems
+            .map(item => item.category)
+            .filter(Boolean)
+    ]));
 
 
     const getItemsByCategory = (category) => {
@@ -264,7 +271,7 @@ function GroceryList() {
                                     onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6B8E6F]"
                                 >
-                                    {categories.map(cat => (
+                                    {defaultCategories.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
                                 </select>

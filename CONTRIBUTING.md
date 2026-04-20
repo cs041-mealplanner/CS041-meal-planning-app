@@ -118,11 +118,12 @@ To prevent oversized or unreviewable PRs, the following rules are **mandatory**:
 
 ### Required for every PR
 
-* **Must link at least one GitHub Issue**
 * **Must be focused** (one feature or fix)
 * **Must pass CI** (lint + tests)
 * **Cannot merge your own PR**
 * **At least 1 reviewer approval**
+* **Branch name must follow repo convention**
+* **PR title must follow Conventional Commits format**
 
 ### PR Size Guidelines
 
@@ -136,7 +137,7 @@ To prevent oversized or unreviewable PRs, the following rules are **mandatory**:
 ### Weekly Expectations
 
 * **2–3 PRs per member per week**
-* Each PR should be meaningful and tied to an Issue or planned task
+* Each PR should be meaningful and tied to a planned task
 
 ---
 
@@ -203,7 +204,7 @@ GitHub Issues are used for:
 * Bug reports
 * Organizing milestones
 
-Not every small UI change needs an Issue, but **all PRs must reference one**.
+Not every small UI change needs a GitHub Issue. Use Issues for larger features, bugs, planning, and milestone tracking when they add useful project context.
 
 ---
 
@@ -310,4 +311,4 @@ v1.1.1 — patches / hotfixes
 
 ---
 
-*Last updated: March 13, 2026*
+*Last updated: April 20, 2026*

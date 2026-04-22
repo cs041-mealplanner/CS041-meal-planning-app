@@ -2,6 +2,11 @@
 import { useEffect, useState } from 'react';
 
 
+const sortGroceryItems = (items) => {
+    return [...items].sort((a, b) => Number(a.checked) - Number(b.checked));
+};
+
+
 function GroceryList() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
@@ -12,7 +17,7 @@ function GroceryList() {
     const loadGroceryItems = () => {
         const saved = localStorage.getItem('groceryList');
         if (saved) {
-            return JSON.parse(saved);
+            return sortGroceryItems(JSON.parse(saved));
         }
 
         // if start with empty list
@@ -28,13 +33,13 @@ function GroceryList() {
     }, [groceryItems]);
 
 
-    const categories = ['Produce', 'Meat & Poultry', 'Pantry', 'Spices & Seasonings', 'Dairy'];
+    const defaultCategories = ['Produce', 'Meat & Poultry', 'Pantry', 'Spices & Seasonings', 'Dairy'];
 
     const toggleCheck = (id) => {
         setGroceryItems(items =>
-            items.map(item =>
+            sortGroceryItems(items.map(item =>
                 item.id === id ? { ...item, checked: !item.checked } : item
-            )
+            ))
         );
     };
 
@@ -45,17 +50,12 @@ function GroceryList() {
 
 
     const clearChecked = () => {
+        if (!window.confirm('Are you sure? (Deleting checked items)')) {
+            return;
+        }
+
         setGroceryItems(items => items.filter(item => !item.checked));
     };
-
-
-    const clearAll = () => {
-        if (window.confirm('Are you sure you want to clear your entire grocery list?')) {
-            setGroceryItems([]);
-            localStorage.removeItem('groceryList');
-        }
-    };
-
 
     const addNewGroceryItem = () => {
         if (newItem.name.trim() && newItem.quantity.trim()) {
@@ -63,14 +63,14 @@ function GroceryList() {
                 ? Math.max(...groceryItems.map(i => i.id)) + 1
                 : 1;
 
-            setGroceryItems([...groceryItems, {
+            setGroceryItems(sortGroceryItems([...groceryItems, {
                 id: newId,
                 name: newItem.name,
                 source: 'Manual',
                 quantity: newItem.quantity,
                 category: newItem.category,
                 checked: false
-            }]);
+            }]));
 
             setNewItem({ name: '', quantity: '', category: 'Produce' });
             setShowAddForm(false);
@@ -85,9 +85,9 @@ function GroceryList() {
 
     const checkAllInCategory = (category) => {
         setGroceryItems(items =>
-            items.map(item =>
+            sortGroceryItems(items.map(item =>
                 item.category === category ? { ...item, checked: true } : item
-            )
+            ))
         );
     };
 
@@ -95,6 +95,13 @@ function GroceryList() {
     const filteredItems = groceryItems.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const categories = Array.from(new Set([
+        ...defaultCategories,
+        ...filteredItems
+            .map(item => item.category)
+            .filter(Boolean)
+    ]));
 
 
     const getItemsByCategory = (category) => {
@@ -120,18 +127,9 @@ function GroceryList() {
                             {checkedItems > 0 && (
                                 <button
                                     onClick={clearChecked}
-                                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                                    className="px-4 py-2 text-sm text-red-600 hover:text-red-700 transition-colors"
                                 >
                                     Clear Checked ({checkedItems})
-                                </button>
-                            )}
-
-                            {totalItems > 0 && (
-                                <button
-                                    onClick={clearAll}
-                                    className="px-4 py-2 text-sm text-red-600 hover:text-red-800 transition-colors"
-                                >
-                                    Clear All
                                 </button>
                             )}
                             <button
@@ -273,7 +271,7 @@ function GroceryList() {
                                     onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6B8E6F]"
                                 >
-                                    {categories.map(cat => (
+                                    {defaultCategories.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
                                 </select>

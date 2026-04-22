@@ -4,14 +4,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
+const DEFAULT_VISIBLE_ITEMS = 10;
+
+
+const sortGroceryItems = (items) => {
+    return [...items].sort((a, b) => Number(a.checked) - Number(b.checked));
+};
+
+
 export default function GroceryListWidget() {
     const navigate = useNavigate();
+    const [visibleCount, setVisibleCount] = useState(DEFAULT_VISIBLE_ITEMS);
 
 
     // load grocery items from localStorage
     const [items, setItems] = useState(() => {
         const saved = localStorage.getItem('groceryList');
-        return saved ? JSON.parse(saved) : [];
+        return saved ? sortGroceryItems(JSON.parse(saved)) : [];
     });
 
 
@@ -19,7 +28,7 @@ export default function GroceryListWidget() {
     useEffect(() => {
         const loadItems = () => {
             const saved = localStorage.getItem('groceryList');
-            setItems(saved ? JSON.parse(saved) : []);
+            setItems(saved ? sortGroceryItems(JSON.parse(saved)) : []);
         };
 
         // Load immediately
@@ -45,12 +54,31 @@ export default function GroceryListWidget() {
     }, []);
 
     const toggleCheck = (id) => {
-        const updatedItems = items.map(item =>
+        const updatedItems = sortGroceryItems(items.map(item =>
             item.id === id ? { ...item, checked: !item.checked } : item
-        );
+        ));
 
         setItems(updatedItems);
         localStorage.setItem('groceryList', JSON.stringify(updatedItems));
+    };
+
+    const clearCheckedItems = () => {
+        if (!window.confirm('Are you sure? (Deleting checked items)')) {
+            return;
+        }
+
+        const updatedItems = items.filter(item => !item.checked);
+        setItems(updatedItems);
+        localStorage.setItem('groceryList', JSON.stringify(updatedItems));
+        setVisibleCount(DEFAULT_VISIBLE_ITEMS);
+    };
+
+    const showMoreItems = () => {
+        setVisibleCount((count) => count + DEFAULT_VISIBLE_ITEMS);
+    };
+
+    const showFewerItems = () => {
+        setVisibleCount(DEFAULT_VISIBLE_ITEMS);
     };
 
 
@@ -59,20 +87,36 @@ export default function GroceryListWidget() {
     const progressPercent = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
 
 
-    // show max 10 items
-    const displayItems = items.slice(0, 10);
+    // show items in expandable groups of 10
+    const displayItems = items.slice(0, visibleCount);
+    const remainingItems = totalCount - displayItems.length;
+    const nextLoadCount = Math.min(DEFAULT_VISIBLE_ITEMS, remainingItems);
+    const canShowFewer = visibleCount > DEFAULT_VISIBLE_ITEMS && totalCount > DEFAULT_VISIBLE_ITEMS;
 
     return (
         <div className="bg-card rounded-xl shadow-md p-6">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-semibold text-primaryDark">Grocery List</h2>
 
-                <button
-                    onClick={() => navigate('/grocery')}
-                    className="text-primary hover:text-primaryDark font-medium text-sm"
-                >
-                    View Full List →
-                </button>
+                <div className="flex items-center gap-3">
+                    {checkedCount > 0 && (
+                        <button
+                            type="button"
+                            onClick={clearCheckedItems}
+                            className="text-sm font-medium text-red-600 transition-colors hover:text-red-700"
+                        >
+                            Clear Checked ({checkedCount})
+                        </button>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={() => navigate('/grocery')}
+                        className="text-primary hover:text-primaryDark font-medium text-sm"
+                    >
+                        View Full List
+                    </button>
+                </div>
 
             </div>
 
@@ -101,10 +145,11 @@ export default function GroceryListWidget() {
                     <p className="text-muted mb-4">Your grocery list is empty.</p>
 
                     <button
+                        type="button"
                         onClick={() => navigate('/grocery')}
                         className="text-primary hover:text-primaryDark font-medium"
                     >
-                        Add items →
+                        Add items
                     </button>
                 </div>
             )}
@@ -112,7 +157,7 @@ export default function GroceryListWidget() {
 
             {/* Items List */}
             {totalCount > 0 && (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <div className="space-y-2">
                     {displayItems.map(item => (
                         <div
                             key={item.id}
@@ -135,10 +180,24 @@ export default function GroceryListWidget() {
                         </div>
                     ))}
 
-                    {items.length > 10 && (
-                        <p className="text-center text-sm text-muted pt-2">
-                            + {items.length - 10} more items
-                        </p>
+                    {remainingItems > 0 && (
+                        <button
+                            type="button"
+                            onClick={showMoreItems}
+                            className="w-full rounded-lg border border-dashed border-primary/40 bg-subtle px-4 py-3 text-sm font-medium text-primary transition-colors hover:border-primary hover:bg-primary hover:text-white"
+                        >
+                            Show {nextLoadCount} more item{nextLoadCount === 1 ? '' : 's'} (+{remainingItems} remaining)
+                        </button>
+                    )}
+
+                    {canShowFewer && (
+                        <button
+                            type="button"
+                            onClick={showFewerItems}
+                            className="w-full text-sm font-medium text-muted transition-colors hover:text-primaryDark"
+                        >
+                            Show fewer
+                        </button>
                     )}
                 </div>
             )}

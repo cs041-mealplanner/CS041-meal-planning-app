@@ -16,6 +16,7 @@ function LogIn() {
     const { setUser } = useAuth();
 
     const redirectTo = location.state?.from?.pathname || '/dashboard';
+    const resetSuccessMessage = location.state?.resetSuccess || '';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -62,6 +63,12 @@ function LogIn() {
 
                         {/* form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {resetSuccessMessage && (
+                                <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                                    {resetSuccessMessage}
+                                </div>
+                            )}
+
                             {error && <div className="text-sm text-red-500">{error}</div>}
 
                             {/* email field */}
@@ -127,7 +134,13 @@ function LogIn() {
                             <div className="text-right">
                                 <button
                                     type="button"
-                                    onClick={() => navigate('/forgot-password')}
+                                    onClick={() =>
+                                        navigate(
+                                            email
+                                                ? `/forgot-password?email=${encodeURIComponent(email)}`
+                                                : '/forgot-password'
+                                        )
+                                    }
                                     className="text-sm text-gray-500 hover:text-[#6B8E6F] transition"
                                 >
                                     Forgot your password?

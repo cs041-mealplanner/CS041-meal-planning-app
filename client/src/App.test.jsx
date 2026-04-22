@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import App from './App';
 
 describe('App', () => {
-  it('renders the landing page hero and navbar', () => {
+  it('renders the landing page hero and navbar', async () => {
     render(<App />);
 
     // Navbar brand link
@@ -17,7 +17,7 @@ describe('App', () => {
 
     // Landing page hero heading
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /Plan your perfect\s*week of meals/i,
       })
     ).toBeInTheDocument();

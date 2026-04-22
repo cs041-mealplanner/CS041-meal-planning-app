@@ -9,6 +9,29 @@ const MAX_RECIPES = 18;     // LOCK at 18 cards max
 const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 const API_BASE = 'https://api.spoonacular.com/recipes';
 
+function normalizeRecipeTags(recipe) {
+    if (!Array.isArray(recipe?.tags)) return [];
+    return recipe.tags
+        .filter((tag) => typeof tag === 'string')
+        .map((tag) => tag.trim().toLowerCase());
+}
+
+function getRecipeTitle(recipe) {
+    if (typeof recipe?.title === 'string' && recipe.title.trim()) return recipe.title;
+    if (typeof recipe?.name === 'string' && recipe.name.trim()) return recipe.name;
+    return '';
+}
+
+function recipeMatchesSearch(recipe, searchQuery) {
+    if (!searchQuery) return true;
+    return getRecipeTitle(recipe).toLowerCase().includes(searchQuery.toLowerCase());
+}
+
+function recipeMatchesFilter(recipe, activeFilter) {
+    if (activeFilter === 'All') return true;
+    return normalizeRecipeTags(recipe).includes(activeFilter.toLowerCase());
+}
+
 
 export default function Recipes() {
     const [recipes, setRecipes] = useState([]);
@@ -46,14 +69,18 @@ export default function Recipes() {
         return shuffled;
     };
 
-
     // fetch recipes from Spoonacular API
     const fetchRecipes = useCallback(async () => {
+        const filteredManualRecipes = manualRecipes.filter((recipe) =>
+            recipeMatchesSearch(recipe, searchQuery) &&
+            recipeMatchesFilter(recipe, activeFilter)
+        );
+
         if (!API_KEY) {
             console.error('Spoonacular API key not configured.');
 
             // Show manual recipes only if API is not configured
-            const shuffled = shuffleArray(manualRecipes);
+            const shuffled = shuffleArray(filteredManualRecipes);
             setAllRecipes(shuffled);
             setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
             setDisplayCount(RECIPES_PER_PAGE);
@@ -109,7 +136,7 @@ export default function Recipes() {
 
 
             // Combine manual recipes + API recipes, then shuffle
-            const combined = [...manualRecipes, ...data.results];
+            const combined = [...filteredManualRecipes, ...data.results];
             const shuffled = shuffleArray(combined);
 
 
@@ -121,7 +148,7 @@ export default function Recipes() {
             setError(err.message);
 
             // error, show manual recipes only
-            const shuffled = shuffleArray(manualRecipes);
+            const shuffled = shuffleArray(filteredManualRecipes);
             setAllRecipes(shuffled);
             setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
             setDisplayCount(RECIPES_PER_PAGE);
@@ -179,10 +206,6 @@ export default function Recipes() {
 
         setManualRecipes(updatedManual);
         localStorage.setItem('manualRecipes', JSON.stringify(updatedManual));
-
-        // Refresh the displayed recipes to include the new one
-        const combined = [...updatedManual, ...allRecipes];
-        setRecipes(combined.slice(0, displayCount));
     };
 
 
@@ -331,7 +354,7 @@ export default function Recipes() {
                                 <p className="text-muted">
                                     {recipes.length >= MAX_RECIPES
                                         ? `Showing ${MAX_RECIPES} recipes. Try adjusting your filters for different results.`
-                                        : "That's everything! Try adjusting your filters to see more recipes."}
+                                        : "That's everything! Try adding a new recipe or adjusting your filters to see more recipes."}
                                 </p>
                             </div>
                         )}
@@ -341,11 +364,13 @@ export default function Recipes() {
 
 
             {/* add user Recipe */}
-            <AddRecipe
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveManualRecipe}
-            />
+            {isModalOpen && (
+                <AddRecipe
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSave={handleSaveManualRecipe}
+                />
+            )}
         </div>
     );
 }

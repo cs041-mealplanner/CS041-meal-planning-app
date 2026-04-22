@@ -1,7 +1,21 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 export default function Landing() {
     const navigate = useNavigate();
+    const { isAuthenticated, isLoading } = useAuth();
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-[60vh] items-center justify-center text-lg text-muted">
+                Loading...
+            </div>
+        );
+    }
+
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     return (
         <div className="bg-mainbg text-primaryDark">

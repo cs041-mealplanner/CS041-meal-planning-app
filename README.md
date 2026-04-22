@@ -107,6 +107,23 @@ Backend functionality such as authentication and data access is handled through 
 
 ---
 
+## Recipe Data Notes
+
+Recipe browsing currently supports two sources:
+
+* **Spoonacular API recipes** when a valid `VITE_SPOONACULAR_API_KEY` is available in the client environment
+* **Manual recipes** created in the UI with the `Create Recipe` button
+
+Important behavior to know:
+
+* If the Spoonacular key is missing or the API request fails, the Recipes page falls back to showing manually created recipes only
+* Manual recipes are stored locally in the browser through `localStorage`
+* Manual recipes can include filter tags such as `Vegetarian`, `Vegan`, `High Protein`, and `Low Carb` so they participate in the same recipe filters as closely as possible
+
+This keeps the app usable in environments where the Spoonacular client key is unavailable while the backend/API integration is still evolving.
+
+---
+
 ## Linting & CI
 
 Linting is enforced via GitHub Actions CI.  

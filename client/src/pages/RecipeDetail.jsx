@@ -1,9 +1,42 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AddRecipe from '../components/AddRecipe';
 
 
 const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 const API_BASE = 'https://api.spoonacular.com/recipes';
+const NUTRIENT_CONFIG = [
+    { name: 'Calories', label: 'Calories', unit: '' },
+    { name: 'Protein', label: 'Protein', unit: 'g' },
+    { name: 'Carbohydrates', label: 'Carbs', unit: 'g' },
+    { name: 'Fat', label: 'Fat', unit: 'g' },
+    { name: 'Fiber', label: 'Fiber', unit: 'g' },
+    { name: 'Sodium', label: 'Sodium', unit: 'mg' },
+];
+
+function getNutritionAmount(recipe, nutrientName) {
+    if (!recipe?.nutrition?.nutrients) return null;
+    const nutrient = recipe.nutrition.nutrients.find((item) => item.name === nutrientName);
+
+    if (!nutrient || nutrient.amount == null || Number.isNaN(Number(nutrient.amount))) {
+        return null;
+    }
+
+    return Math.round(Number(nutrient.amount));
+}
+
+function getRecipeTags(recipe) {
+    const tags = new Set(Array.isArray(recipe?.tags) ? recipe.tags : []);
+    const proteinAmount = getNutritionAmount(recipe, 'Protein');
+    const carbsAmount = getNutritionAmount(recipe, 'Carbohydrates');
+
+    if (recipe?.vegetarian) tags.add('Vegetarian');
+    if (recipe?.vegan) tags.add('Vegan');
+    if (proteinAmount != null && proteinAmount >= 25) tags.add('High Protein');
+    if (carbsAmount != null && carbsAmount <= 30) tags.add('Low Carb');
+
+    return [...tags];
+}
 
 
 export default function RecipeDetail() {
@@ -12,6 +45,7 @@ export default function RecipeDetail() {
     const [recipe, setRecipe] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -73,13 +107,6 @@ export default function RecipeDetail() {
     }, [id]);
 
 
-    // Helper function - to get nutrition value
-    const getNutritionValue = (nutrientName) => {
-        if (!recipe?.nutrition?.nutrients) return 0;
-        const nutrient = recipe.nutrition.nutrients.find(n => n.name === nutrientName);
-        return nutrient ? Math.round(nutrient.amount) : 0;
-    };
-
     const addToGroceryList = () => {
         if (!recipe) return;
 
@@ -120,12 +147,12 @@ export default function RecipeDetail() {
             cook_time: recipe.cookingMinutes || 0,
             meal: 'any',          // Spoonacular doesn't categorize by meal type
             nutrition: {
-                calories: getNutritionValue('Calories'),
-                protein: getNutritionValue('Protein'),
-                carbs: getNutritionValue('Carbohydrates'),
-                fat: getNutritionValue('Fat'),
-                fiber: getNutritionValue('Fiber'),
-                sodium: getNutritionValue('Sodium')
+                calories: getNutritionAmount(recipe, 'Calories') ?? 0,
+                protein: getNutritionAmount(recipe, 'Protein') ?? 0,
+                carbs: getNutritionAmount(recipe, 'Carbohydrates') ?? 0,
+                fat: getNutritionAmount(recipe, 'Fat') ?? 0,
+                fiber: getNutritionAmount(recipe, 'Fiber') ?? 0,
+                sodium: getNutritionAmount(recipe, 'Sodium') ?? 0
             },
             ingredients: recipe.extendedIngredients.map(ing => ({
                 item: ing.name,
@@ -172,6 +199,33 @@ export default function RecipeDetail() {
         }
     };
 
+    const recipeTags = getRecipeTags(recipe);
+    const nutritionEntries = NUTRIENT_CONFIG
+        .map(({ name, label, unit }) => {
+            const value = getNutritionAmount(recipe, name);
+
+            if (value == null) return null;
+
+            return {
+                label,
+                value,
+                unit,
+            };
+        })
+        .filter(Boolean);
+    const isManualRecipe = recipe?.id?.startsWith('manual-');
+
+    const handleSaveManualRecipe = (updatedRecipe) => {
+        const manualRecipes = JSON.parse(localStorage.getItem('manualRecipes') || '[]');
+        const updatedManualRecipes = manualRecipes.map((manualRecipe) =>
+            manualRecipe.id === updatedRecipe.id ? updatedRecipe : manualRecipe
+        );
+
+        localStorage.setItem('manualRecipes', JSON.stringify(updatedManualRecipes));
+        setRecipe(updatedRecipe);
+        setIsEditModalOpen(false);
+    };
+
 
     // Loading state
     if (loading) {
@@ -207,6 +261,17 @@ export default function RecipeDetail() {
 
     return (
         <div className="min-h-screen bg-mainbg">
+            {isManualRecipe && isEditModalOpen && (
+                <AddRecipe
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSave={handleSaveManualRecipe}
+                    existingRecipe={recipe}
+                    modalTitle="Edit Recipe"
+                    submitLabel="Save Changes"
+                />
+            )}
+
             <div className="max-w-6xl mx-auto px-4 py-8">
 
                 {/* Back Button */}
@@ -238,9 +303,24 @@ export default function RecipeDetail() {
                     {/* Recipe Info */}
                     <div className="space-y-6">
                         <div>
-                            <h1 className="text-4xl font-bold text-primaryDark mb-6">
-                                {recipe.title}
-                            </h1>
+                            <div className="mb-6 flex items-start justify-between gap-4">
+                                <h1 className="text-4xl font-bold text-primaryDark">
+                                    {recipe.title}
+                                </h1>
+
+                                {isManualRecipe && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsEditModalOpen(true)}
+                                        className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white shadow-md transition hover:bg-primaryDark"
+                                    >
+                                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 113 3L12 14l-4 1 1-4 7.5-7.5z" />
+                                        </svg>
+                                        Edit
+                                    </button>
+                                )}
+                            </div>
 
                             {/* Time & Servings */}
                             <div className="flex gap-12 mb-6">
@@ -269,63 +349,40 @@ export default function RecipeDetail() {
 
                         {/* Nutrition Info */}
                         <div className="bg-card rounded-lg shadow-md p-6">
-                            <h3 className="text-sm font-semibold text-primaryDark mb-4">
-                                Nutrition Info (per serving)
-                            </h3>
+                            {nutritionEntries.length > 0 ? (
+                                <>
+                                    <h3 className="text-sm font-semibold text-primaryDark mb-4">
+                                        Nutrition Info (per serving)
+                                    </h3>
 
-                            <div className="grid grid-cols-3 gap-6 text-center">
-                                <div>
-                                    <div className="text-2xl font-bold text-primaryDark">
-                                        {getNutritionValue('Calories')}
+                                    <div className="grid grid-cols-3 gap-6 text-center">
+                                        {nutritionEntries.map((entry) => (
+                                            <div key={entry.label}>
+                                                <div className="text-2xl font-bold text-primaryDark">
+                                                    {entry.value}{entry.unit}
+                                                </div>
+
+                                                <div className="text-xs text-muted">{entry.label}</div>
+                                            </div>
+                                        ))}
                                     </div>
+                                </>
+                            ) : recipeTags.length === 0 ? (
+                                <div className="text-sm font-medium text-muted">No Nutrition Info.</div>
+                            ) : null}
 
-                                    <div className="text-xs text-muted">Calories</div>
-
+                            {recipeTags.length > 0 && (
+                                <div className={nutritionEntries.length > 0 ? "mt-5 flex flex-wrap gap-2" : "flex flex-wrap gap-2"}>
+                                    {recipeTags.map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className="rounded-full bg-subtle px-3 py-1 text-xs font-medium text-primaryDark"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
                                 </div>
-
-                                <div>
-                                    <div className="text-2xl font-bold text-primaryDark">
-                                        {getNutritionValue('Protein')}g
-                                    </div>
-
-                                    <div className="text-xs text-muted">Protein</div>
-
-                                </div>
-
-                                <div>
-                                    <div className="text-2xl font-bold text-primaryDark">
-                                        {getNutritionValue('Carbohydrates')}g
-                                    </div>
-
-                                    <div className="text-xs text-muted">Carbs</div>
-                                </div>
-
-                                <div>
-                                    <div className="text-2xl font-bold text-primaryDark">
-                                        {getNutritionValue('Fat')}g
-                                    </div>
-
-                                    <div className="text-xs text-muted">Fat</div>
-                                </div>
-
-                                <div>
-                                    <div className="text-2xl font-bold text-primaryDark">
-                                        {getNutritionValue('Fiber')}g
-                                    </div>
-
-                                    <div className="text-xs text-muted">Fiber</div>
-                                </div>
-
-                                <div>
-                                    <div className="text-2xl font-bold text-primaryDark">
-                                        {getNutritionValue('Sodium')}mg
-                                    </div>
-
-                                    <div className="text-xs text-muted">Sodium</div>
-
-                                </div>
-
-                            </div>
+                            )}
                         </div>
 
 

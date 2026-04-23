@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentUser, signOut as amplifySignOut } from "aws-amplify/auth";
+import { ensureStarterRecipesSeeded } from "../features/recipes/recipeStorage";
+import { clearCurrentUserStorageScope, setCurrentUserStorageScope } from "../lib/userStorage";
 import { AuthContext } from "./useAuth";
 
 export function AuthProvider({ children }) {
@@ -32,6 +34,18 @@ export function AuthProvider({ children }) {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (!user) {
+      clearCurrentUserStorageScope();
+      return;
+    }
+
+    setCurrentUserStorageScope(user);
+    ensureStarterRecipesSeeded();
+  }, [isLoading, user]);
 
   async function logout() {
     await amplifySignOut();

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { getGroceryItems, saveGroceryItems } from '../features/grocery/groceryStorage';
 
 
 const sortGroceryItems = (items) => {
@@ -15,13 +16,7 @@ function GroceryList() {
 
     // load items from localStorage and start with empty list
     const loadGroceryItems = () => {
-        const saved = localStorage.getItem('groceryList');
-        if (saved) {
-            return sortGroceryItems(JSON.parse(saved));
-        }
-
-        // if start with empty list
-        return [];
+        return sortGroceryItems(getGroceryItems());
     };
 
 
@@ -29,7 +24,7 @@ function GroceryList() {
 
     // save to localStorage whenever items change
     useEffect(() => {
-        localStorage.setItem('groceryList', JSON.stringify(groceryItems));
+        saveGroceryItems(groceryItems);
     }, [groceryItems]);
 
 

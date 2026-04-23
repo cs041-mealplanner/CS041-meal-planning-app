@@ -1,150 +1,129 @@
-# 🍽️ CS.041 — Meal Planning Web App (Nourishly)
+# Nourishly
 
-A meal‑planning web application built as part of the **OSU CS Capstone (CS 461–463)** sequence.
+Nourishly is a meal-planning web app for people who want an easier way to organize meals, discover recipes, and turn plans into a grocery list they can actually use.
 
-Nourishly uses a **React (Vite) web client** with **AWS Amplify services** providing backend infrastructure for authentication, data, and hosting.
+[Try the live app](https://main.d2hvbdc7xxhqmv.amplifyapp.com/) | [View the repository](https://github.com/cs041-mealplanner/CS041-meal-planning-app)
 
----
+## Why Nourishly
 
-## Team Members
+Planning meals for the week can be repetitive, easy to forget, and frustrating when recipes, ingredients, and shopping lists all live in different places. Nourishly brings those steps together so users can go from "what should I make?" to a ready-to-shop list in one flow.
 
-* Che‑Han Hsu — [hsuche@oregonstate.edu](mailto:hsuche@oregonstate.edu)
-* Lapatrada Liawpairoj — [liawpail@oregonstate.edu](mailto:liawpail@oregonstate.edu)
-* Kyle Lund — [lundkyl@oregonstate.edu](mailto:lundkyl@oregonstate.edu)
-* Xander Sniffen — [sniffenx@oregonstate.edu](mailto:sniffenx@oregonstate.edu)
-* Louie Baobao — [baobaof@oregonstate.edu](mailto:baobaof@oregonstate.edu)
+## What You Can Do
 
-**Project Partner:** Alexander Ulbrich — [alexander.ulbrich@oregonstate.edu](mailto:alexander.ulbrich@oregonstate.edu)
-**TA / Mentor:** Nischal Aryal — [aryaln@oregonstate.edu](mailto:aryaln@oregonstate.edu)
+- Plan breakfast, lunch, and dinner for each day of the week.
+- Browse recipes by name and filter by tags like `Vegetarian`, `Vegan`, `High Protein`, and `Low Carb`.
+- Create custom recipes with ingredients, nutrition details, and tags.
+- Add recipe ingredients directly to a grocery list.
+- Track grocery progress with categorized items and checkboxes as you shop.
+- Use the dashboard to quickly review today's meals, this week's plan, and grocery progress.
 
----
+## Current Highlights
 
-## Project Overview
+### Weekly Meal Planner
 
-Nourishly focuses on providing a structured workflow for:
+Build a weekly plan one day at a time, choose meals for breakfast, lunch, and dinner, and save the plan for later.
 
-* Meal planning and weekly organization
-* Recipe and ingredient tracking
-* Grocery list generation
+### Recipe Discovery and Custom Recipes
 
-The current codebase emphasizes **clean architecture, CI reliability, and developer workflow** while core features continue to be implemented incrementally.
+Search for recipes, browse filtered results, and add your own recipes when you want something more personal than the default pool.
 
----
+### Grocery List Workflow
 
-## Live Deployment
+Turn ingredients from a recipe into a grocery list, organize items by category, and check them off while shopping.
 
-The application is deployed via AWS Amplify:
+### Dashboard Overview
 
-https://main.d2hvbdc7xxhqmv.amplifyapp.com/
+See today's meals, a weekly calendar snapshot, and grocery list progress from one central page.
 
----
+## How To Access It
 
-## Architecture & Tech Stack
+Use the live deployment here:
 
-### Frontend — React + Vite
+[https://main.d2hvbdc7xxhqmv.amplifyapp.com/](https://main.d2hvbdc7xxhqmv.amplifyapp.com/)
 
-* Located in `client/`
-* Vite dev server with fast HMR
-* UI components, routing, and user‑facing logic
+To explore the app locally:
 
-### Backend Infrastructure — AWS Amplify
-
-Backend services are provided through **AWS Amplify**, which manages authentication, data access, and deployment infrastructure for the application.
-
-### Tooling
-
-* **Node.js 20.x**
-* **ESLint** (client)
-* **GitHub Actions CI** (client dependency install, lint, and test checks)
-
----
-
-## Getting Started
+1. Clone the repository.
+2. Install dependencies with `npm ci` in `client/`.
+3. Run `npm run dev:client` from the repository root.
+4. Open `http://localhost:5173`.
 
 ### Requirements
 
-* Node.js 20.x
-* Git
-* (Recommended) VS Code with ESLint extension
+- Node.js 20.x
+- Git
 
-### Clone the repository
+## Screenshots
 
-```bash
-git clone https://github.com/cs041-mealplanner/CS041-meal-planning-app.git
-cd CS041-meal-planning-app
-```
+![Meal planner screen showing breakfast, lunch, and dinner cards](docs/screenshots/meal-planner.png)
+*Plan meals for the week in one place.*
 
-### Install dependencies
+![Recipes screen showing search and dietary filters](docs/screenshots/recipes.png)
+*Browse recipe options and narrow results by preference.*
 
-> **Note:** Plain `npm install` is intentionally **blocked** in this repository.
-> Use `npm ci` for deterministic installs based on the committed lockfiles.
+![Recipe detail screen showing ingredients and nutrition](docs/screenshots/recipe-detail.png)
+*Review recipe details and add ingredients directly to your grocery list.*
 
-Frontend:
+![Grocery list screen showing categorized items and progress](docs/screenshots/grocery-list.png)
+*Stay organized while shopping with grouped items and progress tracking.*
 
-```bash
-cd client
-npm ci
-cd ..
-```
+## Team
 
----
+- Che-Han Hsu
+- Lapatrada Liawpairoj
+- Kyle Lund
+- Xander Sniffen
+- Louie Baobao
 
-## Running the App
+Project partner: Alexander Ulbrich
 
-Start the development server from the repository root:
+## Contact and Feedback
+
+- Open an issue on GitHub: [Project Issues](https://github.com/cs041-mealplanner/CS041-meal-planning-app/issues)
+- Team contact email: [alexander.ulbrich@oregonstate.edu](mailto:alexander.ulbrich@oregonstate.edu)
+
+## Development Notes
+
+### Tech Stack
+
+- React + Vite
+- AWS Amplify
+- Tailwind CSS
+
+### Commands
+
+Run the client locally:
 
 ```bash
 npm run dev:client
 ```
 
-The Vite development server typically runs at:
-
-```
-http://localhost:5173
-```
-
-Backend functionality such as authentication and data access is handled through AWS Amplify services.
-
----
-
-## Recipe Data Notes
-
-Recipe browsing currently supports two sources:
-
-* **Spoonacular API recipes** when a valid `VITE_SPOONACULAR_API_KEY` is available in the client environment
-* **Manual recipes** created in the UI with the `Create Recipe` button
-
-Important behavior to know:
-
-* If the Spoonacular key is missing or the API request fails, the Recipes page falls back to showing manually created recipes only
-* Manual recipes are stored locally in the browser through `localStorage`
-* Manual recipes can include filter tags such as `Vegetarian`, `Vegan`, `High Protein`, and `Low Carb` so they participate in the same recipe filters as closely as possible
-
-This keeps the app usable in environments where the Spoonacular client key is unavailable while the backend/API integration is still evolving.
-
----
-
-## Linting & CI
-
-Linting is enforced via GitHub Actions CI.  
-Run locally from the repository root:
+Run linting:
 
 ```bash
 npm run lint
 ```
 
----
+Run tests:
 
-## UI / UX Designs
+```bash
+npm run test:client
+```
+
+Build the client:
+
+```bash
+npm run build:client
+```
+
+## Design Reference
 
 Design prototypes and wireframes are maintained in Figma:
 
-[https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App](https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App)
+[Meal Planner Web App Figma](https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App)
 
-Designer: **Lapatrada Liawpairoj (Mint)**
-
----
+Designer: Lapatrada Liawpairoj
 
 ## License
 
-MIT License © 2025 Team CS.041 — Oregon State University
+MIT License Copyright (c) 2025 Team CS.041 - Oregon State University

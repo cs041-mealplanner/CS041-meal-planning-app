@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMealPlanner } from "../features/mealPlanner/useMealPlanner";
+import { getManualRecipes, getRecipePool, normalizeRecipesForPlanner } from "../features/recipes/recipeStorage";
 
 
 function AddMealCard({ label, onClick }) {
@@ -147,16 +148,14 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId, o
 export default function MealPlanner() {
     const navigate = useNavigate();
 
-    // load recipe pool and manual recipes from localStorage
-    const [poolRecipes, setPoolRecipes] = useState([]);
-    const [manualRecipes, setManualRecipes] = useState([]);
+    const [allRecipes, setAllRecipes] = useState([]);
 
     useEffect(() => {
         const loadRecipes = () => {
-            const savedPool = localStorage.getItem('recipePool');
-            const savedManual = localStorage.getItem('manualRecipes');
-            setPoolRecipes(savedPool ? JSON.parse(savedPool) : []);
-            setManualRecipes(savedManual ? JSON.parse(savedManual) : []);
+            setAllRecipes(normalizeRecipesForPlanner([
+                ...getRecipePool(),
+                ...getManualRecipes(),
+            ]));
         };
 
         loadRecipes();
@@ -167,13 +166,6 @@ export default function MealPlanner() {
 
         return () => window.removeEventListener('focus', handleFocus);
     }, []);
-
-
-    // combine pool + manual recipes
-    // not using dish.json anymore
-    const allRecipes = useMemo(() => {
-        return [...poolRecipes, ...manualRecipes];
-    }, [poolRecipes, manualRecipes]);
 
 
     // destructuring values/actions returned by useMealPlanner() into local variables
@@ -277,7 +269,6 @@ export default function MealPlanner() {
 
     const dishesForPickerSlot = useMemo(() => {
         if (!pickerSlot) return [];
-        // All recipes
         return allRecipes;
     }, [pickerSlot, allRecipes]);
 

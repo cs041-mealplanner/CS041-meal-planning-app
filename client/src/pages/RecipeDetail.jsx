@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddRecipe from '../components/AddRecipe';
+import { getGroceryItems, saveGroceryItems } from '../features/grocery/groceryStorage';
+import { getManualRecipes, getRecipePool, isLocalRecipeId, saveManualRecipes, saveRecipePool } from '../features/recipes/recipeStorage';
 
 
 const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
@@ -50,10 +52,9 @@ export default function RecipeDetail() {
 
     useEffect(() => {
         const fetchRecipeDetail = async () => {
-            // Check if this is a manual recipe
-            if (id.startsWith('manual-')) {
+            if (isLocalRecipeId(id)) {
                 try {
-                    const manualRecipes = JSON.parse(localStorage.getItem('manualRecipes') || '[]');
+                    const manualRecipes = getManualRecipes();
                     const recipe = manualRecipes.find(r => r.id === id);
 
                     if (recipe) {
@@ -110,8 +111,7 @@ export default function RecipeDetail() {
     const addToGroceryList = () => {
         if (!recipe) return;
 
-        // Get existing grocery list from localStorage
-        const existingList = JSON.parse(localStorage.getItem('groceryList') || '[]');
+        const existingList = getGroceryItems();
 
         // Transform Spoonacular ingredients to grocery list format
         const newItems = recipe.extendedIngredients.map((ingredient, idx) => ({
@@ -125,7 +125,7 @@ export default function RecipeDetail() {
 
 
         const updatedList = [...existingList, ...newItems];
-        localStorage.setItem('groceryList', JSON.stringify(updatedList));
+        saveGroceryItems(updatedList);
 
 
         alert(`Added all ${recipe.extendedIngredients.length} ingredients to your grocery list!`);
@@ -163,7 +163,7 @@ export default function RecipeDetail() {
 
 
         // Get existing pool from localStorage
-        const existingPool = JSON.parse(localStorage.getItem('recipePool') || '[]');
+        const existingPool = getRecipePool();
 
         // Check if already in pool
         const alreadyExists = existingPool.some(r => r.id === poolRecipe.id);
@@ -183,7 +183,7 @@ export default function RecipeDetail() {
         }
 
         const updatedPool = [...existingPool, poolRecipe];
-        localStorage.setItem('recipePool', JSON.stringify(updatedPool));
+        saveRecipePool(updatedPool);
 
         alert(`Added "${recipe.title}" to your meal plan pool!`);
         navigate('/meal-planner');
@@ -213,15 +213,15 @@ export default function RecipeDetail() {
             };
         })
         .filter(Boolean);
-    const isManualRecipe = recipe?.id?.startsWith('manual-');
+    const isManualRecipe = isLocalRecipeId(recipe?.id);
 
     const handleSaveManualRecipe = (updatedRecipe) => {
-        const manualRecipes = JSON.parse(localStorage.getItem('manualRecipes') || '[]');
+        const manualRecipes = getManualRecipes();
         const updatedManualRecipes = manualRecipes.map((manualRecipe) =>
             manualRecipe.id === updatedRecipe.id ? updatedRecipe : manualRecipe
         );
 
-        localStorage.setItem('manualRecipes', JSON.stringify(updatedManualRecipes));
+        saveManualRecipes(updatedManualRecipes);
         setRecipe(updatedRecipe);
         setIsEditModalOpen(false);
     };

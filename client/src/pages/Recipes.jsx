@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import AddRecipe from '../components/AddRecipe';
 import RecipeCard from '../components/RecipeCard';
+import { getManualRecipes, saveManualRecipes } from '../features/recipes/recipeStorage';
 
 
 const FILTER_TAGS = ['All', 'Vegetarian', 'Vegan', 'High Protein', 'Low Carb'];
@@ -49,8 +50,7 @@ export default function Recipes() {
     // Load manual recipes from localStorage on mount
     useEffect(() => {
         const loadManualRecipes = () => {
-            const saved = localStorage.getItem('manualRecipes');
-            setManualRecipes(saved ? JSON.parse(saved) : []);
+            setManualRecipes(getManualRecipes());
         };
 
         loadManualRecipes();
@@ -205,7 +205,7 @@ export default function Recipes() {
         const updatedManual = [...manualRecipes, newRecipe];
 
         setManualRecipes(updatedManual);
-        localStorage.setItem('manualRecipes', JSON.stringify(updatedManual));
+        saveManualRecipes(updatedManual);
     };
 
 

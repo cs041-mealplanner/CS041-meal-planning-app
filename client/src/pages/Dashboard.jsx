@@ -5,6 +5,7 @@ import DashboardCalendar from '../components/DashboardCalendar';
 import GroceryListWidget from '../components/GroceryListWidget';
 import MealCard from '../components/MealCard';
 import { loadMealPlanEntries } from '../features/mealPlanner/mealPlannerRepo';
+import { getManualRecipes, getRecipePool, normalizeRecipesForPlanner } from '../features/recipes/recipeStorage';
 
 
 export default function Dashboard() {
@@ -18,9 +19,11 @@ export default function Dashboard() {
 
     useEffect(() => {
         const loadRecipes = () => {
-            const poolRecipes = JSON.parse(localStorage.getItem('recipePool') || '[]');
-            const manualRecipes = JSON.parse(localStorage.getItem('manualRecipes') || '[]');
-            setAllRecipes([...poolRecipes, ...manualRecipes]);
+            const recipes = normalizeRecipesForPlanner([
+                ...getRecipePool(),
+                ...getManualRecipes(),
+            ]);
+            setAllRecipes(recipes);
         };
         loadRecipes();
     }, []);

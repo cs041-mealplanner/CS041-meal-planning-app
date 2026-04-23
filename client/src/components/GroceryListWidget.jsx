@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getGroceryItems, getGroceryStorageKey, saveGroceryItems } from '../features/grocery/groceryStorage';
 
 
 const DEFAULT_VISIBLE_ITEMS = 10;
@@ -19,16 +20,14 @@ export default function GroceryListWidget() {
 
     // load grocery items from localStorage
     const [items, setItems] = useState(() => {
-        const saved = localStorage.getItem('groceryList');
-        return saved ? sortGroceryItems(JSON.parse(saved)) : [];
+        return sortGroceryItems(getGroceryItems());
     });
 
 
     // Reload data when component mounts or becomes visible
     useEffect(() => {
         const loadItems = () => {
-            const saved = localStorage.getItem('groceryList');
-            setItems(saved ? sortGroceryItems(JSON.parse(saved)) : []);
+            setItems(sortGroceryItems(getGroceryItems()));
         };
 
         // Load immediately
@@ -42,7 +41,7 @@ export default function GroceryListWidget() {
 
         // Reload when storage changes in another tab
         const handleStorage = (e) => {
-            if (e.key === 'groceryList') loadItems();
+            if (e.key === getGroceryStorageKey()) loadItems();
         };
         window.addEventListener('storage', handleStorage);
 
@@ -59,7 +58,7 @@ export default function GroceryListWidget() {
         ));
 
         setItems(updatedItems);
-        localStorage.setItem('groceryList', JSON.stringify(updatedItems));
+        saveGroceryItems(updatedItems);
     };
 
     const clearCheckedItems = () => {
@@ -69,7 +68,7 @@ export default function GroceryListWidget() {
 
         const updatedItems = items.filter(item => !item.checked);
         setItems(updatedItems);
-        localStorage.setItem('groceryList', JSON.stringify(updatedItems));
+        saveGroceryItems(updatedItems);
         setVisibleCount(DEFAULT_VISIBLE_ITEMS);
     };
 

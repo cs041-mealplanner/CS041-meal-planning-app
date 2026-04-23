@@ -1,4 +1,5 @@
 // repo for MealPlanner page
+import { getMigratedScopedJson, setScopedJson } from "../../lib/userStorage";
 
 const STORAGE_KEY = "mealPlanEntries";
 
@@ -21,18 +22,12 @@ function isValidEntry(e) {
 }
 
 export function loadMealPlanEntries() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter(isValidEntry);
-    } catch {
-        return [];
-    }
+    const parsed = getMigratedScopedJson(STORAGE_KEY, []);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isValidEntry);
 }
 
 export function saveMealPlanEntries(entries) {
     // assume caller sends an array of valid entries
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    setScopedJson(STORAGE_KEY, entries);
 }

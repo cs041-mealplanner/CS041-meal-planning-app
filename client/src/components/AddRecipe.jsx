@@ -104,7 +104,7 @@ export default function AddRecipe({
         );
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
 
@@ -153,7 +153,12 @@ export default function AddRecipe({
         };
 
 
-        onSave(manualRecipe);
+        try {
+            await onSave(manualRecipe);
+        } catch (error) {
+            alert(error.message || 'Unable to save recipe right now.');
+            return;
+        }
 
 
         // Reset form

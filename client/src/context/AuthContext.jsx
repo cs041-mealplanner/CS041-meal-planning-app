@@ -6,7 +6,8 @@ import { AuthContext } from "./useAuth";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,7 +24,7 @@ export function AuthProvider({ children }) {
         }
       } finally {
         if (isMounted) {
-          setIsLoading(false);
+          setIsAuthLoading(false);
         }
       }
     }
@@ -36,16 +37,39 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isAuthLoading) return;
 
-    if (!user) {
-      clearCurrentUserStorageScope();
-      return;
+    let isMounted = true;
+
+    async function bootstrapUserData() {
+      if (!user) {
+        clearCurrentUserStorageScope();
+        if (isMounted) {
+          setIsDataLoading(false);
+        }
+        return;
+      }
+
+      setCurrentUserStorageScope(user);
+
+      try {
+        await ensureStarterRecipesSeeded();
+      } catch (error) {
+        console.error("Failed to seed starter recipes:", error);
+      } finally {
+        if (isMounted) {
+          setIsDataLoading(false);
+        }
+      }
     }
 
-    setCurrentUserStorageScope(user);
-    ensureStarterRecipesSeeded();
-  }, [isLoading, user]);
+    setIsDataLoading(true);
+    bootstrapUserData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthLoading, user]);
 
   async function logout() {
     await amplifySignOut();
@@ -57,7 +81,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         isAuthenticated: Boolean(user),
-        isLoading,
+        isLoading: isAuthLoading || isDataLoading,
         setUser,
         logout,
       }}

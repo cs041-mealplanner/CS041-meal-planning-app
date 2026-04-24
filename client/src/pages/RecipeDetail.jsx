@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddRecipe from '../components/AddRecipe';
-import { getGroceryItems, saveGroceryItems } from '../features/grocery/groceryStorage';
-import { getManualRecipes, getRecipePool, isLocalRecipeId, saveManualRecipes, saveRecipePool } from '../features/recipes/recipeStorage';
+import { addGroceryItems } from '../features/grocery/groceryStorage';
+import { getRecipeById, isPersistedRecipeId, saveSpoonacularRecipe, updateRecipe } from '../features/recipes/recipeStorage';
 
 
 const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
@@ -52,13 +52,12 @@ export default function RecipeDetail() {
 
     useEffect(() => {
         const fetchRecipeDetail = async () => {
-            if (isLocalRecipeId(id)) {
+            if (isPersistedRecipeId(id)) {
                 try {
-                    const manualRecipes = getManualRecipes();
-                    const recipe = manualRecipes.find(r => r.id === id);
+                    const persistedRecipe = await getRecipeById(id);
 
-                    if (recipe) {
-                        setRecipe(recipe);
+                    if (persistedRecipe) {
+                        setRecipe(persistedRecipe);
                     } else {
                         setError('Recipe not found');
                     }
@@ -108,14 +107,10 @@ export default function RecipeDetail() {
     }, [id]);
 
 
-    const addToGroceryList = () => {
+    const addToGroceryList = async () => {
         if (!recipe) return;
 
-        const existingList = getGroceryItems();
-
-        // Transform Spoonacular ingredients to grocery list format
-        const newItems = recipe.extendedIngredients.map((ingredient, idx) => ({
-            id: Date.now() + Math.random() + idx,
+        const newItems = recipe.extendedIngredients.map((ingredient) => ({
             name: ingredient.name,
             quantity: `${ingredient.amount} ${ingredient.unit}`,
             category: ingredient.aisle || 'Pantry',
@@ -123,70 +118,39 @@ export default function RecipeDetail() {
             checked: false
         }));
 
-
-        const updatedList = [...existingList, ...newItems];
-        saveGroceryItems(updatedList);
-
-
-        alert(`Added all ${recipe.extendedIngredients.length} ingredients to your grocery list!`);
-        navigate('/grocery');
+        try {
+            await addGroceryItems(newItems);
+            alert(`Added all ${recipe.extendedIngredients.length} ingredients to your grocery list!`);
+            navigate('/grocery');
+        } catch (error) {
+            console.error('Failed to add ingredients to grocery list:', error);
+            alert(error.message || 'Unable to add these ingredients right now.');
+        }
     };
 
 
-    const addToMealPlan = () => {
+    const addToMealPlan = async () => {
         if (!recipe) return;
 
-
-        // Transform Spoonacular recipe
-        const poolRecipe = {
-            id: `pool-${recipe.id}`,
-            name: recipe.title,
-            image: recipe.image,
-            servings: recipe.servings,
-            prep_time: recipe.preparationMinutes || 0,
-            cook_time: recipe.cookingMinutes || 0,
-            meal: 'any',          // Spoonacular doesn't categorize by meal type
-            nutrition: {
-                calories: getNutritionAmount(recipe, 'Calories') ?? 0,
-                protein: getNutritionAmount(recipe, 'Protein') ?? 0,
-                carbs: getNutritionAmount(recipe, 'Carbohydrates') ?? 0,
-                fat: getNutritionAmount(recipe, 'Fat') ?? 0,
-                fiber: getNutritionAmount(recipe, 'Fiber') ?? 0,
-                sodium: getNutritionAmount(recipe, 'Sodium') ?? 0
-            },
-            ingredients: recipe.extendedIngredients.map(ing => ({
-                item: ing.name,
-                amount: `${ing.amount} ${ing.unit}`,
-                category: ing.aisle || 'Pantry'
-            }))
-        };
-
-
-        // Get existing pool from localStorage
-        const existingPool = getRecipePool();
-
-        // Check if already in pool
-        const alreadyExists = existingPool.some(r => r.id === poolRecipe.id);
-
-
-        if (alreadyExists) {
-            alert('This recipe is already in your meal plan pool!');
+        if (isPersistedRecipeId(recipe.id)) {
             navigate('/meal-planner');
             return;
         }
 
-        // Add to pool (cap at 20 recipes max)
-        if (existingPool.length >= 20) {
-            alert('Pool is full (max 20 recipes). Remove a recipe to add more.');
+        try {
+            const { created } = await saveSpoonacularRecipe(recipe);
+
+            if (created) {
+                alert(`Added "${recipe.title}" to your recipes and meal planner!`);
+            } else {
+                alert('This recipe is already available in your meal planner.');
+            }
+
             navigate('/meal-planner');
-            return;
+        } catch (error) {
+            console.error('Failed to save recipe for meal planner:', error);
+            alert(error.message || 'Unable to save this recipe right now.');
         }
-
-        const updatedPool = [...existingPool, poolRecipe];
-        saveRecipePool(updatedPool);
-
-        alert(`Added "${recipe.title}" to your meal plan pool!`);
-        navigate('/meal-planner');
     };
 
 
@@ -213,16 +177,11 @@ export default function RecipeDetail() {
             };
         })
         .filter(Boolean);
-    const isManualRecipe = isLocalRecipeId(recipe?.id);
+    const isManualRecipe = typeof recipe?.id === 'string' && recipe.id.startsWith('manual-');
 
-    const handleSaveManualRecipe = (updatedRecipe) => {
-        const manualRecipes = getManualRecipes();
-        const updatedManualRecipes = manualRecipes.map((manualRecipe) =>
-            manualRecipe.id === updatedRecipe.id ? updatedRecipe : manualRecipe
-        );
-
-        saveManualRecipes(updatedManualRecipes);
-        setRecipe(updatedRecipe);
+    const handleSaveManualRecipe = async (updatedRecipe) => {
+        const savedRecipe = await updateRecipe(updatedRecipe);
+        setRecipe(savedRecipe);
         setIsEditModalOpen(false);
     };
 

@@ -5,7 +5,7 @@ import DashboardCalendar from '../components/DashboardCalendar';
 import GroceryListWidget from '../components/GroceryListWidget';
 import MealCard from '../components/MealCard';
 import { loadMealPlanEntries } from '../features/mealPlanner/mealPlannerRepo';
-import { getManualRecipes, getRecipePool, normalizeRecipesForPlanner } from '../features/recipes/recipeStorage';
+import { listRecipes, normalizeRecipesForPlanner } from '../features/recipes/recipeStorage';
 
 
 export default function Dashboard() {
@@ -13,26 +13,45 @@ export default function Dashboard() {
     const today = dayjs().format('YYYY-MM-DD');
 
 
-    // Load recipes from localStorage
     const [allRecipes, setAllRecipes] = useState([]);
+    const [mealPlanEntries, setMealPlanEntries] = useState([]);
+    const [isLoadingData, setIsLoadingData] = useState(true);
 
 
     useEffect(() => {
-        const loadRecipes = () => {
-            const recipes = normalizeRecipesForPlanner([
-                ...getRecipePool(),
-                ...getManualRecipes(),
-            ]);
-            setAllRecipes(recipes);
+        let isMounted = true;
+
+        async function loadDashboardData() {
+            try {
+                const [recipes, entries] = await Promise.all([
+                    listRecipes(),
+                    loadMealPlanEntries(),
+                ]);
+
+                if (!isMounted) return;
+
+                setAllRecipes(normalizeRecipesForPlanner(recipes));
+                setMealPlanEntries(entries);
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            } finally {
+                if (isMounted) {
+                    setIsLoadingData(false);
+                }
+            }
+        }
+
+        loadDashboardData();
+
+        return () => {
+            isMounted = false;
         };
-        loadRecipes();
     }, []);
 
 
     // Load today's meals
     const todayMeals = useMemo(() => {
-        const allEntries = loadMealPlanEntries();
-        const todayEntries = allEntries.filter(entry => entry.date === today);
+        const todayEntries = mealPlanEntries.filter(entry => entry.date === today);
 
 
         // Sort by slot (breakfast, lunch, dinner)
@@ -44,7 +63,7 @@ export default function Dashboard() {
         return todayEntries
             .map(entry => allRecipes.find(d => d.id === entry.dishId))
             .filter(Boolean);   // Remove any null/undefined
-    }, [today, allRecipes]);
+    }, [allRecipes, mealPlanEntries, today]);
 
 
     return (
@@ -71,7 +90,11 @@ export default function Dashboard() {
                         Meals for Today
                     </h2>
 
-                    {todayMeals.length === 0 ? (
+                    {isLoadingData ? (
+                        <div className="bg-card rounded-xl shadow-md p-12 text-center text-muted">
+                            Loading today's meals...
+                        </div>
+                    ) : todayMeals.length === 0 ? (
                         // Empty State
                         <div className="bg-card rounded-xl shadow-md p-12 text-center">
 
@@ -119,7 +142,7 @@ export default function Dashboard() {
 
                 {/* Weekly Calendar weekly */}
                 <section>
-                    <DashboardCalendar allRecipes={allRecipes} />
+                    <DashboardCalendar allRecipes={allRecipes} mealPlanEntries={mealPlanEntries} />
                 </section>
 
 

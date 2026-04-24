@@ -1,8 +1,10 @@
-import { getMigratedScopedJson, setScopedJson } from "../../lib/userStorage";
+import { getDataModel, MODEL_AUTH_OPTIONS } from "../../lib/amplifyDataClient";
 
-const MANUAL_RECIPES_KEY = "manualRecipes";
-const RECIPE_POOL_KEY = "recipePool";
-const STARTER_RECIPES_SEEDED_KEY = "starterRecipesSeeded";
+const RECIPE_SOURCE = {
+  STARTER: "starter",
+  MANUAL: "manual",
+  SPOONACULAR: "spoonacular",
+};
 
 const STARTER_RECIPES = [
   {
@@ -29,6 +31,7 @@ const STARTER_RECIPES = [
       { name: "chia seeds", amount: 1, unit: "tbsp", aisle: "Pantry" },
       { name: "mixed berries", amount: 0.5, unit: "cup", aisle: "Produce" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-eggs-toast",
@@ -53,6 +56,7 @@ const STARTER_RECIPES = [
       { name: "bread", amount: 2, unit: "slices", aisle: "Pantry" },
       { name: "butter", amount: 1, unit: "tsp", aisle: "Dairy" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-greek-yogurt-parfait",
@@ -78,6 +82,7 @@ const STARTER_RECIPES = [
       { name: "strawberries", amount: 0.5, unit: "cup", aisle: "Produce" },
       { name: "honey", amount: 1, unit: "tbsp", aisle: "Pantry" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-turkey-sandwich",
@@ -103,6 +108,7 @@ const STARTER_RECIPES = [
       { name: "lettuce", amount: 2, unit: "leaves", aisle: "Produce" },
       { name: "tomato", amount: 4, unit: "slices", aisle: "Produce" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-chicken-rice-bowl",
@@ -128,6 +134,7 @@ const STARTER_RECIPES = [
       { name: "broccoli", amount: 1, unit: "cup", aisle: "Produce" },
       { name: "soy sauce", amount: 1, unit: "tbsp", aisle: "Pantry" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-caesar-salad",
@@ -153,6 +160,7 @@ const STARTER_RECIPES = [
       { name: "parmesan", amount: 0.25, unit: "cup", aisle: "Dairy" },
       { name: "caesar dressing", amount: 3, unit: "tbsp", aisle: "Pantry" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-veggie-stir-fry",
@@ -178,6 +186,7 @@ const STARTER_RECIPES = [
       { name: "broccoli", amount: 1, unit: "cup", aisle: "Produce" },
       { name: "brown rice", amount: 1, unit: "cup", aisle: "Pasta and Rice" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
   {
     id: "starter-pasta-marinara",
@@ -203,6 +212,7 @@ const STARTER_RECIPES = [
       { name: "olive oil", amount: 1, unit: "tbsp", aisle: "Pantry" },
       { name: "garlic", amount: 2, unit: "cloves", aisle: "Produce" },
     ],
+    source: RECIPE_SOURCE.STARTER,
   },
 ];
 
@@ -212,6 +222,56 @@ function cloneStarterRecipes() {
 
 function ensureArray(value) {
   return Array.isArray(value) ? value : [];
+}
+
+function getRecipeModel() {
+  return getDataModel("Recipe");
+}
+
+async function listRecipeRecords() {
+  const model = getRecipeModel();
+  if (!model) return [];
+
+  const { data } = await model.list({
+    ...MODEL_AUTH_OPTIONS,
+    limit: 1000,
+  });
+
+  return ensureArray(data);
+}
+
+function toManualRecipePayload(recipe) {
+  return {
+    id: recipe.id || `manual-${Date.now()}`,
+    title: recipe.title,
+    image: recipe.image,
+    servings: recipe.servings,
+    preparationMinutes: recipe.preparationMinutes,
+    cookingMinutes: recipe.cookingMinutes,
+    nutrition: recipe.nutrition,
+    extendedIngredients: recipe.extendedIngredients,
+    tags: ensureArray(recipe.tags),
+    source: recipe.source || RECIPE_SOURCE.MANUAL,
+  };
+}
+
+export function getPersistedSpoonacularRecipeId(recipeId) {
+  return `spoonacular-${recipeId}`;
+}
+
+function toSpoonacularRecipePayload(recipe) {
+  return {
+    id: getPersistedSpoonacularRecipeId(recipe.id),
+    title: recipe.title,
+    image: recipe.image,
+    servings: recipe.servings ?? 1,
+    preparationMinutes: recipe.preparationMinutes || 0,
+    cookingMinutes: recipe.cookingMinutes || 0,
+    nutrition: recipe.nutrition,
+    extendedIngredients: ensureArray(recipe.extendedIngredients),
+    tags: ensureArray(recipe.tags),
+    source: RECIPE_SOURCE.SPOONACULAR,
+  };
 }
 
 function getNutrientAmount(recipe, nutrientName) {
@@ -250,20 +310,99 @@ function normalizeIngredients(recipe) {
   }));
 }
 
-export function getManualRecipes() {
-  return ensureArray(getMigratedScopedJson(MANUAL_RECIPES_KEY, []));
+export async function listRecipes() {
+  return listRecipeRecords();
 }
 
-export function saveManualRecipes(recipes) {
-  setScopedJson(MANUAL_RECIPES_KEY, ensureArray(recipes));
+export async function getRecipeById(recipeId) {
+  const model = getRecipeModel();
+  if (!model || !recipeId) return null;
+
+  const { data } = await model.get({ id: recipeId }, MODEL_AUTH_OPTIONS);
+  return data ?? null;
 }
 
-export function getRecipePool() {
-  return ensureArray(getMigratedScopedJson(RECIPE_POOL_KEY, []));
+export async function createManualRecipe(recipe) {
+  const model = getRecipeModel();
+  if (!model) {
+    throw new Error("Recipe persistence is not ready yet. Sync Amplify outputs first.");
+  }
+
+  const payload = toManualRecipePayload(recipe);
+  const { data, errors } = await model.create(payload, MODEL_AUTH_OPTIONS);
+
+  if (errors?.length) {
+    throw new Error(errors[0].message || "Failed to create recipe.");
+  }
+
+  return data ?? payload;
 }
 
-export function saveRecipePool(recipes) {
-  setScopedJson(RECIPE_POOL_KEY, ensureArray(recipes));
+export async function updateRecipe(recipe) {
+  const model = getRecipeModel();
+  if (!model) {
+    throw new Error("Recipe persistence is not ready yet. Sync Amplify outputs first.");
+  }
+
+  const payload = toManualRecipePayload(recipe);
+  const { data, errors } = await model.update(payload, MODEL_AUTH_OPTIONS);
+
+  if (errors?.length) {
+    throw new Error(errors[0].message || "Failed to update recipe.");
+  }
+
+  return data ?? payload;
+}
+
+export async function saveSpoonacularRecipe(recipe) {
+  const model = getRecipeModel();
+  if (!model) {
+    throw new Error("Recipe persistence is not ready yet. Sync Amplify outputs first.");
+  }
+
+  const payload = toSpoonacularRecipePayload(recipe);
+  const existingRecipe = await getRecipeById(payload.id);
+
+  if (existingRecipe) {
+    return {
+      recipe: existingRecipe,
+      created: false,
+    };
+  }
+
+  const { data, errors } = await model.create(payload, MODEL_AUTH_OPTIONS);
+
+  if (errors?.length) {
+    throw new Error(errors[0].message || "Failed to save recipe.");
+  }
+
+  return {
+    recipe: data ?? payload,
+    created: true,
+  };
+}
+
+export async function ensureStarterRecipesSeeded() {
+  const model = getRecipeModel();
+  if (!model) return false;
+
+  const existingRecipes = await listRecipeRecords();
+  const existingRecipeIds = new Set(existingRecipes.map((recipe) => recipe.id));
+  const missingStarterRecipes = cloneStarterRecipes().filter(
+    (recipe) => !existingRecipeIds.has(recipe.id)
+  );
+
+  if (missingStarterRecipes.length === 0) return false;
+
+  for (const recipe of missingStarterRecipes) {
+    const { errors } = await model.create(recipe, MODEL_AUTH_OPTIONS);
+
+    if (errors?.length) {
+      throw new Error(errors[0].message || "Failed to seed starter recipes.");
+    }
+  }
+
+  return true;
 }
 
 export function normalizeRecipeForPlanner(recipe) {
@@ -294,59 +433,11 @@ export function normalizeRecipesForPlanner(recipes) {
   return ensureArray(recipes).map(normalizeRecipeForPlanner);
 }
 
-export function isLocalRecipeId(recipeId) {
-  return typeof recipeId === "string" && (recipeId.startsWith("manual-") || recipeId.startsWith("starter-"));
-}
-
-function migrateStarterRecipeImages(recipes) {
-  const starterImageMap = new Map(
-    STARTER_RECIPES.map((recipe) => [recipe.id, recipe.image])
+export function isPersistedRecipeId(recipeId) {
+  return (
+    typeof recipeId === "string" &&
+    (recipeId.startsWith("manual-") ||
+      recipeId.startsWith("starter-") ||
+      recipeId.startsWith("spoonacular-"))
   );
-
-  let changed = false;
-  const nextRecipes = ensureArray(recipes).map((recipe) => {
-    if (!starterImageMap.has(recipe.id)) return recipe;
-
-    const nextImage = starterImageMap.get(recipe.id);
-    const currentImage = recipe?.image;
-    const shouldUpgradeImage =
-      typeof currentImage !== "string" ||
-      !currentImage.trim() ||
-      currentImage.includes("placehold.co");
-
-    if (!shouldUpgradeImage || currentImage === nextImage) {
-      return recipe;
-    }
-
-    changed = true;
-    return {
-      ...recipe,
-      image: nextImage,
-    };
-  });
-
-  return { changed, recipes: nextRecipes };
-}
-
-export function ensureStarterRecipesSeeded() {
-  const migratedManualRecipes = migrateStarterRecipeImages(getManualRecipes());
-  if (migratedManualRecipes.changed) {
-    saveManualRecipes(migratedManualRecipes.recipes);
-  }
-
-  const hasSeeded = Boolean(getMigratedScopedJson(STARTER_RECIPES_SEEDED_KEY, false));
-
-  if (hasSeeded) return false;
-
-  const manualRecipes = migratedManualRecipes.recipes;
-  const recipePool = getRecipePool();
-
-  if (manualRecipes.length > 0 || recipePool.length > 0) {
-    setScopedJson(STARTER_RECIPES_SEEDED_KEY, true);
-    return false;
-  }
-
-  saveManualRecipes(cloneStarterRecipes());
-  setScopedJson(STARTER_RECIPES_SEEDED_KEY, true);
-  return true;
 }

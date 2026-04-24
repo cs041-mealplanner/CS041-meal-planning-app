@@ -387,13 +387,20 @@ export async function ensureStarterRecipesSeeded() {
   if (!model) return false;
 
   const existingRecipes = await listRecipeRecords();
-  if (existingRecipes.length > 0) return false;
-
-  const starterRecipes = cloneStarterRecipes();
-
-  await Promise.all(
-    starterRecipes.map((recipe) => model.create(recipe, MODEL_AUTH_OPTIONS))
+  const existingRecipeIds = new Set(existingRecipes.map((recipe) => recipe.id));
+  const missingStarterRecipes = cloneStarterRecipes().filter(
+    (recipe) => !existingRecipeIds.has(recipe.id)
   );
+
+  if (missingStarterRecipes.length === 0) return false;
+
+  for (const recipe of missingStarterRecipes) {
+    const { errors } = await model.create(recipe, MODEL_AUTH_OPTIONS);
+
+    if (errors?.length) {
+      throw new Error(errors[0].message || "Failed to seed starter recipes.");
+    }
+  }
 
   return true;
 }

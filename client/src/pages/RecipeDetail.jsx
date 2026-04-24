@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddRecipe from '../components/AddRecipe';
-import { getGroceryItems, saveGroceryItems } from '../features/grocery/groceryStorage';
+import { addGroceryItems } from '../features/grocery/groceryStorage';
 import { getRecipeById, isPersistedRecipeId, saveSpoonacularRecipe, updateRecipe } from '../features/recipes/recipeStorage';
 
 
@@ -107,14 +107,10 @@ export default function RecipeDetail() {
     }, [id]);
 
 
-    const addToGroceryList = () => {
+    const addToGroceryList = async () => {
         if (!recipe) return;
 
-        const existingList = getGroceryItems();
-
-        // Transform Spoonacular ingredients to grocery list format
-        const newItems = recipe.extendedIngredients.map((ingredient, idx) => ({
-            id: Date.now() + Math.random() + idx,
+        const newItems = recipe.extendedIngredients.map((ingredient) => ({
             name: ingredient.name,
             quantity: `${ingredient.amount} ${ingredient.unit}`,
             category: ingredient.aisle || 'Pantry',
@@ -122,13 +118,14 @@ export default function RecipeDetail() {
             checked: false
         }));
 
-
-        const updatedList = [...existingList, ...newItems];
-        saveGroceryItems(updatedList);
-
-
-        alert(`Added all ${recipe.extendedIngredients.length} ingredients to your grocery list!`);
-        navigate('/grocery');
+        try {
+            await addGroceryItems(newItems);
+            alert(`Added all ${recipe.extendedIngredients.length} ingredients to your grocery list!`);
+            navigate('/grocery');
+        } catch (error) {
+            console.error('Failed to add ingredients to grocery list:', error);
+            alert(error.message || 'Unable to add these ingredients right now.');
+        }
     };
 
 

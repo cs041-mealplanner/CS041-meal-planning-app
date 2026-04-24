@@ -6,12 +6,18 @@ import { useMealPlanner } from "../features/mealPlanner/useMealPlanner";
 import { listRecipes, normalizeRecipesForPlanner } from "../features/recipes/recipeStorage";
 
 
-function AddMealCard({ label, onClick }) {
+function AddMealCard({ label, onClick, disabled = false }) {
     return (
         <button
             type="button"
             onClick={onClick}
-            className="group flex h-[19.5rem] w-full flex-col items-center justify-center rounded-2xl border border-stone-300 bg-card px-6 py-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
+            disabled={disabled}
+            className={[
+                "group flex h-[19.5rem] w-full flex-col items-center justify-center rounded-2xl border border-stone-300 bg-card px-6 py-6 shadow-sm transition duration-200",
+                disabled
+                    ? "cursor-not-allowed opacity-70"
+                    : "hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg",
+            ].join(" ")}
         >
             <div className="flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-xl bg-subtle transition duration-200 group-hover:bg-white">
                 <span className="text-4xl font-bold text-muted">+</span>
@@ -198,6 +204,7 @@ export default function MealPlanner() {
 
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerSlot, setPickerSlot] = useState(null);
+    const isPlannerBusy = isLoading || isLoadingRecipes;
 
 
     const dishById = useMemo(() => {
@@ -286,6 +293,7 @@ export default function MealPlanner() {
 
 
     function openPicker(slot) {
+        if (isPlannerBusy) return;
         setPickerSlot(slot);
         setPickerOpen(true);
     }
@@ -410,6 +418,7 @@ export default function MealPlanner() {
                                         key={slot}
                                         label={slot[0].toUpperCase() + slot.slice(1)}
                                         onClick={() => openPicker(slot)}
+                                        disabled={isPlannerBusy}
                                     />
                                 );
                             }
@@ -429,7 +438,8 @@ export default function MealPlanner() {
                                             <button
                                                 type="button"
                                                 onClick={() => openPicker(slot)}
-                                                className="text-xs font-semibold text-primary transition hover:text-primaryDark hover:underline"
+                                                disabled={isPlannerBusy}
+                                                className="text-xs font-semibold text-primary transition hover:text-primaryDark hover:underline disabled:cursor-not-allowed disabled:opacity-60"
                                             >
                                                 Replace
                                             </button>
@@ -437,7 +447,8 @@ export default function MealPlanner() {
                                             <button
                                                 type="button"
                                                 onClick={() => removeMeal(selectedYmd, slot)}
-                                                className="text-xs font-semibold text-red-600 transition hover:text-red-700 hover:underline"
+                                                disabled={isPlannerBusy}
+                                                className="text-xs font-semibold text-red-600 transition hover:text-red-700 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
                                             >
                                                 Remove
                                             </button>
@@ -480,13 +491,13 @@ export default function MealPlanner() {
                         <button
                             type="button"
                             onClick={save}
-                            disabled={isSaving || !isDirty}
+                            disabled={isPlannerBusy || isSaving || !isDirty}
                             className={[
                                 "rounded-xl border px-6 py-3.5 text-base font-semibold transition duration-200 hover:-translate-y-0.5 hover:shadow-md",
                                 isDirty
                                     ? "border-primary bg-primary text-white hover:bg-primaryDark"
                                     : "border-primary bg-white text-primary hover:bg-stone-50",
-                                isSaving || !isDirty ? "cursor-default" : "",
+                                isPlannerBusy || isSaving || !isDirty ? "cursor-default" : "",
                             ].join(" ")}
                             style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
                         >

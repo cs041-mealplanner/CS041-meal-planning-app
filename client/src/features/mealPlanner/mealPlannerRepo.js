@@ -47,6 +47,16 @@ function sortEntries(entries) {
   });
 }
 
+async function executeModelOperation(operationPromise, fallbackMessage) {
+  const result = await operationPromise;
+
+  if (result?.errors?.length) {
+    throw new Error(result.errors[0].message || fallbackMessage);
+  }
+
+  return result?.data ?? null;
+}
+
 export async function loadMealPlanEntries() {
   const model = getMealPlanEntryModel();
   if (!model) return [];
@@ -79,7 +89,12 @@ export async function saveMealPlanEntries(entries, previousEntries = []) {
 
   for (const [entryId, prevEntry] of prevMap.entries()) {
     if (!nextMap.has(entryId)) {
-      operations.push(model.delete({ id: prevEntry.id }, MODEL_AUTH_OPTIONS));
+      operations.push(
+        executeModelOperation(
+          model.delete({ id: prevEntry.id }, MODEL_AUTH_OPTIONS),
+          "Failed to remove meal plan entry."
+        )
+      );
     }
   }
 
@@ -87,12 +102,22 @@ export async function saveMealPlanEntries(entries, previousEntries = []) {
     const prevEntry = prevMap.get(entryId);
 
     if (!prevEntry) {
-      operations.push(model.create(nextEntry, MODEL_AUTH_OPTIONS));
+      operations.push(
+        executeModelOperation(
+          model.create(nextEntry, MODEL_AUTH_OPTIONS),
+          "Failed to create meal plan entry."
+        )
+      );
       continue;
     }
 
     if (prevEntry.recipeId !== nextEntry.recipeId) {
-      operations.push(model.update(nextEntry, MODEL_AUTH_OPTIONS));
+      operations.push(
+        executeModelOperation(
+          model.update(nextEntry, MODEL_AUTH_OPTIONS),
+          "Failed to update meal plan entry."
+        )
+      );
     }
   }
 

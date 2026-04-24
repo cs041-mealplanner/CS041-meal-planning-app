@@ -1,120 +1,131 @@
-
 import { useEffect, useState } from 'react';
 import { getGroceryItems, saveGroceryItems } from '../features/grocery/groceryStorage';
-
 
 const sortGroceryItems = (items) => {
     return [...items].sort((a, b) => Number(a.checked) - Number(b.checked));
 };
 
-
 function GroceryList() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
     const [newItem, setNewItem] = useState({ name: '', quantity: '', category: 'Produce' });
+    const [groceryItems, setGroceryItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-
-    // load items from localStorage and start with empty list
-    const loadGroceryItems = () => {
-        return sortGroceryItems(getGroceryItems());
-    };
-
-
-    const [groceryItems, setGroceryItems] = useState(loadGroceryItems);
-
-    // save to localStorage whenever items change
     useEffect(() => {
-        saveGroceryItems(groceryItems);
-    }, [groceryItems]);
+        let isMounted = true;
 
+        async function loadItems() {
+            try {
+                const items = await getGroceryItems();
+
+                if (isMounted) {
+                    setGroceryItems(sortGroceryItems(items));
+                }
+            } catch (error) {
+                console.error('Failed to load grocery items:', error);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        loadItems();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const defaultCategories = ['Produce', 'Meat & Poultry', 'Pantry', 'Spices & Seasonings', 'Dairy'];
 
-    const toggleCheck = (id) => {
-        setGroceryItems(items =>
-            sortGroceryItems(items.map(item =>
-                item.id === id ? { ...item, checked: !item.checked } : item
-            ))
-        );
+    const persistItems = async (nextItems) => {
+        const previousItems = groceryItems;
+        setGroceryItems(nextItems);
+
+        try {
+            await saveGroceryItems(nextItems, previousItems);
+        } catch (error) {
+            console.error('Failed to save grocery items:', error);
+            setGroceryItems(previousItems);
+            alert(error.message || 'We could not save your grocery list right now.');
+        }
     };
 
+    const toggleCheck = async (id) => {
+        const nextItems = sortGroceryItems(groceryItems.map((item) =>
+            item.id === id ? { ...item, checked: !item.checked } : item
+        ));
 
-    const removeItem = (id) => {
-        setGroceryItems(items => items.filter(item => item.id !== id));
+        await persistItems(nextItems);
     };
 
+    const removeItem = async (id) => {
+        const nextItems = groceryItems.filter((item) => item.id !== id);
+        await persistItems(nextItems);
+    };
 
-    const clearChecked = () => {
+    const clearChecked = async () => {
         if (!window.confirm('Are you sure? (Deleting checked items)')) {
             return;
         }
 
-        setGroceryItems(items => items.filter(item => !item.checked));
+        const nextItems = groceryItems.filter((item) => !item.checked);
+        await persistItems(nextItems);
     };
 
-    const addNewGroceryItem = () => {
+    const addNewGroceryItem = async () => {
         if (newItem.name.trim() && newItem.quantity.trim()) {
-            const newId = groceryItems.length > 0
-                ? Math.max(...groceryItems.map(i => i.id)) + 1
-                : 1;
-
-            setGroceryItems(sortGroceryItems([...groceryItems, {
-                id: newId,
+            const nextItems = sortGroceryItems([...groceryItems, {
+                id: `grocery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                 name: newItem.name,
                 source: 'Manual',
                 quantity: newItem.quantity,
                 category: newItem.category,
                 checked: false
-            }]));
+            }]);
 
+            await persistItems(nextItems);
             setNewItem({ name: '', quantity: '', category: 'Produce' });
             setShowAddForm(false);
         }
     };
 
-    // WILL ADD MORE
     const shareList = () => {
-        // MINT TO DO : implement share functionality (talk with the team--share to what/where)
         alert('Share functionality coming soon!');
     };
 
-    const checkAllInCategory = (category) => {
-        setGroceryItems(items =>
-            sortGroceryItems(items.map(item =>
-                item.category === category ? { ...item, checked: true } : item
-            ))
-        );
+    const checkAllInCategory = async (category) => {
+        const nextItems = sortGroceryItems(groceryItems.map((item) =>
+            item.category === category ? { ...item, checked: true } : item
+        ));
+
+        await persistItems(nextItems);
     };
 
-
-    const filteredItems = groceryItems.filter(item =>
+    const filteredItems = groceryItems.filter((item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const categories = Array.from(new Set([
         ...defaultCategories,
         ...filteredItems
-            .map(item => item.category)
+            .map((item) => item.category)
             .filter(Boolean)
     ]));
 
-
     const getItemsByCategory = (category) => {
-        return filteredItems.filter(item => item.category === category);
+        return filteredItems.filter((item) => item.category === category);
     };
 
-
     const totalItems = groceryItems.length;
-    const checkedItems = groceryItems.filter(item => item.checked).length;
+    const checkedItems = groceryItems.filter((item) => item.checked).length;
     const progressPercent = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
-
 
     return (
         <div className="min-h-screen bg-[#E8E3D8]">
-            {/* Main Content */}
             <div className="max-w-3xl mx-auto px-4 py-8">
-
-                {/* Header Card */}
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <div className="flex items-center justify-between mb-4">
                         <h1 className="text-2xl font-bold text-gray-800">My Grocery List</h1>
@@ -136,8 +147,6 @@ function GroceryList() {
                         </div>
                     </div>
 
-
-                    {/* Progress Bar */}
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-sm text-gray-600">Shopping progress</span>
@@ -152,8 +161,6 @@ function GroceryList() {
                     </div>
                 </div>
 
-
-                {/* Search Bar */}
                 <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
                     <input
                         type="text"
@@ -164,18 +171,20 @@ function GroceryList() {
                     />
                 </div>
 
-
-                {/* Items List by Category */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                    {totalItems === 0 ? (
+                    {isLoading ? (
+                        <div className="text-center py-12 text-gray-500">
+                            Loading your grocery list...
+                        </div>
+                    ) : totalItems === 0 ? (
                         <div className="text-center py-12">
-                            <div className="text-gray-400 text-5xl mb-4">🛒</div>
+                            <div className="text-gray-400 text-5xl mb-4">ðŸ›’</div>
                             <h3 className="text-xl font-semibold text-gray-700 mb-2">Your grocery list is empty</h3>
                             <p className="text-gray-500 mb-6">Add ingredients from recipes or manually add items below</p>
                         </div>
                     ) : (
                         <>
-                            {categories.map(category => {
+                            {categories.map((category) => {
                                 const categoryItems = getItemsByCategory(category);
                                 if (categoryItems.length === 0) return null;
 
@@ -195,7 +204,7 @@ function GroceryList() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            {categoryItems.map(item => (
+                                            {categoryItems.map((item) => (
                                                 <div
                                                     key={item.id}
                                                     className="flex items-center justify-between py-2 group hover:bg-gray-50 rounded px-2 -mx-2 transition-colors"
@@ -221,7 +230,7 @@ function GroceryList() {
                                                             onClick={() => removeItem(item.id)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                                         >
-                                                            ✕
+                                                            âœ•
                                                         </button>
                                                     </div>
                                                 </div>
@@ -233,8 +242,6 @@ function GroceryList() {
                         </>
                     )}
 
-
-                    {/* Add New Item Section */}
                     <div className="mt-6 pt-6 border-t border-gray-200">
                         {!showAddForm ? (
                             <button
@@ -266,7 +273,7 @@ function GroceryList() {
                                     onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6B8E6F]"
                                 >
-                                    {defaultCategories.map(cat => (
+                                    {defaultCategories.map((cat) => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
                                 </select>
@@ -294,10 +301,8 @@ function GroceryList() {
                 </div>
             </div>
 
-
-            {/* Footer */}
             <footer className="mt-12 pb-8 text-center text-sm text-gray-500">
-                © Nourishly 2025 • <a href="#" className="hover:text-gray-700">Privacy</a> • <a href="#" className="hover:text-gray-700">Terms</a>
+                Â© Nourishly 2025 â€¢ <a href="#" className="hover:text-gray-700">Privacy</a> â€¢ <a href="#" className="hover:text-gray-700">Terms</a>
             </footer>
         </div>
     );

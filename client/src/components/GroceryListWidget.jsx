@@ -2,73 +2,80 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getGroceryItems, getGroceryStorageKey, saveGroceryItems } from '../features/grocery/groceryStorage';
-
+import { getGroceryItems, saveGroceryItems } from '../features/grocery/groceryStorage';
 
 const DEFAULT_VISIBLE_ITEMS = 10;
-
 
 const sortGroceryItems = (items) => {
     return [...items].sort((a, b) => Number(a.checked) - Number(b.checked));
 };
 
-
 export default function GroceryListWidget() {
     const navigate = useNavigate();
     const [visibleCount, setVisibleCount] = useState(DEFAULT_VISIBLE_ITEMS);
+    const [items, setItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-
-    // load grocery items from localStorage
-    const [items, setItems] = useState(() => {
-        return sortGroceryItems(getGroceryItems());
-    });
-
-
-    // Reload data when component mounts or becomes visible
     useEffect(() => {
-        const loadItems = () => {
-            setItems(sortGroceryItems(getGroceryItems()));
+        let isMounted = true;
+
+        const loadItems = async () => {
+            try {
+                const loadedItems = await getGroceryItems();
+
+                if (isMounted) {
+                    setItems(sortGroceryItems(loadedItems));
+                }
+            } catch (error) {
+                console.error('Failed to load grocery items:', error);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
         };
 
-        // Load immediately
         loadItems();
 
-
-        // Reload when window regains focus (user comes back to tab)
-        const handleFocus = () => loadItems();
+        const handleFocus = () => {
+            loadItems();
+        };
         window.addEventListener('focus', handleFocus);
 
-
-        // Reload when storage changes in another tab
-        const handleStorage = (e) => {
-            if (e.key === getGroceryStorageKey()) loadItems();
-        };
-        window.addEventListener('storage', handleStorage);
-
-
         return () => {
+            isMounted = false;
             window.removeEventListener('focus', handleFocus);
-            window.removeEventListener('storage', handleStorage);
         };
     }, []);
 
-    const toggleCheck = (id) => {
-        const updatedItems = sortGroceryItems(items.map(item =>
+    const persistItems = async (nextItems) => {
+        const previousItems = items;
+        setItems(nextItems);
+
+        try {
+            await saveGroceryItems(nextItems, previousItems);
+        } catch (error) {
+            console.error('Failed to save grocery widget items:', error);
+            setItems(previousItems);
+            alert(error.message || 'We could not update your grocery list right now.');
+        }
+    };
+
+    const toggleCheck = async (id) => {
+        const updatedItems = sortGroceryItems(items.map((item) =>
             item.id === id ? { ...item, checked: !item.checked } : item
         ));
 
-        setItems(updatedItems);
-        saveGroceryItems(updatedItems);
+        await persistItems(updatedItems);
     };
 
-    const clearCheckedItems = () => {
+    const clearCheckedItems = async () => {
         if (!window.confirm('Are you sure? (Deleting checked items)')) {
             return;
         }
 
-        const updatedItems = items.filter(item => !item.checked);
-        setItems(updatedItems);
-        saveGroceryItems(updatedItems);
+        const updatedItems = items.filter((item) => !item.checked);
+        await persistItems(updatedItems);
         setVisibleCount(DEFAULT_VISIBLE_ITEMS);
     };
 
@@ -80,13 +87,9 @@ export default function GroceryListWidget() {
         setVisibleCount(DEFAULT_VISIBLE_ITEMS);
     };
 
-
-    const checkedCount = items.filter(item => item.checked).length;
+    const checkedCount = items.filter((item) => item.checked).length;
     const totalCount = items.length;
     const progressPercent = totalCount > 0 ? (checkedCount / totalCount) * 100 : 0;
-
-
-    // show items in expandable groups of 10
     const displayItems = items.slice(0, visibleCount);
     const remainingItems = totalCount - displayItems.length;
     const nextLoadCount = Math.min(DEFAULT_VISIBLE_ITEMS, remainingItems);
@@ -116,11 +119,8 @@ export default function GroceryListWidget() {
                         View Full List
                     </button>
                 </div>
-
             </div>
 
-
-            {/* Progress Bar */}
             {totalCount > 0 && (
                 <div className="mb-6">
                     <div className="flex justify-between text-sm text-muted mb-2">
@@ -137,9 +137,11 @@ export default function GroceryListWidget() {
                 </div>
             )}
 
-
-            {/* Empty State */}
-            {totalCount === 0 && (
+            {isLoading ? (
+                <div className="text-center py-8">
+                    <p className="text-muted">Loading your grocery list...</p>
+                </div>
+            ) : totalCount === 0 ? (
                 <div className="text-center py-8">
                     <p className="text-muted mb-4">Your grocery list is empty.</p>
 
@@ -151,18 +153,13 @@ export default function GroceryListWidget() {
                         Add items
                     </button>
                 </div>
-            )}
-
-
-            {/* Items List */}
-            {totalCount > 0 && (
+            ) : (
                 <div className="space-y-2">
-                    {displayItems.map(item => (
+                    {displayItems.map((item) => (
                         <div
                             key={item.id}
                             className="flex items-center gap-3 py-2 hover:bg-subtle px-2 rounded-lg transition-colors"
                         >
-
                             <input
                                 type="checkbox"
                                 checked={item.checked}
@@ -171,8 +168,7 @@ export default function GroceryListWidget() {
                             />
 
                             <span
-                                className={`flex-1 ${item.checked ? 'line-through text-muted' : 'text-primaryDark'
-                                    }`}
+                                className={`flex-1 ${item.checked ? 'line-through text-muted' : 'text-primaryDark'}`}
                             >
                                 {item.name}
                             </span>

@@ -46,10 +46,12 @@ function GroceryList() {
 
         try {
             await saveGroceryItems(nextItems, previousItems);
+            return true;
         } catch (error) {
             console.error('Failed to save grocery items:', error);
             setGroceryItems(previousItems);
             alert(error.message || 'We could not save your grocery list right now.');
+            return false;
         }
     };
 
@@ -86,9 +88,12 @@ function GroceryList() {
                 checked: false
             }]);
 
-            await persistItems(nextItems);
-            setNewItem({ name: '', quantity: '', category: 'Produce' });
-            setShowAddForm(false);
+            const didSave = await persistItems(nextItems);
+
+            if (didSave) {
+                setNewItem({ name: '', quantity: '', category: 'Produce' });
+                setShowAddForm(false);
+            }
         }
     };
 
@@ -178,7 +183,7 @@ function GroceryList() {
                         </div>
                     ) : totalItems === 0 ? (
                         <div className="text-center py-12">
-                            <div className="text-gray-400 text-5xl mb-4">ðŸ›’</div>
+                            <div className="text-gray-400 text-5xl mb-4">🛒</div>
                             <h3 className="text-xl font-semibold text-gray-700 mb-2">Your grocery list is empty</h3>
                             <p className="text-gray-500 mb-6">Add ingredients from recipes or manually add items below</p>
                         </div>
@@ -230,7 +235,7 @@ function GroceryList() {
                                                             onClick={() => removeItem(item.id)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                                         >
-                                                            âœ•
+                                                            ✕
                                                         </button>
                                                     </div>
                                                 </div>
@@ -302,7 +307,7 @@ function GroceryList() {
             </div>
 
             <footer className="mt-12 pb-8 text-center text-sm text-gray-500">
-                Â© Nourishly 2025 â€¢ <a href="#" className="hover:text-gray-700">Privacy</a> â€¢ <a href="#" className="hover:text-gray-700">Terms</a>
+                © Nourishly 2025 • <a href="#" className="hover:text-gray-700">Privacy</a> • <a href="#" className="hover:text-gray-700">Terms</a>
             </footer>
         </div>
     );

@@ -2,7 +2,7 @@
 
 Nourishly is a meal-planning web app for people who want an easier way to organize meals, discover recipes, and turn plans into a grocery list they can actually use.
 
-[Try the live app](https://main.d2hvbdc7xxhqmv.amplifyapp.com/) | [View the repository](https://github.com/cs041-mealplanner/CS041-meal-planning-app)
+[Try the live app](https://main.d2hvbdc7xxhqmv.amplifyapp.com/)
 
 ## Why Nourishly
 
@@ -55,17 +55,25 @@ To explore the app locally:
 
 ## Screenshots
 
-![Meal planner screen showing breakfast, lunch, and dinner cards](docs/screenshots/meal-planner.png)
-*Plan meals for the week in one place.*
+<p>
+  <img src="docs/screenshots/meal-planner.png" alt="Meal planner screen showing breakfast, lunch, and dinner cards">
+</p>
+<p><em>Plan meals for the week in one place.</em></p>
 
-![Recipes screen showing search and dietary filters](docs/screenshots/recipes.png)
-*Browse recipe options and narrow results by preference.*
+<p>
+  <img src="docs/screenshots/recipes.png" alt="Recipes screen showing search and dietary filters">
+</p>
+<p><em>Browse recipe options and narrow results by preference.</em></p>
 
-![Recipe detail screen showing ingredients and nutrition](docs/screenshots/recipe-detail.png)
-*Review recipe details and add ingredients directly to your grocery list.*
+<p>
+  <img src="docs/screenshots/recipe-detail.png" alt="Recipe detail screen showing ingredients and nutrition">
+</p>
+<p><em>Review recipe details and add ingredients directly to your grocery list.</em></p>
 
-![Grocery list screen showing categorized items and progress](docs/screenshots/grocery-list.png)
-*Stay organized while shopping with grouped items and progress tracking.*
+<p>
+  <img src="docs/screenshots/grocery-list.png" alt="Grocery list screen showing categorized items and progress">
+</p>
+<p><em>Stay organized while shopping with grouped items and progress tracking.</em></p>
 
 ## Team
 
@@ -80,7 +88,6 @@ Project partner: Alexander Ulbrich
 ## Contact and Feedback
 
 - Open an issue on GitHub: [Project Issues](https://github.com/cs041-mealplanner/CS041-meal-planning-app/issues)
-- Team contact email: [alexander.ulbrich@oregonstate.edu](mailto:alexander.ulbrich@oregonstate.edu)
 
 ## Development Notes
 

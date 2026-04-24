@@ -1,6 +1,6 @@
 // custom hook for Meal Planner
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { loadMealPlanEntries, saveMealPlanEntries } from "./mealPlannerRepo";
 
 const SLOTS = ["breakfast", "lunch", "dinner"];
@@ -47,7 +47,13 @@ function indexByKey(entries) {
 function arraysEqualJson(a, b) {
     // stable compare by sorting on (date, slot)
     const normalize = (arr) =>
-        [...arr].sort((x, y) => {
+        [...arr]
+            .map((entry) => ({
+                date: entry.date,
+                slot: entry.slot,
+                dishId: entry.dishId,
+            }))
+            .sort((x, y) => {
             if (x.date !== y.date) return x.date.localeCompare(y.date);
             return x.slot.localeCompare(y.slot);
         });
@@ -55,12 +61,11 @@ function arraysEqualJson(a, b) {
 }
 
 export function useMealPlanner() {
-    // load once
-    const initialEntries = useMemo(() => loadMealPlanEntries(), []);
-    const [savedSnapshot, setSavedSnapshot] = useState(initialEntries);
-
-    const [entries, setEntries] = useState(initialEntries);
+    const [savedSnapshot, setSavedSnapshot] = useState([]);
+    const [entries, setEntries] = useState([]);
     const [selectedDate, setSelectedDate] = useState(() => new Date());
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     const selectedYmd = useMemo(() => toYmd(selectedDate), [selectedDate]);
 
@@ -86,6 +91,33 @@ export function useMealPlanner() {
         [entries, savedSnapshot]
     );
 
+    useEffect(() => {
+        let isMounted = true;
+
+        async function bootstrapEntries() {
+            try {
+                const loadedEntries = await loadMealPlanEntries();
+
+                if (!isMounted) return;
+
+                setEntries(loadedEntries);
+                setSavedSnapshot(loadedEntries);
+            } catch (error) {
+                console.error("Failed to load meal plan entries:", error);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        bootstrapEntries();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     function getEntry(dateYmd, slot) {
         return entriesMap.get(makeKey(dateYmd, slot)) || null;
     }
@@ -95,7 +127,7 @@ export function useMealPlanner() {
 
         setEntries((prev) => {
             const next = prev.filter((e) => !(e.date === dateYmd && e.slot === slot));
-            next.push({ date: dateYmd, slot, dishId });
+            next.push({ id: makeKey(dateYmd, slot), date: dateYmd, slot, dishId });
             return next;
         });
     }
@@ -106,9 +138,18 @@ export function useMealPlanner() {
         setEntries((prev) => prev.filter((e) => !(e.date === dateYmd && e.slot === slot)));
     }
 
-    function save() {
-        saveMealPlanEntries(entries);
-        setSavedSnapshot(entries);
+    async function save() {
+        setIsSaving(true);
+
+        try {
+            await saveMealPlanEntries(entries, savedSnapshot);
+            setSavedSnapshot(entries);
+        } catch (error) {
+            console.error("Failed to save meal plan entries:", error);
+            alert("We couldn't save your meal plan just yet. Please try again.");
+        } finally {
+            setIsSaving(false);
+        }
     }
 
     function goPrevWeek() {
@@ -126,6 +167,8 @@ export function useMealPlanner() {
         selectedYmd,
         weekDays,
         isDirty,
+        isLoading,
+        isSaving,
 
         // Actions (ViewModel)
         setSelectedDate,

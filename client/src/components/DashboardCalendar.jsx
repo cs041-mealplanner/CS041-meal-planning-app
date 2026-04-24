@@ -2,10 +2,9 @@
 
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { loadMealPlanEntries } from '../features/mealPlanner/mealPlannerRepo';
 
 
-export default function DashboardCalendar({ allRecipes = [] }) {
+export default function DashboardCalendar({ allRecipes = [], mealPlanEntries = [] }) {
     // Get current week (Sun-Sat)
     const currentWeekStart = dayjs().startOf('week');
     const days = useMemo(() =>
@@ -15,10 +14,6 @@ export default function DashboardCalendar({ allRecipes = [] }) {
 
 
     const today = dayjs().format('YYYY-MM-DD');
-
-    // Load all meal plan entries
-    const mealPlanEntries = useMemo(() => loadMealPlanEntries(), []);
-
     // Get meals for a specific day
     const getMealsForDay = (date) => {
         const dayEntries = mealPlanEntries.filter(

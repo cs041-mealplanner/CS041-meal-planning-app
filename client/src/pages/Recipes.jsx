@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import AddRecipe from '../components/AddRecipe';
 import RecipeCard from '../components/RecipeCard';
-import { getManualRecipes, saveManualRecipes } from '../features/recipes/recipeStorage';
+import { createManualRecipe, getPersistedSpoonacularRecipeId, listRecipes } from '../features/recipes/recipeStorage';
 
 
 const FILTER_TAGS = ['All', 'Vegetarian', 'Vegan', 'High Protein', 'Low Carb'];
@@ -36,7 +36,7 @@ function recipeMatchesFilter(recipe, activeFilter) {
 
 export default function Recipes() {
     const [recipes, setRecipes] = useState([]);
-    const [manualRecipes, setManualRecipes] = useState([]);
+    const [storedRecipes, setStoredRecipes] = useState([]);
     const [allRecipes, setAllRecipes] = useState([]);           // store full
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -46,14 +46,30 @@ export default function Recipes() {
     const [displayCount, setDisplayCount] = useState(RECIPES_PER_PAGE);      // to show
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-
-    // Load manual recipes from localStorage on mount
     useEffect(() => {
-        const loadManualRecipes = () => {
-            setManualRecipes(getManualRecipes());
-        };
+        let isMounted = true;
 
-        loadManualRecipes();
+        async function loadStoredRecipes() {
+            try {
+                const persistedRecipes = await listRecipes();
+
+                if (isMounted) {
+                    setStoredRecipes(persistedRecipes);
+                }
+            } catch (err) {
+                console.error('Failed to load persisted recipes:', err);
+
+                if (isMounted) {
+                    setError('Unable to load your saved recipes right now.');
+                }
+            }
+        }
+
+        loadStoredRecipes();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
 
@@ -71,7 +87,7 @@ export default function Recipes() {
 
     // fetch recipes from Spoonacular API
     const fetchRecipes = useCallback(async () => {
-        const filteredManualRecipes = manualRecipes.filter((recipe) =>
+        const filteredStoredRecipes = storedRecipes.filter((recipe) =>
             recipeMatchesSearch(recipe, searchQuery) &&
             recipeMatchesFilter(recipe, activeFilter)
         );
@@ -79,8 +95,7 @@ export default function Recipes() {
         if (!API_KEY) {
             console.error('Spoonacular API key not configured.');
 
-            // Show manual recipes only if API is not configured
-            const shuffled = shuffleArray(filteredManualRecipes);
+            const shuffled = shuffleArray(filteredStoredRecipes);
             setAllRecipes(shuffled);
             setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
             setDisplayCount(RECIPES_PER_PAGE);
@@ -133,10 +148,13 @@ export default function Recipes() {
             }
 
             const data = await response.json();
+            const dedupedApiRecipes = data.results.filter(
+                (recipe) => !filteredStoredRecipes.some(
+                    (storedRecipe) => storedRecipe.id === getPersistedSpoonacularRecipeId(recipe.id)
+                )
+            );
 
-
-            // Combine manual recipes + API recipes, then shuffle
-            const combined = [...filteredManualRecipes, ...data.results];
+            const combined = [...filteredStoredRecipes, ...dedupedApiRecipes];
             const shuffled = shuffleArray(combined);
 
 
@@ -147,8 +165,7 @@ export default function Recipes() {
         } catch (err) {
             setError(err.message);
 
-            // error, show manual recipes only
-            const shuffled = shuffleArray(filteredManualRecipes);
+            const shuffled = shuffleArray(filteredStoredRecipes);
             setAllRecipes(shuffled);
             setRecipes(shuffled.slice(0, RECIPES_PER_PAGE));
             setDisplayCount(RECIPES_PER_PAGE);
@@ -156,7 +173,7 @@ export default function Recipes() {
         } finally {
             setLoading(false);
         }
-    }, [activeFilter, manualRecipes, searchQuery]);
+    }, [activeFilter, searchQuery, storedRecipes]);
 
 
     // load and when filter changes or manual recipes change
@@ -201,11 +218,9 @@ export default function Recipes() {
 
 
     // Save manual recipe
-    const handleSaveManualRecipe = (newRecipe) => {
-        const updatedManual = [...manualRecipes, newRecipe];
-
-        setManualRecipes(updatedManual);
-        saveManualRecipes(updatedManual);
+    const handleSaveManualRecipe = async (newRecipe) => {
+        const createdRecipe = await createManualRecipe(newRecipe);
+        setStoredRecipes((prev) => [...prev, createdRecipe]);
     };
 
 

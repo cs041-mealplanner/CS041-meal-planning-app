@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMealPlanner } from "../features/mealPlanner/useMealPlanner";
-import { getManualRecipes, getRecipePool, normalizeRecipesForPlanner } from "../features/recipes/recipeStorage";
+import { listRecipes, normalizeRecipesForPlanner } from "../features/recipes/recipeStorage";
 
 
 function AddMealCard({ label, onClick }) {
@@ -149,22 +149,32 @@ export default function MealPlanner() {
     const navigate = useNavigate();
 
     const [allRecipes, setAllRecipes] = useState([]);
+    const [isLoadingRecipes, setIsLoadingRecipes] = useState(true);
 
     useEffect(() => {
-        const loadRecipes = () => {
-            setAllRecipes(normalizeRecipesForPlanner([
-                ...getRecipePool(),
-                ...getManualRecipes(),
-            ]));
-        };
+        let isMounted = true;
+
+        async function loadRecipes() {
+            try {
+                const persistedRecipes = await listRecipes();
+
+                if (isMounted) {
+                    setAllRecipes(normalizeRecipesForPlanner(persistedRecipes));
+                }
+            } catch (error) {
+                console.error("Failed to load meal planner recipes:", error);
+            } finally {
+                if (isMounted) {
+                    setIsLoadingRecipes(false);
+                }
+            }
+        }
 
         loadRecipes();
 
-        // Reload when window gets focus (when user comes back from adding recipe)
-        const handleFocus = () => loadRecipes();
-        window.addEventListener('focus', handleFocus);
-
-        return () => window.removeEventListener('focus', handleFocus);
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
 
@@ -174,6 +184,8 @@ export default function MealPlanner() {
         selectedYmd,
         weekDays,
         isDirty,
+        isLoading,
+        isSaving,
         goPrevWeek,
         goNextWeek,
         setSelectedDate,
@@ -381,6 +393,12 @@ export default function MealPlanner() {
                         {shortSelectedDate}
                     </p>
 
+                    {(isLoading || isLoadingRecipes) && (
+                        <div className="mt-6 text-center text-sm text-muted">
+                            Loading your meal plan...
+                        </div>
+                    )}
+
                     <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
                         {["breakfast", "lunch", "dinner"].map((slot) => {
                             const entry = getEntry(selectedYmd, slot);
@@ -462,15 +480,17 @@ export default function MealPlanner() {
                         <button
                             type="button"
                             onClick={save}
+                            disabled={isSaving || !isDirty}
                             className={[
                                 "rounded-xl border px-6 py-3.5 text-base font-semibold transition duration-200 hover:-translate-y-0.5 hover:shadow-md",
                                 isDirty
                                     ? "border-primary bg-primary text-white hover:bg-primaryDark"
                                     : "border-primary bg-white text-primary hover:bg-stone-50",
+                                isSaving || !isDirty ? "cursor-default" : "",
                             ].join(" ")}
                             style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
                         >
-                            {isDirty ? "Save Plan" : "Saved"}
+                            {isSaving ? "Saving..." : isDirty ? "Save Plan" : "Saved"}
                         </button>
 
                     </div>

@@ -97,30 +97,12 @@ Project partner: Alexander Ulbrich
 - AWS Amplify
 - Tailwind CSS
 
-### Commands
+### Run Locally
 
 Run the client locally:
 
 ```bash
 npm run dev:client
-```
-
-Run linting:
-
-```bash
-npm run lint
-```
-
-Run tests:
-
-```bash
-npm run test:client
-```
-
-Build the client:
-
-```bash
-npm run build:client
 ```
 
 ## Design Reference

@@ -125,9 +125,10 @@ npm run build:client
 
 ## Design Reference
 
-Design prototypes and wireframes are maintained in Figma:
+Design prototypes, wireframes, and document are maintained in Figma and Google Docs file:
 
 [Meal Planner Web App Figma](https://www.figma.com/design/AaskoDRw7IUEmEOyLcIDQa/Meal-Planner-Web-App)
+[Meal Planner Master Plan Document](https://docs.google.com/document/d/1m6GXdb4r7GI8eP9NyM6B49am-PJK-rIiOMVlKtdPwOY/edit?usp=sharing)
 
 Designer: Lapatrada Liawpairoj
 

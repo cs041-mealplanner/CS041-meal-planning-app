@@ -1,3 +1,4 @@
+import { getCurrentUser } from "aws-amplify/auth";
 import { getDataModel, MODEL_AUTH_OPTIONS } from "../../lib/amplifyDataClient";
 
 const RECIPE_SOURCE = {
@@ -224,6 +225,63 @@ function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function sanitizeIdSegment(value) {
+  return String(value || "user").replace(/[^a-zA-Z0-9-]/g, "-");
+}
+
+async function getCurrentOwnerKey() {
+  try {
+    const currentUser = await getCurrentUser();
+    return sanitizeIdSegment(
+      currentUser?.userId || currentUser?.username || currentUser?.signInDetails?.loginId
+    );
+  } catch {
+    return "user";
+  }
+}
+
+function buildStarterRecipeId(templateId, ownerKey) {
+  const suffix = String(templateId).startsWith("starter-")
+    ? String(templateId).slice("starter-".length)
+    : String(templateId);
+
+  return `starter-${ownerKey}-${suffix}`;
+}
+
+function buildScopedSpoonacularRecipeId(recipeId, ownerKey) {
+  return `spoonacular-${ownerKey}-${recipeId}`;
+}
+
+function serializeJsonField(value) {
+  if (value == null) return null;
+  return JSON.stringify(value);
+}
+
+function parseJsonField(value, fallback) {
+  if (value == null || value === "") return fallback;
+
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return fallback;
+    }
+  }
+
+  return value;
+}
+
+function normalizeRecipeRecord(recipe) {
+  if (!recipe) return null;
+
+  return {
+    ...recipe,
+    nutrition: parseJsonField(recipe.nutrition, { nutrients: [] }),
+    extendedIngredients: parseJsonField(recipe.extendedIngredients, []),
+    tags: ensureArray(recipe.tags),
+  };
+}
+
 function getRecipeModel() {
   return getDataModel("Recipe");
 }
@@ -237,7 +295,7 @@ async function listRecipeRecords() {
     limit: 1000,
   });
 
-  return ensureArray(data);
+  return ensureArray(data).map(normalizeRecipeRecord).filter(Boolean);
 }
 
 function toManualRecipePayload(recipe) {
@@ -248,8 +306,8 @@ function toManualRecipePayload(recipe) {
     servings: recipe.servings,
     preparationMinutes: recipe.preparationMinutes,
     cookingMinutes: recipe.cookingMinutes,
-    nutrition: recipe.nutrition,
-    extendedIngredients: recipe.extendedIngredients,
+    nutrition: serializeJsonField(recipe.nutrition),
+    extendedIngredients: serializeJsonField(recipe.extendedIngredients),
     tags: ensureArray(recipe.tags),
     source: recipe.source || RECIPE_SOURCE.MANUAL,
   };
@@ -259,16 +317,30 @@ export function getPersistedSpoonacularRecipeId(recipeId) {
   return `spoonacular-${recipeId}`;
 }
 
-function toSpoonacularRecipePayload(recipe) {
+function isLegacyOrScopedStarterRecipeId(recipeId, templateId, ownerKey) {
+  return recipeId === templateId || recipeId === buildStarterRecipeId(templateId, ownerKey);
+}
+
+export function isPersistedSpoonacularRecipeMatch(recipe, spoonacularRecipeId) {
+  const recipeId = typeof recipe?.id === "string" ? recipe.id : "";
+  const legacyId = getPersistedSpoonacularRecipeId(spoonacularRecipeId);
+
+  return (
+    recipe?.source === RECIPE_SOURCE.SPOONACULAR &&
+    (recipeId === legacyId || recipeId.endsWith(`-${spoonacularRecipeId}`))
+  );
+}
+
+function toSpoonacularRecipePayload(recipe, ownerKey) {
   return {
-    id: getPersistedSpoonacularRecipeId(recipe.id),
+    id: buildScopedSpoonacularRecipeId(recipe.id, ownerKey),
     title: recipe.title,
     image: recipe.image,
     servings: recipe.servings ?? 1,
     preparationMinutes: recipe.preparationMinutes || 0,
     cookingMinutes: recipe.cookingMinutes || 0,
-    nutrition: recipe.nutrition,
-    extendedIngredients: ensureArray(recipe.extendedIngredients),
+    nutrition: serializeJsonField(recipe.nutrition),
+    extendedIngredients: serializeJsonField(ensureArray(recipe.extendedIngredients)),
     tags: ensureArray(recipe.tags),
     source: RECIPE_SOURCE.SPOONACULAR,
   };
@@ -319,7 +391,7 @@ export async function getRecipeById(recipeId) {
   if (!model || !recipeId) return null;
 
   const { data } = await model.get({ id: recipeId }, MODEL_AUTH_OPTIONS);
-  return data ?? null;
+  return normalizeRecipeRecord(data);
 }
 
 export async function createManualRecipe(recipe) {
@@ -335,7 +407,7 @@ export async function createManualRecipe(recipe) {
     throw new Error(errors[0].message || "Failed to create recipe.");
   }
 
-  return data ?? payload;
+  return normalizeRecipeRecord(data ?? payload);
 }
 
 export async function updateRecipe(recipe) {
@@ -351,7 +423,7 @@ export async function updateRecipe(recipe) {
     throw new Error(errors[0].message || "Failed to update recipe.");
   }
 
-  return data ?? payload;
+  return normalizeRecipeRecord(data ?? payload);
 }
 
 export async function saveSpoonacularRecipe(recipe) {
@@ -360,8 +432,13 @@ export async function saveSpoonacularRecipe(recipe) {
     throw new Error("Recipe persistence is not ready yet. Sync Amplify outputs first.");
   }
 
-  const payload = toSpoonacularRecipePayload(recipe);
-  const existingRecipe = await getRecipeById(payload.id);
+  const ownerKey = await getCurrentOwnerKey();
+  const payload = toSpoonacularRecipePayload(recipe, ownerKey);
+  const existingRecipe =
+    (await getRecipeById(payload.id)) ||
+    (await listRecipeRecords()).find((storedRecipe) =>
+      isPersistedSpoonacularRecipeMatch(storedRecipe, recipe.id)
+    );
 
   if (existingRecipe) {
     return {
@@ -377,7 +454,7 @@ export async function saveSpoonacularRecipe(recipe) {
   }
 
   return {
-    recipe: data ?? payload,
+    recipe: normalizeRecipeRecord(data ?? payload),
     created: true,
   };
 }
@@ -386,16 +463,28 @@ export async function ensureStarterRecipesSeeded() {
   const model = getRecipeModel();
   if (!model) return false;
 
+  const ownerKey = await getCurrentOwnerKey();
   const existingRecipes = await listRecipeRecords();
   const existingRecipeIds = new Set(existingRecipes.map((recipe) => recipe.id));
   const missingStarterRecipes = cloneStarterRecipes().filter(
-    (recipe) => !existingRecipeIds.has(recipe.id)
+    (recipe) =>
+      ![...existingRecipeIds].some((recipeId) =>
+        isLegacyOrScopedStarterRecipeId(recipeId, recipe.id, ownerKey)
+      )
   );
 
   if (missingStarterRecipes.length === 0) return false;
 
   for (const recipe of missingStarterRecipes) {
-    const { errors } = await model.create(recipe, MODEL_AUTH_OPTIONS);
+    const { errors } = await model.create(
+      {
+        ...recipe,
+        id: buildStarterRecipeId(recipe.id, ownerKey),
+        nutrition: serializeJsonField(recipe.nutrition),
+        extendedIngredients: serializeJsonField(recipe.extendedIngredients),
+      },
+      MODEL_AUTH_OPTIONS
+    );
 
     if (errors?.length) {
       throw new Error(errors[0].message || "Failed to seed starter recipes.");

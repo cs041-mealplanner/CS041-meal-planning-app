@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import AddRecipe from '../components/AddRecipe';
 import RecipeCard from '../components/RecipeCard';
-import { createManualRecipe, getPersistedSpoonacularRecipeId, listRecipes } from '../features/recipes/recipeStorage';
+import {
+    createManualRecipe,
+    isPersistedSpoonacularRecipeMatch,
+    listRecipes,
+} from '../features/recipes/recipeStorage';
 
 
 const FILTER_TAGS = ['All', 'Vegetarian', 'Vegan', 'High Protein', 'Low Carb'];
@@ -9,6 +13,7 @@ const RECIPES_PER_PAGE = 6;
 const MAX_RECIPES = 18;     // LOCK at 18 cards max
 const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 const API_BASE = 'https://api.spoonacular.com/recipes';
+let hasWarnedMissingSpoonacularKey = false;
 
 function normalizeRecipeTags(recipe) {
     if (!Array.isArray(recipe?.tags)) return [];
@@ -93,7 +98,10 @@ export default function Recipes() {
         );
 
         if (!API_KEY) {
-            console.error('Spoonacular API key not configured.');
+            if (!hasWarnedMissingSpoonacularKey) {
+                console.warn('Spoonacular API key not configured.');
+                hasWarnedMissingSpoonacularKey = true;
+            }
 
             const shuffled = shuffleArray(filteredStoredRecipes);
             setAllRecipes(shuffled);
@@ -150,7 +158,7 @@ export default function Recipes() {
             const data = await response.json();
             const dedupedApiRecipes = data.results.filter(
                 (recipe) => !filteredStoredRecipes.some(
-                    (storedRecipe) => storedRecipe.id === getPersistedSpoonacularRecipeId(recipe.id)
+                    (storedRecipe) => isPersistedSpoonacularRecipeMatch(storedRecipe, recipe.id)
                 )
             );
 

@@ -1,3 +1,4 @@
+import { getCurrentUser } from "aws-amplify/auth";
 import { getDataModel, MODEL_AUTH_OPTIONS } from "../../lib/amplifyDataClient";
 
 const VALID_SLOTS = ["breakfast", "lunch", "dinner"];
@@ -10,8 +11,27 @@ function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-function toEntryId(date, slot) {
+function sanitizeIdSegment(value) {
+  return String(value || "user").replace(/[^a-zA-Z0-9-]/g, "-");
+}
+
+async function getCurrentOwnerKey() {
+  try {
+    const currentUser = await getCurrentUser();
+    return sanitizeIdSegment(
+      currentUser?.userId || currentUser?.username || currentUser?.signInDetails?.loginId
+    );
+  } catch {
+    return "user";
+  }
+}
+
+function toEntryKey(date, slot) {
   return `${date}|${slot}`;
+}
+
+function toScopedEntryId(ownerKey, date, slot) {
+  return `meal-plan-${ownerKey}-${date}-${slot}`;
 }
 
 function isValidEntry(entry) {
@@ -31,9 +51,9 @@ function normalizeLoadedEntry(entry) {
   };
 }
 
-function normalizeEntryForSave(entry) {
+function normalizeEntryForSave(entry, ownerKey) {
   return {
-    id: entry.id || toEntryId(entry.date, entry.slot),
+    id: toScopedEntryId(ownerKey, entry.date, entry.slot),
     date: entry.date,
     slot: entry.slot,
     recipeId: String(entry.dishId),
@@ -77,12 +97,19 @@ export async function saveMealPlanEntries(entries, previousEntries = []) {
 
   const nextEntries = sortEntries(ensureArray(entries).filter(isValidEntry));
   const prevEntries = sortEntries(ensureArray(previousEntries).filter(isValidEntry));
+  const ownerKey = await getCurrentOwnerKey();
 
   const nextMap = new Map(
-    nextEntries.map((entry) => [toEntryId(entry.date, entry.slot), normalizeEntryForSave(entry)])
+    nextEntries.map((entry) => [
+      toEntryKey(entry.date, entry.slot),
+      normalizeEntryForSave(entry, ownerKey),
+    ])
   );
   const prevMap = new Map(
-    prevEntries.map((entry) => [toEntryId(entry.date, entry.slot), normalizeEntryForSave(entry)])
+    prevEntries.map((entry) => [
+      toEntryKey(entry.date, entry.slot),
+      normalizeEntryForSave(entry, ownerKey),
+    ])
   );
 
   const operations = [];

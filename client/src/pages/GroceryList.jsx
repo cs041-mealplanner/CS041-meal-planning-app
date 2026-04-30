@@ -130,22 +130,22 @@ function GroceryList() {
 
     return (
         <div className="min-h-screen bg-[#E8E3D8]">
-            <div className="max-w-3xl mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h1 className="text-2xl font-bold text-gray-800">My Grocery List</h1>
-                        <div className="flex gap-3">
+            <div className="max-w-3xl mx-auto px-3 py-6 sm:px-4 sm:py-8">
+                <div className="bg-white rounded-lg shadow-sm p-4 mb-5 sm:p-6 sm:mb-6">
+                    <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+                        <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">My Grocery List</h1>
+                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
                             {checkedItems > 0 && (
                                 <button
                                     onClick={clearChecked}
-                                    className="px-4 py-2 text-sm text-red-600 hover:text-red-700 transition-colors"
+                                    className="w-full px-4 py-2 text-sm text-red-600 hover:text-red-700 transition-colors sm:w-auto"
                                 >
                                     Clear Checked ({checkedItems})
                                 </button>
                             )}
                             <button
                                 onClick={shareList}
-                                className="px-4 py-2 text-sm bg-[#6B8E6F] text-white rounded-md hover:bg-[#5a7a5e] transition-colors"
+                                className="w-full px-4 py-2 text-sm bg-[#6B8E6F] text-white rounded-md hover:bg-[#5a7a5e] transition-colors sm:w-auto"
                             >
                                 Share List
                             </button>
@@ -154,7 +154,7 @@ function GroceryList() {
 
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600">Shopping progress</span>
+                            <span className="max-w-24 break-words text-right text-sm text-gray-600 sm:max-w-none">Shopping progress</span>
                             <span className="text-sm font-medium text-gray-700">{checkedItems}/{totalItems}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -166,7 +166,7 @@ function GroceryList() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+                <div className="bg-white rounded-lg shadow-sm p-3 mb-5 sm:p-4 sm:mb-6">
                     <input
                         type="text"
                         placeholder="Search items..."
@@ -176,7 +176,7 @@ function GroceryList() {
                     />
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
                     {isLoading ? (
                         <div className="text-center py-12 text-gray-500">
                             Loading your grocery list...
@@ -195,10 +195,10 @@ function GroceryList() {
 
                                 return (
                                     <div key={category} className="mb-6 last:mb-0">
-                                        <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200">
+                                        <div className="flex flex-col gap-2 mb-3 pb-2 border-b border-gray-200 sm:flex-row sm:items-center sm:justify-between">
                                             <h2 className="text-sm font-semibold text-gray-700">{category}</h2>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xs text-gray-500">{categoryItems.length} items</span>
+                                                <span className="break-words text-xs text-gray-500">{categoryItems.length} items</span>
                                                 <button
                                                     onClick={() => checkAllInCategory(category)}
                                                     className="text-xs text-[#6B8E6F] hover:underline"
@@ -212,28 +212,28 @@ function GroceryList() {
                                             {categoryItems.map((item) => (
                                                 <div
                                                     key={item.id}
-                                                    className="flex items-center justify-between py-2 group hover:bg-gray-50 rounded px-2 -mx-2 transition-colors"
+                                                    className="flex items-start justify-between gap-3 py-3 group hover:bg-gray-50 rounded px-2 -mx-2 transition-colors"
                                                 >
-                                                    <div className="flex items-center gap-3 flex-1">
+                                                    <div className="flex min-w-0 flex-1 items-start gap-3">
                                                         <input
                                                             type="checkbox"
                                                             checked={item.checked}
                                                             onChange={() => toggleCheck(item.id)}
                                                             className="w-4 h-4 text-[#6B8E6F] border-gray-300 rounded focus:ring-[#6B8E6F] cursor-pointer"
                                                         />
-                                                        <div className={item.checked ? 'opacity-50' : ''}>
-                                                            <div className={`text-sm font-medium ${item.checked ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                                                        <div className={`min-w-0 ${item.checked ? 'opacity-50' : ''}`}>
+                                                            <div className={`break-words text-sm font-medium ${item.checked ? 'line-through text-gray-500' : 'text-gray-800'}`}>
                                                                 {item.name}
                                                             </div>
-                                                            <div className="text-xs text-gray-500">{item.source}</div>
+                                                            <div className="break-words text-xs text-gray-500">{item.source}</div>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-sm text-gray-600">{item.quantity}</span>
+                                                    <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+                                                        <span className="max-w-24 break-words text-right text-sm text-gray-600 sm:max-w-none">{item.quantity}</span>
                                                         <button
                                                             onClick={() => removeItem(item.id)}
-                                                            className="text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                            className="text-gray-400 hover:text-red-500 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                                                         >
                                                             ✕
                                                         </button>
@@ -257,7 +257,7 @@ function GroceryList() {
                             </button>
                         ) : (
                             <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     <input
                                         type="text"
                                         placeholder="Item name"
@@ -283,7 +283,7 @@ function GroceryList() {
                                     ))}
                                 </select>
 
-                                <div className="flex gap-2">
+                                <div className="flex flex-col gap-2 sm:flex-row">
                                     <button
                                         onClick={addNewGroceryItem}
                                         className="flex-1 px-4 py-2 bg-[#6B8E6F] text-white rounded-md hover:bg-[#5a7a5e] transition-colors"
@@ -306,7 +306,7 @@ function GroceryList() {
                 </div>
             </div>
 
-            <footer className="mt-12 pb-8 text-center text-sm text-gray-500">
+            <footer className="mt-10 px-4 pb-8 text-center text-sm text-gray-500 sm:mt-12">
                 © Nourishly 2025 • <a href="#" className="hover:text-gray-700">Privacy</a> • <a href="#" className="hover:text-gray-700">Terms</a>
             </footer>
         </div>

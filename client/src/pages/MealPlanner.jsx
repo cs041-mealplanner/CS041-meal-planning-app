@@ -13,7 +13,7 @@ function AddMealCard({ label, onClick, disabled = false }) {
             onClick={onClick}
             disabled={disabled}
             className={[
-                "group flex h-[19.5rem] w-full flex-col items-center justify-center rounded-2xl border border-stone-300 bg-card px-6 py-6 shadow-sm transition duration-200",
+                "group flex min-h-48 w-full flex-col items-center justify-center rounded-2xl border border-stone-300 bg-card px-6 py-6 shadow-sm transition duration-200 md:min-h-[19.5rem]",
                 disabled
                     ? "cursor-not-allowed opacity-70"
                     : "hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg",
@@ -56,11 +56,11 @@ function DayPill({ d, label, active, onClick }) {
             type="button"
             onClick={onClick}
             className={[
-                "flex h-24 w-[4.5rem] flex-col items-center justify-center rounded-2xl border border-stone-300",
+                "flex h-20 min-w-[4.25rem] flex-col items-center justify-center rounded-2xl border border-stone-300 sm:h-24 sm:w-[4.5rem]",
                 active ? "bg-primary text-white" : "bg-card text-neutral-500",
             ].join(" ")}
         >
-            <div className="text-[1.75rem] font-bold leading-6">{d}</div>
+            <div className="text-2xl font-bold leading-6 sm:text-[1.75rem]">{d}</div>
             <div className="mt-2 text-base tracking-tight">{label}</div>
         </button>
     );
@@ -72,14 +72,14 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId, o
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-3 sm:p-4"
             role="dialog"
             aria-modal="true"
         >
-            <div className="w-full max-w-4xl rounded-3xl border border-stone-300 bg-card p-8">
-                <div className="flex items-start justify-between">
+            <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-stone-300 bg-card p-4 sm:p-6 md:p-8">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <div className="text-3xl font-bold text-neutral-800">
+                        <div className="text-2xl font-bold text-neutral-800 sm:text-3xl">
                             Choose a {slot} meal
                         </div>
                         <div className="mt-2 text-base text-neutral-500">
@@ -127,11 +127,11 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId, o
                 </div>
 
 
-                <div className="mt-5 flex items-center justify-end gap-3">
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
                     <button
                         type="button"
                         onClick={onBrowseRecipes}
-                        className="rounded-xl border border-primary bg-white px-6 py-3 text-base font-semibold text-primary transition hover:bg-stone-50 hover:shadow-md"
+                        className="w-full rounded-xl border border-primary bg-white px-6 py-3 text-base font-semibold text-primary transition hover:bg-stone-50 hover:shadow-md sm:w-auto"
                     >
                         Browse Recipes
                     </button>
@@ -139,7 +139,7 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId, o
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-xl bg-primary px-6 py-3 text-base font-semibold text-white transition hover:bg-primaryDark"
+                        className="w-full rounded-xl bg-primary px-6 py-3 text-base font-semibold text-white transition hover:bg-primaryDark sm:w-auto"
                     >
                         Cancel
                     </button>
@@ -327,9 +327,9 @@ export default function MealPlanner() {
 
             {/* HERO SECTION */}
             <section className="bg-mainbg">
-                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 lg:grid-cols-2 lg:px-6 lg:py-16">
+                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-10 lg:grid-cols-2 lg:px-6 lg:py-16">
                     <div className="flex flex-col justify-center text-center lg:text-left">
-                        <h1 className="text-4xl font-extrabold leading-tight text-neutral-700 md:text-5xl">
+                        <h1 className="text-3xl font-extrabold leading-tight text-neutral-700 sm:text-4xl md:text-5xl">
                             Plan Your Week,
                             <br />
                             One Meal at a Time
@@ -339,7 +339,7 @@ export default function MealPlanner() {
                             Build a personalized meal plan and let us handle the rest.
                         </p>
 
-                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
                             <button
                                 type="button"
                                 onClick={() =>
@@ -347,7 +347,7 @@ export default function MealPlanner() {
                                         .getElementById("meal-plan-builder")
                                         ?.scrollIntoView({ behavior: "smooth" })
                                 }
-                                className="rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition hover:bg-primaryDark"
+                                className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition hover:bg-primaryDark sm:w-auto"
                                 style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
                             >
                                 Get Started
@@ -356,7 +356,7 @@ export default function MealPlanner() {
                             <button
                                 type="button"
                                 onClick={() => navigate('/recipes')}
-                                className="rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition hover:bg-primaryDark"
+                                className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition hover:bg-primaryDark sm:w-auto"
                                 style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
                             >
                                 Browse Recipes
@@ -365,7 +365,7 @@ export default function MealPlanner() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-center">
+                    <div className="hidden items-center justify-center lg:flex">
                         <div
                             className="w-full max-w-md overflow-hidden rounded-3xl bg-card"
                             style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
@@ -390,10 +390,10 @@ export default function MealPlanner() {
             >
 
                 <div
-                    className="rounded-3xl bg-card px-6 py-10 md:px-10"
+                    className="rounded-3xl bg-card px-4 py-8 sm:px-6 sm:py-10 md:px-10"
                     style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
                 >
-                    <h2 className="text-center text-3xl font-bold text-neutral-700">
+                    <h2 className="text-center text-2xl font-bold text-neutral-700 sm:text-3xl">
                         🍴 Build Your Meal Plan
                     </h2>
 
@@ -537,7 +537,7 @@ export default function MealPlanner() {
                         </button>
                     </div>
 
-                    <div className="mt-5 flex flex-wrap justify-center gap-4">
+                    <div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-visible sm:pb-0">
                         {weekDays.map((x) => (
                             <DayPill
                                 key={x.ymd}
@@ -554,8 +554,8 @@ export default function MealPlanner() {
 
 
             {/* MEALS FOR SELECTED DAY */}
-            <section className="mx-auto mt-10 w-full max-w-6xl px-4 pb-14">
-                <h3 className="mb-4 text-2xl font-bold text-neutral-800">
+            <section className="mx-auto mt-8 w-full max-w-6xl px-4 pb-12 sm:mt-10 sm:pb-14">
+                <h3 className="mb-4 text-xl font-bold text-neutral-800 sm:text-2xl">
                     Meals for {formattedSelectedDate}
                 </h3>
 
@@ -564,7 +564,7 @@ export default function MealPlanner() {
                         No planned meals.
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
                         {mealsForDay.map((meal) => (
                             <MealCard key={meal.id} meal={meal} />
                         ))}

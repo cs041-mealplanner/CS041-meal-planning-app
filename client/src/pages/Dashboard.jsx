@@ -68,16 +68,16 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-mainbg">
-            <div className="max-w-7xl mx-auto px-6 py-12 space-y-10">
+            <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 sm:px-6 sm:py-12 sm:space-y-10">
 
 
                 {/* Welcome Section */}
                 <div>
-                    <h1 className="text-4xl font-bold text-primaryDark mb-2">
+                    <h1 className="text-3xl font-bold text-primaryDark mb-2 sm:text-4xl">
                         Welcome Back!
                     </h1>
 
-                    <p className="text-lg text-muted">
+                    <p className="text-base text-muted sm:text-lg">
                         New day, new meals — nourish your body and mind.
                     </p>
 
@@ -91,12 +91,12 @@ export default function Dashboard() {
                     </h2>
 
                     {isLoadingData ? (
-                        <div className="bg-card rounded-xl shadow-md p-12 text-center text-muted">
+                        <div className="bg-card rounded-xl shadow-md p-6 text-center text-muted sm:p-12">
                             Loading today's meals...
                         </div>
                     ) : todayMeals.length === 0 ? (
                         // Empty State
-                        <div className="bg-card rounded-xl shadow-md p-12 text-center">
+                        <div className="bg-card rounded-xl shadow-md p-6 text-center sm:p-12">
 
                             <svg
                                 className="mx-auto h-16 w-16 text-muted mb-4"
@@ -122,7 +122,7 @@ export default function Dashboard() {
 
                             <button
                                 onClick={() => navigate('/meal-planner')}
-                                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primaryDark transition-colors font-medium"
+                                className="w-full px-6 py-3 bg-primary sm:w-auto text-white rounded-lg hover:bg-primaryDark transition-colors font-medium"
                             >
                                 Start Planning
                             </button>

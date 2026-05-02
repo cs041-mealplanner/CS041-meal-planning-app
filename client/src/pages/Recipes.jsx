@@ -199,21 +199,25 @@ export default function Recipes() {
     return (
         <div className="min-h-screen bg-mainbg">
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-                <div className="mb-8 rounded-3xl bg-card p-5 shadow-sm sm:p-7 lg:p-8">
-                    <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <section className="mb-8 rounded-3xl bg-card p-5 shadow-sm sm:p-7 lg:p-8">
+                    <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-primaryDark sm:text-4xl lg:text-5xl">
+                            <div className="mb-3 inline-flex rounded-full bg-subtle px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                                Recipe library
+                            </div>
+
+                            <h1 className="text-3xl font-bold leading-tight text-primaryDark sm:text-4xl lg:text-5xl">
                                 Browse Recipes
                             </h1>
 
-                            <p className="mt-2 max-w-2xl text-sm text-muted sm:text-base">
+                            <p className="mt-3 max-w-2xl text-sm text-muted sm:text-base lg:text-lg">
                                 Search, filter, and find meals that fit your week.
                             </p>
                         </div>
 
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="hidden lg:inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-primary bg-card px-6 py-3 font-bold text-primary transition-colors hover:bg-subtle"
+                            className="hidden items-center justify-center gap-2 rounded-2xl border-2 border-primary bg-card px-6 py-3 font-bold text-primary transition-colors hover:bg-subtle lg:inline-flex"
                         >
                             <span className="text-xl leading-none">+</span>
                             Create Recipe
@@ -232,7 +236,7 @@ export default function Recipes() {
                                     value={searchInput}
                                     onChange={(e) => setSearchInput(e.target.value)}
                                     placeholder="Search recipes by name..."
-                                    className="w-full rounded-2xl border border-gray-300 bg-white py-4 pl-12 pr-4 text-base text-primaryDark shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="w-full rounded-2xl border border-gray-200 bg-white py-4 pl-12 pr-4 text-base text-primaryDark shadow-sm transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                                 />
                             </div>
 
@@ -252,8 +256,8 @@ export default function Recipes() {
                                     key={tag}
                                     onClick={() => handleFilterChange(tag)}
                                     className={`shrink-0 rounded-full px-5 py-3 font-semibold transition-colors ${activeFilter === tag
-                                            ? 'bg-primary text-white'
-                                            : 'border border-gray-200 bg-white text-primaryDark hover:bg-subtle'
+                                        ? 'bg-primary text-white'
+                                        : 'border border-gray-200 bg-white text-primaryDark hover:bg-subtle'
                                         }`}
                                 >
                                     {tag}
@@ -271,7 +275,7 @@ export default function Recipes() {
                         <span className="text-xl leading-none">+</span>
                         Create Recipe
                     </button>
-                </div>
+                </section>
 
                 {error && (
                     <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 p-5 sm:p-6">
@@ -294,12 +298,12 @@ export default function Recipes() {
 
                 {!loading && recipes.length === 0 && searchQuery && !error && (
                     <div className="rounded-3xl bg-card px-5 py-16 text-center shadow-sm sm:px-8 sm:py-20">
-                        <svg className="mx-auto mb-4 h-16 w-16 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-subtle text-3xl">
+                            🔍
+                        </div>
 
-                        <h3 className="mb-2 text-xl font-semibold text-primaryDark">
-                            No recipes found for "{searchQuery}"
+                        <h3 className="mb-2 text-xl font-bold text-primaryDark">
+                            No recipes found for &quot;{searchQuery}&quot;
                         </h3>
 
                         <p className="mb-6 text-muted">
@@ -308,7 +312,7 @@ export default function Recipes() {
 
                         <button
                             onClick={handleBrowseAll}
-                            className="rounded-xl bg-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-primaryDark"
+                            className="rounded-2xl bg-primary px-6 py-3 font-bold text-white transition-colors hover:bg-primaryDark"
                         >
                             Browse All Recipes
                         </button>

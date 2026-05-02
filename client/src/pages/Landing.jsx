@@ -1,6 +1,30 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
+const previewCards = [
+    { title: "Grilled Chicken Bowl", meta: "430 kcal · Balanced", emoji: "🍗", bg: "bg-[#EADBBC]" },
+    { title: "Garden Caesar Salad", meta: "320 kcal · Fresh", emoji: "🥗", bg: "bg-[#DCE8D7]" },
+    { title: "Eggs & Toast", meta: "280 kcal · Quick", emoji: "🍳", bg: "bg-[#DCE7F2]" },
+];
+
+const features = [
+    {
+        icon: "🗓️",
+        title: "Plan Your Week",
+        description: "Assign meals to your weekly calendar so every day has a simple plan.",
+    },
+    {
+        icon: "🍽️",
+        title: "Browse Recipes",
+        description: "Search and filter recipes by dietary preferences like vegan, vegetarian, high protein, and low carb.",
+    },
+    {
+        icon: "🛒",
+        title: "Auto Grocery List",
+        description: "Turn saved meals into a grocery list so shopping feels less chaotic.",
+    },
+];
+
 export default function Landing() {
     const navigate = useNavigate();
     const { isAuthenticated, isLoading } = useAuth();
@@ -18,156 +42,129 @@ export default function Landing() {
     }
 
     return (
-        <div className="bg-mainbg text-primaryDark">
-            {/* HERO */}
-            <section className="mx-auto max-w-6xl px-6 py-16 text-center">
-                <div className="text-xs font-semibold tracking-wide text-muted">
-                    🌿 Smart meal planning, made simple
-                </div>
+        <div className="min-h-screen bg-mainbg text-primaryDark">
+            <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+                <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+                    <div className="text-center lg:text-left">
+                        <div className="mx-auto mb-4 inline-flex rounded-full bg-card px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm lg:mx-0">
+                            🌿 Smart meal planning, made simple
+                        </div>
 
-                <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold leading-tight md:text-6xl">
-                    Plan your perfect
-                    <br />
-                    week of meals
-                </h1>
+                        <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight text-primaryDark sm:text-5xl lg:mx-0 lg:text-6xl">
+                            Plan your perfect week of meals
+                        </h1>
 
-                <p className="mx-auto mt-6 max-w-2xl text-base text-muted md:text-lg">
-                    Build a meal plan, discover recipes you love, and generate
-                    your grocery list — all in one place.
-                </p>
+                        <p className="mx-auto mt-5 max-w-2xl text-base text-muted sm:text-lg lg:mx-0">
+                            Build a meal plan, discover recipes you love, and generate your grocery list — all in one place.
+                        </p>
 
-                <button
-                    type="button"
-                    onClick={() => navigate("/login")}
-                    className="mt-8 rounded-xl bg-primary px-8 py-3 text-base font-semibold text-white"
-                    style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
-                >
-                    Get Started
-                </button>
+                        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+                            <button
+                                type="button"
+                                onClick={() => navigate("/login")}
+                                className="rounded-2xl bg-primary px-8 py-4 font-bold text-white shadow-sm transition-colors hover:bg-primaryDark"
+                            >
+                                Get Started
+                            </button>
 
-                <div className="mt-4 text-xs text-neutral-400">
-                    Free to use · No credit card required
+                            <button
+                                type="button"
+                                onClick={() => navigate("/login")}
+                                className="rounded-2xl border-2 border-primary bg-card px-8 py-4 font-bold text-primary transition-colors hover:bg-subtle"
+                            >
+                                Browse Recipes
+                            </button>
+                        </div>
+
+                        <div className="mt-4 text-sm text-muted">
+                            Free to use · No credit card required
+                        </div>
+                    </div>
+
+                    <div className="rounded-3xl bg-card p-4 shadow-sm sm:p-5 lg:p-6">
+                        <div className="rounded-3xl bg-subtle p-5">
+                            <div className="mb-5 flex items-center justify-between">
+                                <div>
+                                    <div className="text-sm font-semibold text-muted">This week</div>
+                                    <div className="text-2xl font-bold text-primaryDark">Meal snapshot</div>
+                                </div>
+                                <div className="rounded-full bg-card px-3 py-1 text-sm font-bold text-primary">7 days</div>
+                            </div>
+
+                            <div className="space-y-3">
+                                {previewCards.map((card) => (
+                                    <div key={card.title} className="flex items-center gap-4 rounded-2xl bg-card p-3 shadow-sm">
+                                        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-3xl ${card.bg}`}>
+                                            {card.emoji}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="truncate font-bold text-primaryDark">{card.title}</div>
+                                            <div className="mt-1 text-sm text-muted">{card.meta}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* PREVIEW CARDS */}
-            <section className="mx-auto max-w-6xl px-6 pb-16">
+            <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 sm:pb-16 lg:px-8">
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                    <div className="overflow-hidden rounded-2xl bg-card shadow-sm">
-                        <div className="flex h-44 items-center justify-center bg-[#EADBBC] text-5xl">
-                            🍗
-                        </div>
-                        <div className="p-4 text-left">
-                            <div className="text-lg font-bold text-neutral-800">
-                                Grilled Chicken Bowl
+                    {previewCards.map((card) => (
+                        <div key={card.title} className="overflow-hidden rounded-3xl bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                            <div className={`flex h-44 items-center justify-center text-5xl ${card.bg}`}>
+                                {card.emoji}
                             </div>
-                            <div className="mt-1 text-sm text-neutral-500">
-                                430 kcal · Lunch
+                            <div className="p-5 text-left">
+                                <div className="text-lg font-bold text-primaryDark">{card.title}</div>
+                                <div className="mt-1 text-sm text-muted">{card.meta}</div>
                             </div>
                         </div>
-                    </div>
-
-                    <div className="overflow-hidden rounded-2xl bg-card shadow-sm">
-                        <div className="flex h-44 items-center justify-center bg-[#DCE8D7] text-5xl">
-                            🥗
-                        </div>
-                        <div className="p-4 text-left">
-                            <div className="text-lg font-bold text-neutral-800">
-                                Caesar Salad
-                            </div>
-                            <div className="mt-1 text-sm text-neutral-500">
-                                320 kcal · Lunch
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="overflow-hidden rounded-2xl bg-card shadow-sm">
-                        <div className="flex h-44 items-center justify-center bg-[#DCE7F2] text-5xl">
-                            🍳
-                        </div>
-                        <div className="p-4 text-left">
-                            <div className="text-lg font-bold text-neutral-800">
-                                Eggs &amp; Toast
-                            </div>
-                            <div className="mt-1 text-sm text-neutral-500">
-                                280 kcal · Breakfast
-                            </div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
 
-            {/* FEATURES */}
-            <section className="bg-card py-20">
-                <div className="mx-auto max-w-6xl px-6 text-center">
-                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+            <section className="bg-card py-16 sm:py-20">
+                <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                         Why Nourishly
                     </div>
 
-                    <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-bold leading-tight md:text-5xl">
-                        Everything you need for
-                        <br />
-                        smarter meals
+                    <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-bold leading-tight text-primaryDark sm:text-4xl lg:text-5xl">
+                        Everything you need for smarter meals
                     </h2>
 
-                    <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-                        <div className="rounded-2xl bg-[#F2EEE6] p-8 text-left shadow-sm">
-                            <div className="text-2xl">🗓️</div>
-                            <h3 className="mt-5 text-xl font-bold text-neutral-800">
-                                Plan Your Week
-                            </h3>
-                            <p className="mt-3 text-sm leading-6 text-neutral-500">
-                                Assign breakfast, lunch, and dinner to every day
-                                of the week. Stay organized and stop wondering
-                                what to eat.
-                            </p>
-                        </div>
-
-                        <div className="rounded-2xl bg-[#F2EEE6] p-8 text-left shadow-sm">
-                            <div className="text-2xl">🍽️</div>
-                            <h3 className="mt-5 text-xl font-bold text-neutral-800">
-                                Browse Recipes
-                            </h3>
-                            <p className="mt-3 text-sm leading-6 text-neutral-500">
-                                Discover new dishes filtered by meal type and
-                                dietary preference. Add any recipe to your plan
-                                in one tap.
-                            </p>
-                        </div>
-
-                        <div className="rounded-2xl bg-[#F2EEE6] p-8 text-left shadow-sm">
-                            <div className="text-2xl">🛒</div>
-                            <h3 className="mt-5 text-xl font-bold text-neutral-800">
-                                Auto Grocery List
-                            </h3>
-                            <p className="mt-3 text-sm leading-6 text-neutral-500">
-                                Your grocery list builds itself as you plan. No
-                                more forgetting ingredients — just shop and
-                                cook.
-                            </p>
-                        </div>
+                    <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
+                        {features.map((feature) => (
+                            <div key={feature.title} className="rounded-3xl bg-mainbg p-6 text-left shadow-sm sm:p-8">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card text-2xl">
+                                    {feature.icon}
+                                </div>
+                                <h3 className="mt-5 text-xl font-bold text-primaryDark">{feature.title}</h3>
+                                <p className="mt-3 text-sm leading-6 text-muted sm:text-base">
+                                    {feature.description}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* BOTTOM CTA */}
-            <section className="bg-primary py-20 text-center text-white mb-0">
-                <div className="mx-auto max-w-3xl px-6">
-                    <h2 className="text-3xl font-bold leading-tight md:text-5xl">
-                        Ready to start eating
-                        <br />
-                        better?
+            <section className="bg-primary py-16 text-center text-white sm:py-20">
+                <div className="mx-auto max-w-3xl px-4 sm:px-6">
+                    <h2 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                        Ready to start eating better?
                     </h2>
 
-                    <p className="mx-auto mt-6 max-w-xl text-sm text-white/80 md:text-base">
-                        Join Nourishly and take the stress out of meal
-                        planning — for good.
+                    <p className="mx-auto mt-5 max-w-xl text-sm text-white/85 sm:text-base">
+                        Join Nourishly and take the stress out of meal planning — for good.
                     </p>
 
                     <button
                         type="button"
                         onClick={() => navigate("/login")}
-                        className="mt-8 rounded-xl bg-white px-8 py-3 text-base font-semibold text-primaryDark"
+                        className="mt-8 rounded-2xl bg-white px-8 py-4 font-bold text-primaryDark transition hover:bg-subtle"
                     >
                         Get Started
                     </button>

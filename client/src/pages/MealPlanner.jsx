@@ -1,10 +1,7 @@
-// meal planner page
-
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMealPlanner } from "../features/mealPlanner/useMealPlanner";
 import { listRecipes, normalizeRecipesForPlanner } from "../features/recipes/recipeStorage";
-
 
 function AddMealCard({ label, onClick, disabled = false }) {
     return (
@@ -13,42 +10,37 @@ function AddMealCard({ label, onClick, disabled = false }) {
             onClick={onClick}
             disabled={disabled}
             className={[
-                "group flex h-[19.5rem] w-full flex-col items-center justify-center rounded-2xl border border-stone-300 bg-card px-6 py-6 shadow-sm transition duration-200",
+                "group flex min-h-56 w-full flex-col items-center justify-center rounded-3xl border-2 border-dashed border-gray-200 bg-card px-6 py-6 shadow-sm transition duration-200 md:min-h-[19.5rem]",
                 disabled
                     ? "cursor-not-allowed opacity-70"
-                    : "hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg",
+                    : "hover:-translate-y-1 hover:border-primary/50 hover:bg-subtle hover:shadow-md",
             ].join(" ")}
         >
-            <div className="flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-xl bg-subtle transition duration-200 group-hover:bg-white">
-                <span className="text-4xl font-bold text-muted">+</span>
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-subtle transition duration-200 group-hover:bg-card">
+                <span className="text-4xl font-bold text-primary">+</span>
             </div>
 
-            <div className="mt-4 text-xl font-semibold text-neutral-900">Add meal</div>
-            <div className="mt-2 text-base text-muted">{label}</div>
+            <div className="mt-4 text-xl font-bold text-primaryDark">Add meal</div>
+            <div className="mt-1 text-sm font-medium text-muted">{label}</div>
         </button>
     );
 }
 
-
 function MealCard({ meal }) {
     return (
-        <div
-            className="overflow-hidden rounded-2xl border border-stone-300 bg-card"
-            style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
-        >
+        <div className="overflow-hidden rounded-3xl bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-md">
             <img
                 src={meal.imageUrl}
                 alt={meal.title}
-                className="h-64 w-full object-cover"
+                className="h-56 w-full object-cover sm:h-64"
             />
-            <div className="p-4">
-                <div className="text-lg font-bold text-neutral-700">{meal.title}</div>
-                <div className="mt-1 text-sm text-neutral-500">{meal.meta}</div>
+            <div className="p-5">
+                <div className="line-clamp-2 text-lg font-bold text-primaryDark">{meal.title}</div>
+                <div className="mt-1 text-sm text-muted">{meal.meta}</div>
             </div>
         </div>
     );
 }
-
 
 function DayPill({ d, label, active, onClick }) {
     return (
@@ -56,82 +48,88 @@ function DayPill({ d, label, active, onClick }) {
             type="button"
             onClick={onClick}
             className={[
-                "flex h-24 w-[4.5rem] flex-col items-center justify-center rounded-2xl border border-stone-300",
-                active ? "bg-primary text-white" : "bg-card text-neutral-500",
+                "flex h-20 min-w-[4.5rem] shrink-0 flex-col items-center justify-center rounded-2xl border-2 transition-colors sm:h-24 sm:min-w-[4.75rem]",
+                active
+                    ? "border-primary bg-primary text-white shadow-sm"
+                    : "border-transparent bg-card text-muted hover:bg-subtle hover:text-primaryDark",
             ].join(" ")}
         >
-            <div className="text-[1.75rem] font-bold leading-6">{d}</div>
-            <div className="mt-2 text-base tracking-tight">{label}</div>
+            <div className="text-2xl font-bold leading-6 sm:text-3xl">{d}</div>
+            <div className="mt-2 text-sm font-semibold tracking-tight">{label}</div>
         </button>
     );
 }
-
 
 function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId, onBrowseRecipes }) {
     if (!open || !slot) return null;
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-3 sm:p-4"
             role="dialog"
             aria-modal="true"
         >
-            <div className="w-full max-w-4xl rounded-3xl border border-stone-300 bg-card p-8">
-                <div className="flex items-start justify-between">
+            <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-card p-4 shadow-xl sm:p-6 md:p-8">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <div className="text-3xl font-bold text-neutral-800">
+                        <div className="text-2xl font-bold text-primaryDark sm:text-3xl">
                             Choose a {slot} meal
                         </div>
-                        <div className="mt-2 text-base text-neutral-500">
-                            Pick one dish to assign to this slot.
+                        <div className="mt-2 text-sm text-muted sm:text-base">
+                            Pick one recipe to assign to this slot.
                         </div>
                     </div>
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-xl bg-primary px-4 py-2 text-base font-semibold text-white transition hover:bg-primaryDark"
+                        className="flex h-10 w-10 items-center justify-center self-end rounded-full bg-subtle text-primaryDark transition hover:bg-primary hover:text-white sm:self-auto"
+                        aria-label="Close meal picker"
                     >
                         ✕
                     </button>
                 </div>
 
-                <div className="mt-5 max-h-[55vh] overflow-auto rounded-2xl border border-stone-200">
-                    <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
-                        {dishesForSlot.map((d) => (
-                            <button
-                                key={d.id}
-                                type="button"
-                                onClick={() => onSelectDishId(d.id)}
-                                className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4 text-left hover:bg-stone-50"
-                            >
-                                <img
-                                    src={d.image}
-                                    alt={d.name}
-                                    className="h-20 w-20 rounded-xl object-cover"
-                                />
+                <div className="mt-5 max-h-[55vh] overflow-auto rounded-2xl border border-gray-100">
+                    {dishesForSlot.length === 0 ? (
+                        <div className="p-8 text-center text-muted">
+                            No recipes available yet. Browse recipes or create one first.
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
+                            {dishesForSlot.map((d) => (
+                                <button
+                                    key={d.id}
+                                    type="button"
+                                    onClick={() => onSelectDishId(d.id)}
+                                    className="flex items-center gap-4 rounded-2xl bg-white p-4 text-left transition hover:bg-subtle"
+                                >
+                                    <img
+                                        src={d.image}
+                                        alt={d.name}
+                                        className="h-20 w-20 shrink-0 rounded-xl object-cover"
+                                    />
 
-                                <div className="min-w-0">
-                                    <div className="truncate text-lg font-bold text-neutral-800">
-                                        {d.name}
+                                    <div className="min-w-0">
+                                        <div className="truncate text-base font-bold text-primaryDark sm:text-lg">
+                                            {d.name}
+                                        </div>
+
+                                        <div className="mt-1 text-sm text-muted">
+                                            {d.nutrition?.calories ?? "?"} kcal
+                                        </div>
                                     </div>
-
-                                    <div className="mt-2 text-base text-neutral-500">
-                                        {d.nutrition?.calories ?? "?"} kcal
-                                    </div>
-                                </div>
-
-                            </button>
-                        ))}
-                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-
-                <div className="mt-5 flex items-center justify-end gap-3">
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
                     <button
                         type="button"
                         onClick={onBrowseRecipes}
-                        className="rounded-xl border border-primary bg-white px-6 py-3 text-base font-semibold text-primary transition hover:bg-stone-50 hover:shadow-md"
+                        className="w-full rounded-2xl border-2 border-primary bg-card px-6 py-3 font-bold text-primary transition hover:bg-subtle sm:w-auto"
                     >
                         Browse Recipes
                     </button>
@@ -139,17 +137,15 @@ function DishPickerModal({ open, slot, dishesForSlot, onClose, onSelectDishId, o
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-xl bg-primary px-6 py-3 text-base font-semibold text-white transition hover:bg-primaryDark"
+                        className="w-full rounded-2xl bg-primary px-6 py-3 font-bold text-white transition hover:bg-primaryDark sm:w-auto"
                     >
-                        Cancel
+                        Done
                     </button>
                 </div>
-
             </div>
         </div>
     );
 }
-
 
 export default function MealPlanner() {
     const navigate = useNavigate();
@@ -183,8 +179,6 @@ export default function MealPlanner() {
         };
     }, []);
 
-
-    // destructuring values/actions returned by useMealPlanner() into local variables
     const {
         entries,
         selectedYmd,
@@ -201,11 +195,9 @@ export default function MealPlanner() {
         removeMeal,
     } = useMealPlanner();
 
-
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerSlot, setPickerSlot] = useState(null);
     const isPlannerBusy = isLoading || isLoadingRecipes;
-
 
     const dishById = useMemo(() => {
         const map = new Map();
@@ -213,11 +205,11 @@ export default function MealPlanner() {
         return map;
     }, [allRecipes]);
 
-
     const mealsForDay = useMemo(() => {
+        const slotOrder = { breakfast: 0, lunch: 1, dinner: 2 };
         const dayEntries = entries
             .filter((e) => e.date === selectedYmd)
-            .sort((a, b) => a.slot.localeCompare(b.slot));
+            .sort((a, b) => (slotOrder[a.slot] ?? 99) - (slotOrder[b.slot] ?? 99));
 
         return dayEntries
             .map((e) => {
@@ -234,21 +226,16 @@ export default function MealPlanner() {
             .filter(Boolean);
     }, [entries, selectedYmd, dishById]);
 
-
     const weekLabel = useMemo(() => {
         if (!weekDays || weekDays.length === 0) return "";
 
         const start = weekDays[0].dateObj;
         const end = weekDays[6].dateObj;
-
-
         const sameMonth =
             start.getMonth() === end.getMonth() &&
             start.getFullYear() === end.getFullYear();
-
         const monthStart = start.toLocaleDateString(undefined, { month: "long" });
         const monthEnd = end.toLocaleDateString(undefined, { month: "long" });
-
         const startDay = start.getDate();
         const endDay = end.getDate();
 
@@ -257,7 +244,6 @@ export default function MealPlanner() {
         }
         return `${monthStart} ${startDay} - ${monthEnd} ${endDay}`;
     }, [weekDays]);
-
 
     const formattedSelectedDate = useMemo(() => {
         if (!selectedYmd) return "";
@@ -272,7 +258,6 @@ export default function MealPlanner() {
         });
     }, [selectedYmd]);
 
-
     const shortSelectedDate = useMemo(() => {
         if (!selectedYmd) return "";
 
@@ -285,12 +270,10 @@ export default function MealPlanner() {
         });
     }, [selectedYmd]);
 
-
     const dishesForPickerSlot = useMemo(() => {
         if (!pickerSlot) return [];
         return allRecipes;
     }, [pickerSlot, allRecipes]);
-
 
     function openPicker(slot) {
         if (isPlannerBusy) return;
@@ -309,9 +292,8 @@ export default function MealPlanner() {
         closePicker();
     }
 
-
     return (
-        <div className="min-h-screen bg-secondarybg">
+        <div className="min-h-screen bg-mainbg">
             <DishPickerModal
                 open={pickerOpen}
                 slot={pickerSlot}
@@ -324,22 +306,24 @@ export default function MealPlanner() {
                 }}
             />
 
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+                <section className="mb-8 rounded-3xl bg-card p-5 shadow-sm sm:p-7 lg:p-8">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                        <div>
+                            <div className="mb-3 inline-flex rounded-full bg-subtle px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                                Weekly meal planner
+                            </div>
 
-            {/* HERO SECTION */}
-            <section className="bg-mainbg">
-                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 lg:grid-cols-2 lg:px-6 lg:py-16">
-                    <div className="flex flex-col justify-center text-center lg:text-left">
-                        <h1 className="text-4xl font-extrabold leading-tight text-neutral-700 md:text-5xl">
-                            Plan Your Week,
-                            <br />
-                            One Meal at a Time
-                        </h1>
+                            <h1 className="max-w-3xl text-3xl font-bold leading-tight text-primaryDark sm:text-4xl lg:text-5xl">
+                                Plan your week, one meal at a time
+                            </h1>
 
-                        <p className="mt-4 text-lg text-neutral-500">
-                            Build a personalized meal plan and let us handle the rest.
-                        </p>
+                            <p className="mt-3 max-w-2xl text-sm text-muted sm:text-base lg:text-lg">
+                                Build your weekly meal plan, assign recipes to breakfast, lunch, and dinner, then save when you are ready.
+                            </p>
+                        </div>
 
-                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                        <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
                             <button
                                 type="button"
                                 onClick={() =>
@@ -347,67 +331,40 @@ export default function MealPlanner() {
                                         .getElementById("meal-plan-builder")
                                         ?.scrollIntoView({ behavior: "smooth" })
                                 }
-                                className="rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition hover:bg-primaryDark"
-                                style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
+                                className="rounded-2xl bg-primary px-6 py-3 font-bold text-white shadow-sm transition hover:bg-primaryDark"
                             >
-                                Get Started
+                                Create My Plan
                             </button>
 
                             <button
                                 type="button"
                                 onClick={() => navigate('/recipes')}
-                                className="rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition hover:bg-primaryDark"
-                                style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
+                                className="rounded-2xl border-2 border-primary bg-card px-6 py-3 font-bold text-primary transition hover:bg-subtle"
                             >
                                 Browse Recipes
                             </button>
-
                         </div>
                     </div>
+                </section>
 
-                    <div className="flex items-center justify-center">
-                        <div
-                            className="w-full max-w-md overflow-hidden rounded-3xl bg-card"
-                            style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
-                        >
+                <section id="meal-plan-builder" className="mb-8 rounded-3xl bg-card p-5 shadow-sm sm:p-7 lg:p-8">
+                    <div className="mb-6 text-center">
+                        <h2 className="text-2xl font-bold text-primaryDark sm:text-3xl">
+                            🍴 Build Your Meal Plan
+                        </h2>
 
-                            <img
-                                src="https://placehold.co/493x403"
-                                alt="Meal"
-                                className="h-80 w-full object-cover"
-                            />
-                        </div>
+                        <p className="mt-2 text-sm text-muted sm:text-base">
+                            {shortSelectedDate}
+                        </p>
                     </div>
-
-                </div>
-            </section>
-
-
-            {/* BUILD MEAL PLAN CARD */}
-            <section
-                id="meal-plan-builder"
-                className="mx-auto mt-10 w-full max-w-6xl px-4"
-            >
-
-                <div
-                    className="rounded-3xl bg-card px-6 py-10 md:px-10"
-                    style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
-                >
-                    <h2 className="text-center text-3xl font-bold text-neutral-700">
-                        🍴 Build Your Meal Plan
-                    </h2>
-
-                    <p className="mt-2 text-center text-base font-light tracking-wide text-neutral-400 md:text-lg">
-                        {shortSelectedDate}
-                    </p>
 
                     {(isLoading || isLoadingRecipes) && (
-                        <div className="mt-6 text-center text-sm text-muted">
+                        <div className="mb-6 rounded-2xl bg-subtle p-4 text-center text-sm text-muted">
                             Loading your meal plan...
                         </div>
                     )}
 
-                    <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                         {["breakfast", "lunch", "dinner"].map((slot) => {
                             const entry = getEntry(selectedYmd, slot);
                             const dish = entry ? dishById.get(entry.dishId) : null;
@@ -426,11 +383,10 @@ export default function MealPlanner() {
                             return (
                                 <div
                                     key={slot}
-                                    className="flex h-[19.5rem] flex-col rounded-2xl border border-stone-300 bg-card p-3.5 transition duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
-                                    style={{ boxShadow: "0 8px 24px rgba(20,30,25,0.08)" }}
+                                    className="flex min-h-[19.5rem] flex-col rounded-3xl bg-card p-4 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
                                 >
-                                    <div className="flex items-start justify-between">
-                                        <div className="text-sm font-semibold text-neutral-700 capitalize">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="rounded-full bg-subtle px-3 py-1 text-xs font-bold capitalize text-primaryDark">
                                             {slot}
                                         </div>
 
@@ -439,7 +395,7 @@ export default function MealPlanner() {
                                                 type="button"
                                                 onClick={() => openPicker(slot)}
                                                 disabled={isPlannerBusy}
-                                                className="text-xs font-semibold text-primary transition hover:text-primaryDark hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+                                                className="text-xs font-bold text-primary transition hover:text-primaryDark disabled:cursor-not-allowed disabled:opacity-60"
                                             >
                                                 Replace
                                             </button>
@@ -448,42 +404,39 @@ export default function MealPlanner() {
                                                 type="button"
                                                 onClick={() => removeMeal(selectedYmd, slot)}
                                                 disabled={isPlannerBusy}
-                                                className="text-xs font-semibold text-red-600 transition hover:text-red-700 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+                                                className="text-xs font-bold text-red-600 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                                             >
                                                 Remove
                                             </button>
-
                                         </div>
                                     </div>
 
-                                    <div className="mt-2.5 flex flex-1 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                                    <div className="mt-3 flex flex-1 flex-col overflow-hidden rounded-2xl bg-white">
                                         <img
                                             src={dish.image}
                                             alt={dish.name}
-                                            className="aspect-square w-full max-h-[10.75rem] flex-none object-cover"
+                                            className="h-44 w-full flex-none object-cover"
                                         />
-                                        <div className="flex-none p-3">
-                                            <div className="text-base font-bold text-neutral-800">
+                                        <div className="flex-none p-4">
+                                            <div className="line-clamp-2 text-base font-bold text-primaryDark">
                                                 {dish.name}
                                             </div>
 
-                                            <div className="mt-1 text-sm text-neutral-500">
+                                            <div className="mt-1 text-sm text-muted">
                                                 {dish.nutrition?.calories ?? "?"} kcal
                                             </div>
-
                                         </div>
-
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
 
-                    <div className="mt-8 flex flex-wrap justify-center gap-3">
+                    <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
                         <button
                             type="button"
                             onClick={() => navigate("/dashboard")}
-                            className="rounded-xl bg-stone-200 px-6 py-3.5 text-base font-semibold text-primaryDark transition duration-200 hover:-translate-y-0.5 hover:bg-stone-300 hover:shadow-md"
+                            className="rounded-2xl border-2 border-primary bg-card px-6 py-3 font-bold text-primary transition hover:bg-subtle"
                         >
                             Back to Dashboard
                         </button>
@@ -493,84 +446,85 @@ export default function MealPlanner() {
                             onClick={save}
                             disabled={isPlannerBusy || isSaving || !isDirty}
                             className={[
-                                "rounded-xl border px-6 py-3.5 text-base font-semibold transition duration-200 hover:-translate-y-0.5 hover:shadow-md",
+                                "rounded-2xl px-6 py-3 font-bold transition",
                                 isDirty
-                                    ? "border-primary bg-primary text-white hover:bg-primaryDark"
-                                    : "border-primary bg-white text-primary hover:bg-stone-50",
-                                isPlannerBusy || isSaving || !isDirty ? "cursor-default" : "",
+                                    ? "bg-primary text-white hover:bg-primaryDark"
+                                    : "border-2 border-primary bg-white text-primary",
+                                isPlannerBusy || isSaving || !isDirty ? "cursor-default opacity-80" : "shadow-sm",
                             ].join(" ")}
-                            style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
                         >
                             {isSaving ? "Saving..." : isDirty ? "Save Plan" : "Saved"}
                         </button>
-
                     </div>
-                </div>
-            </section>
+                </section>
 
-
-            {/* WEEK SELECTOR */}
-            <section className="mx-auto mt-10 w-full max-w-6xl px-4">
-                <div
-                    className="mx-auto w-full max-w-2xl rounded-2xl bg-subtle px-8 py-6"
-                    style={{ boxShadow: "0 10px 30px rgba(20,30,25,0.08)" }}
-                >
-                    <div className="flex items-center justify-between">
+                <section className="mb-8 rounded-3xl bg-card p-5 shadow-sm sm:p-7 lg:p-8">
+                    <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <button
                             type="button"
                             onClick={goPrevWeek}
-                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-base font-semibold text-white transition hover:bg-primaryDark"
+                            className="flex h-11 w-full items-center justify-center rounded-2xl bg-subtle font-bold text-primaryDark transition hover:bg-primary hover:text-white sm:w-11"
+                            aria-label="Previous week"
                         >
-                            {"<"}
+                            ←
                         </button>
 
-                        <div className="text-center text-4xl font-semibold text-neutral-500">
-                            {weekLabel}
+                        <div className="text-center">
+                            <div className="text-xs font-semibold uppercase tracking-wide text-muted">Current week</div>
+                            <div className="mt-1 text-2xl font-bold text-primaryDark sm:text-3xl">
+                                {weekLabel}
+                            </div>
                         </div>
 
                         <button
                             type="button"
                             onClick={goNextWeek}
-                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-base font-semibold text-white transition hover:bg-primaryDark"
+                            className="flex h-11 w-full items-center justify-center rounded-2xl bg-subtle font-bold text-primaryDark transition hover:bg-primary hover:text-white sm:w-11"
+                            aria-label="Next week"
                         >
-                            {">"}
+                            →
                         </button>
                     </div>
 
-                    <div className="mt-5 flex flex-wrap justify-center gap-4">
-                        {weekDays.map((x) => (
-                            <DayPill
-                                key={x.ymd}
-                                d={String(x.dayNumber)}
-                                label={x.label}
-                                active={x.ymd === selectedYmd}
-                                onClick={() => setSelectedDate(x.dateObj)}
-                            />
-                        ))}
+                    <div className="relative -mx-5 sm:mx-0">
+                        <div className="flex gap-3 overflow-x-auto px-5 pb-2 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 sm:pb-0">
+                            {weekDays.map((x) => (
+                                <DayPill
+                                    key={x.ymd}
+                                    d={String(x.dayNumber)}
+                                    label={x.label}
+                                    active={x.ymd === selectedYmd}
+                                    onClick={() => setSelectedDate(x.dateObj)}
+                                />
+                            ))}
+                        </div>
+                        <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-card to-transparent sm:hidden" />
+                    </div>
+                </section>
+
+                <section className="pb-4 sm:pb-6">
+                    <div className="mb-4">
+                        <h3 className="text-2xl font-bold text-primaryDark sm:text-3xl">
+                            Meals for {formattedSelectedDate}
+                        </h3>
+                        <p className="mt-1 text-sm text-muted">
+                            Saved meals for the selected day.
+                        </p>
                     </div>
 
-                </div>
-            </section>
-
-
-            {/* MEALS FOR SELECTED DAY */}
-            <section className="mx-auto mt-10 w-full max-w-6xl px-4 pb-14">
-                <h3 className="mb-4 text-2xl font-bold text-neutral-800">
-                    Meals for {formattedSelectedDate}
-                </h3>
-
-                {mealsForDay.length === 0 ? (
-                    <div className="rounded-2xl border border-stone-300 bg-card p-8 text-center text-neutral-500">
-                        No planned meals.
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        {mealsForDay.map((meal) => (
-                            <MealCard key={meal.id} meal={meal} />
-                        ))}
-                    </div>
-                )}
-            </section>
+                    {mealsForDay.length === 0 ? (
+                        <div className="rounded-3xl bg-card p-8 text-center text-muted shadow-sm">
+                            No planned meals yet.
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                            {mealsForDay.map((meal) => (
+                                <MealCard key={meal.id} meal={meal} />
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
         </div>
     );
 }

@@ -7,16 +7,13 @@ import MealCard from '../components/MealCard';
 import { loadMealPlanEntries } from '../features/mealPlanner/mealPlannerRepo';
 import { listRecipes, normalizeRecipesForPlanner } from '../features/recipes/recipeStorage';
 
-
 export default function Dashboard() {
     const navigate = useNavigate();
     const today = dayjs().format('YYYY-MM-DD');
 
-
     const [allRecipes, setAllRecipes] = useState([]);
     const [mealPlanEntries, setMealPlanEntries] = useState([]);
     const [isLoadingData, setIsLoadingData] = useState(true);
-
 
     useEffect(() => {
         let isMounted = true;
@@ -48,90 +45,94 @@ export default function Dashboard() {
         };
     }, []);
 
-
-    // Load today's meals
     const todayMeals = useMemo(() => {
-        const todayEntries = mealPlanEntries.filter(entry => entry.date === today);
-
-
-        // Sort by slot (breakfast, lunch, dinner)
+        const todayEntries = mealPlanEntries.filter((entry) => entry.date === today);
         const slotOrder = { breakfast: 0, lunch: 1, dinner: 2 };
-        todayEntries.sort((a, b) => slotOrder[a.slot] - slotOrder[b.slot]);
 
-
-        // Map to dish objects
         return todayEntries
-            .map(entry => allRecipes.find(d => d.id === entry.dishId))
-            .filter(Boolean);   // Remove any null/undefined
+            .sort((a, b) => (slotOrder[a.slot] ?? 99) - (slotOrder[b.slot] ?? 99))
+            .map((entry) => allRecipes.find((dish) => dish.id === entry.dishId))
+            .filter(Boolean);
     }, [allRecipes, mealPlanEntries, today]);
-
 
     return (
         <div className="min-h-screen bg-mainbg">
-            <div className="max-w-7xl mx-auto px-6 py-12 space-y-10">
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+                <section className="mb-8 rounded-3xl bg-card p-5 shadow-sm sm:p-7 lg:p-8">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                        <div>
+                            <div className="mb-3 inline-flex rounded-full bg-subtle px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                                Today’s overview
+                            </div>
 
+                            <h1 className="text-3xl font-bold leading-tight text-primaryDark sm:text-4xl lg:text-5xl">
+                                Welcome Back!
+                            </h1>
 
-                {/* Welcome Section */}
-                <div>
-                    <h1 className="text-4xl font-bold text-primaryDark mb-2">
-                        Welcome Back!
-                    </h1>
+                            <p className="mt-3 max-w-2xl text-sm text-muted sm:text-base lg:text-lg">
+                                New day, new meals — check today’s plan, review your week, and keep your grocery list moving.
+                            </p>
+                        </div>
 
-                    <p className="text-lg text-muted">
-                        New day, new meals — nourish your body and mind.
-                    </p>
+                        <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/meal-planner')}
+                                className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primaryDark sm:text-base"
+                            >
+                                Plan Meals
+                            </button>
 
-                </div>
+                            <button
+                                type="button"
+                                onClick={() => navigate('/recipes')}
+                                className="rounded-2xl border-2 border-primary bg-card px-5 py-3 text-sm font-bold text-primary transition-colors hover:bg-subtle sm:text-base"
+                            >
+                                Browse Recipes
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
-
-                {/* Meals for Today */}
-                <section>
-                    <h2 className="text-2xl font-semibold text-primaryDark mb-6">
-                        Meals for Today
-                    </h2>
+                <section className="mb-8">
+                    <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-primaryDark sm:text-3xl">
+                                Meals for Today
+                            </h2>
+                            <p className="mt-1 text-sm text-muted">
+                                Breakfast, lunch, and dinner appear here after you save your plan.
+                            </p>
+                        </div>
+                    </div>
 
                     {isLoadingData ? (
-                        <div className="bg-card rounded-xl shadow-md p-12 text-center text-muted">
-                            Loading today's meals...
+                        <div className="rounded-3xl bg-card p-8 text-center text-muted shadow-sm sm:p-12">
+                            Loading today&apos;s meals...
                         </div>
                     ) : todayMeals.length === 0 ? (
-                        // Empty State
-                        <div className="bg-card rounded-xl shadow-md p-12 text-center">
+                        <div className="rounded-3xl bg-card p-8 text-center shadow-sm sm:p-12">
+                            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-subtle text-3xl">
+                                🗓️
+                            </div>
 
-                            <svg
-                                className="mx-auto h-16 w-16 text-muted mb-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                            </svg>
-
-                            <h3 className="text-xl font-semibold text-primaryDark mb-2">
+                            <h3 className="mb-2 text-xl font-bold text-primaryDark sm:text-2xl">
                                 No meals planned for today
                             </h3>
 
-                            <p className="text-muted mb-6">
-                                Start planning your meals to see them here
+                            <p className="mx-auto mb-6 max-w-md text-sm text-muted sm:text-base">
+                                Start planning your meals to see today&apos;s lineup here.
                             </p>
 
                             <button
                                 onClick={() => navigate('/meal-planner')}
-                                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primaryDark transition-colors font-medium"
+                                className="w-full rounded-2xl bg-primary px-6 py-3 font-bold text-white transition-colors hover:bg-primaryDark sm:w-auto"
                             >
                                 Start Planning
                             </button>
-
                         </div>
                     ) : (
-
-                        // Meal Cards
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                             {todayMeals.map((dish, idx) => (
                                 <MealCard key={`${dish.id}-${idx}`} dish={dish} />
                             ))}
@@ -139,17 +140,15 @@ export default function Dashboard() {
                     )}
                 </section>
 
+                <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+                    <section>
+                        <DashboardCalendar allRecipes={allRecipes} mealPlanEntries={mealPlanEntries} />
+                    </section>
 
-                {/* Weekly Calendar weekly */}
-                <section>
-                    <DashboardCalendar allRecipes={allRecipes} mealPlanEntries={mealPlanEntries} />
-                </section>
-
-
-                {/* Grocery List Widget */}
-                <section>
-                    <GroceryListWidget />
-                </section>
+                    <section>
+                        <GroceryListWidget />
+                    </section>
+                </div>
             </div>
         </div>
     );

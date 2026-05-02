@@ -5,6 +5,23 @@ import AuthPageLayout from "../components/AuthPageLayout";
 
 const PASSWORD_MIN_LENGTH = 8;
 
+function EyeIcon() {
+    return (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+    );
+}
+
+function EyeSlashIcon() {
+    return (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+        </svg>
+    );
+}
+
 function PasswordField({
     id,
     label,
@@ -16,10 +33,7 @@ function PasswordField({
 }) {
     return (
         <div>
-            <label
-                htmlFor={id}
-                className="mb-2 block text-sm font-medium text-gray-600"
-            >
+            <label htmlFor={id} className="mb-2 block text-sm font-semibold text-primaryDark">
                 {label}
             </label>
 
@@ -29,7 +43,7 @@ function PasswordField({
                     type={show ? "text" : "password"}
                     value={value}
                     onChange={onChange}
-                    className="w-full rounded-lg bg-[#F5F5F5] px-4 py-3 pr-12 transition focus:outline-none focus:ring-2 focus:ring-[#6B8E6F]"
+                    className="w-full rounded-2xl border border-gray-200 bg-subtle px-4 py-3 pr-12 text-primaryDark transition placeholder:text-muted/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder={placeholder}
                     required
                 />
@@ -37,19 +51,10 @@ function PasswordField({
                 <button
                     type="button"
                     onClick={onToggle}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted transition hover:text-primaryDark"
                     aria-label={show ? "Hide password" : "Show password"}
                 >
-                    {show ? (
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                    ) : (
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                        </svg>
-                    )}
+                    {show ? <EyeIcon /> : <EyeSlashIcon />}
                 </button>
             </div>
         </div>
@@ -176,54 +181,57 @@ export default function ForgotPassword() {
 
     return (
         <AuthPageLayout>
-            <div className="w-full rounded-3xl bg-white p-8 shadow-lg lg:p-10">
-                <h2 className="mb-3 text-center text-3xl font-bold text-[#6B8E6F]">
-                    Forgot Password
-                </h2>
+            <div className="w-full rounded-3xl border border-white/70 bg-card p-5 shadow-sm sm:p-8 lg:p-10">
+                <div className="mb-6 text-center sm:mb-8">
+                    <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary">
+                        Account recovery
+                    </p>
+                    <h2 className="text-3xl font-bold text-primaryDark sm:text-4xl">
+                        Reset Password
+                    </h2>
+                    <p className="mt-2 text-sm text-muted">
+                        {step === "request"
+                            ? "Enter your email and we'll send you a verification code."
+                            : "Enter the code from your email and choose a new password."}
+                    </p>
+                </div>
 
-                <p className="mb-6 text-center text-sm text-gray-600">
-                    {step === "request"
-                        ? "Enter your email and we'll send you a verification code."
-                        : "Enter the confirmation code from your email and choose a new password."}
-                </p>
+                <div className="mb-8 rounded-2xl bg-subtle p-4">
+                    <div className="flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-wide">
+                        <div className="flex items-center gap-2">
+                            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step === "request" ? "bg-primary text-white" : "bg-card text-primary"}`}>
+                                1
+                            </span>
+                            <span className="text-muted">Email</span>
+                        </div>
 
-                <div className="mb-8 flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-wide">
-                    <div className="flex items-center gap-2">
-                        <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step === "request" ? "bg-[#6B8E6F] text-white" : "bg-[#DDE8DE] text-[#6B8E6F]"}`}>
-                            1
-                        </span>
-                        <span className="text-gray-600">Email</span>
-                    </div>
+                        <div className="h-px w-10 bg-gray-200" />
 
-                    <div className="h-px w-10 bg-gray-300" />
-
-                    <div className="flex items-center gap-2">
-                        <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step === "confirm" ? "bg-[#6B8E6F] text-white" : "bg-[#F0F0F0] text-gray-500"}`}>
-                            2
-                        </span>
-                        <span className="text-gray-600">Reset</span>
+                        <div className="flex items-center gap-2">
+                            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step === "confirm" ? "bg-primary text-white" : "bg-card text-muted"}`}>
+                                2
+                            </span>
+                            <span className="text-muted">Reset</span>
+                        </div>
                     </div>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                         {error}
                     </div>
                 )}
 
                 {message && (
-                    <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+                    <div className="mb-4 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
                         {message}
                     </div>
                 )}
 
                 {step === "request" ? (
-                    <form onSubmit={handleRequestReset} className="space-y-6">
+                    <form onSubmit={handleRequestReset} className="space-y-4 sm:space-y-5">
                         <div>
-                            <label
-                                htmlFor="email"
-                                className="mb-2 block text-sm font-medium text-gray-600"
-                            >
+                            <label htmlFor="email" className="mb-2 block text-sm font-semibold text-primaryDark">
                                 Email
                             </label>
 
@@ -235,7 +243,7 @@ export default function ForgotPassword() {
                                     setEmail(e.target.value);
                                     setError("");
                                 }}
-                                className="w-full rounded-lg bg-[#F5F5F5] px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-[#6B8E6F]"
+                                className="w-full rounded-2xl border border-gray-200 bg-subtle px-4 py-3 text-primaryDark transition placeholder:text-muted/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                                 placeholder="Enter your email"
                                 required
                             />
@@ -244,19 +252,16 @@ export default function ForgotPassword() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full rounded-lg bg-[#6B8E6F] py-3 font-medium text-white transition duration-200 hover:bg-[#5a7a5e] disabled:cursor-not-allowed disabled:opacity-70"
+                            className="w-full rounded-2xl bg-primary py-3 font-bold text-white shadow-sm transition hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-70"
                         >
                             {isSubmitting ? "Sending code..." : "Send Reset Code"}
                         </button>
                     </form>
                 ) : (
                     <>
-                        <form onSubmit={handleConfirmReset} className="space-y-6">
+                        <form onSubmit={handleConfirmReset} className="space-y-4 sm:space-y-5">
                             <div>
-                                <label
-                                    htmlFor="code"
-                                    className="mb-2 block text-sm font-medium text-gray-600"
-                                >
+                                <label htmlFor="code" className="mb-2 block text-sm font-semibold text-primaryDark">
                                     Confirmation Code
                                 </label>
 
@@ -268,7 +273,7 @@ export default function ForgotPassword() {
                                         setCode(e.target.value);
                                         setError("");
                                     }}
-                                    className="w-full rounded-lg bg-[#F5F5F5] px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-[#6B8E6F]"
+                                    className="w-full rounded-2xl border border-gray-200 bg-subtle px-4 py-3 text-primaryDark transition placeholder:text-muted/70 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                                     placeholder="Enter the 6-digit code"
                                     required
                                 />
@@ -303,7 +308,7 @@ export default function ForgotPassword() {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full rounded-lg bg-[#6B8E6F] py-3 font-medium text-white transition duration-200 hover:bg-[#5a7a5e] disabled:cursor-not-allowed disabled:opacity-70"
+                                className="w-full rounded-2xl bg-primary py-3 font-bold text-white shadow-sm transition hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-70"
                             >
                                 {isSubmitting ? "Resetting password..." : "Reset Password"}
                             </button>
@@ -314,7 +319,7 @@ export default function ForgotPassword() {
                                 type="button"
                                 onClick={handleResendCode}
                                 disabled={isSubmitting}
-                                className="text-[#6B8E6F] transition hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+                                className="font-semibold text-primary transition hover:text-primaryDark disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 Resend code
                             </button>
@@ -323,7 +328,7 @@ export default function ForgotPassword() {
                                 type="button"
                                 onClick={handleUseDifferentEmail}
                                 disabled={isSubmitting}
-                                className="text-gray-500 transition hover:text-[#6B8E6F] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="font-semibold text-muted transition hover:text-primaryDark disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 Use a different email
                             </button>
@@ -335,7 +340,7 @@ export default function ForgotPassword() {
                     <button
                         type="button"
                         onClick={() => navigate("/login")}
-                        className="text-sm text-gray-500 transition hover:text-[#6B8E6F]"
+                        className="text-sm font-semibold text-primary transition hover:text-primaryDark"
                     >
                         Back to Log in
                     </button>

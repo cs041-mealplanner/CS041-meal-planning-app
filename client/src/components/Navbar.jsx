@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
 const logoUrl = new URL("../../assets/images/nourishlylogonoears.png", import.meta.url).href;
 
 export default function Header() {
     const { isAuthenticated, isLoading, logout } = useAuth();
-    const location = useLocation();
     const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -85,7 +84,6 @@ export default function Header() {
                 ) : (
                     <Link
                         to="/login"
-                        state={{ from: location }}
                         className="ml-8 hidden rounded-xl bg-primary px-5 py-2 font-semibold text-white shadow transition hover:brightness-110 md:block"
                     >
                         Login
@@ -155,7 +153,6 @@ export default function Header() {
                         <div className="flex flex-col px-6 py-4">
                             <Link
                                 to="/login"
-                                state={{ from: location }}
                                 onClick={handleLinkClick}
                                 className="rounded-xl bg-primary px-5 py-3 text-center font-semibold text-white shadow transition hover:brightness-110"
                             >

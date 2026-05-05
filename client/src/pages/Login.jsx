@@ -1,5 +1,5 @@
-import { signIn } from "aws-amplify/auth";
-import { useState } from 'react';
+import { signIn, signInWithRedirect } from "aws-amplify/auth";
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthPageLayout from '../components/AuthPageLayout';
 import { useAuth } from '../context/useAuth';
@@ -29,10 +29,16 @@ function LogIn() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { setUser } = useAuth();
+    const { isAuthenticated, isLoading, setUser } = useAuth();
 
     const redirectTo = location.state?.from?.pathname || '/dashboard';
     const resetSuccessMessage = location.state?.resetSuccess || '';
+
+    useEffect(() => {
+        if (!isLoading && isAuthenticated) {
+            navigate(redirectTo, { replace: true });
+        }
+    }, [isAuthenticated, isLoading, navigate, redirectTo]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -59,12 +65,24 @@ function LogIn() {
         }
     };
 
-    const handleGoogleLogin = () => {
-        setError('Google sign-in is not available yet.');
+    const handleGoogleLogin = async () => {
+        setError('');
+
+        try {
+            await signInWithRedirect({ provider: 'Google' });
+        } catch (err) {
+            setError(err.message || 'Google sign-in is not ready yet.');
+        }
     };
 
-    const handleFacebookLogin = () => {
-        setError('Facebook sign-in is not available yet.');
+    const handleFacebookLogin = async () => {
+        setError('');
+
+        try {
+            await signInWithRedirect({ provider: 'Facebook' });
+        } catch (err) {
+            setError(err.message || 'Facebook sign-in is not ready yet.');
+        }
     };
 
     return (
